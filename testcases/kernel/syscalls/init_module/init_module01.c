@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic init_module() tests.
  *
  * [Algorithm]
@@ -13,6 +11,7 @@
  * Inserts a simple module after opening and mmaping the module file.
  */
 
+#include <stdlib.h>
 #include <errno.h>
 #include "lapi/init_module.h"
 #include "tst_module.h"
@@ -21,10 +20,14 @@
 
 static struct stat sb;
 static void *buf;
+static int sig_enforce;
 
 static void setup(void)
 {
 	int fd;
+
+	if (tst_module_signature_enforced())
+		sig_enforce = 1;
 
 	tst_module_exists(MODULE_NAME, NULL);
 
@@ -36,7 +39,9 @@ static void setup(void)
 
 static void run(void)
 {
-	TST_EXP_PASS(init_module(buf, sb.st_size, "status=valid"));
+	int err = sig_enforce == 1 ? EKEYREJECTED : 0;
+
+	TST_EXP_PASS_OR_FAIL(init_module(buf, sb.st_size, "status=valid"), err);
 	if (!TST_PASS)
 		return;
 

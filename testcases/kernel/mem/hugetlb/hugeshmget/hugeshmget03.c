@@ -19,7 +19,6 @@
  * depending on the system being tested.
  */
 #define MAXIDS	8192
-#define PATH_SHMMNI	"/proc/sys/kernel/shmmni"
 
 static size_t shm_size;
 static int shm_id_1 = -1;
@@ -49,8 +48,8 @@ static void setup(void)
 	if (tst_hugepages == 0)
 		tst_brk(TCONF, "No enough hugepages for testing.");
 
-	SAFE_FILE_SCANF(PATH_SHMMNI, "%ld", &orig_shmmni);
-	SAFE_FILE_PRINTF(PATH_SHMMNI, "%ld", tst_hugepages / 2);
+	SAFE_FILE_SCANF(PATH_KERN_SHMMNI, "%ld", &orig_shmmni);
+	SAFE_FILE_PRINTF(PATH_KERN_SHMMNI, "%ld", tst_hugepages / 2);
 
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 	shm_size = hpage_size;
@@ -84,7 +83,7 @@ static void cleanup(void)
 		rm_shm(shm_id_arr[i]);
 
 	if (orig_shmmni != -1)
-		SAFE_FILE_PRINTF(PATH_SHMMNI, "%ld", orig_shmmni);
+		SAFE_FILE_PRINTF(PATH_KERN_SHMMNI, "%ld", orig_shmmni);
 }
 
 static struct tst_test test = {

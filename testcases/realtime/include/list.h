@@ -39,6 +39,8 @@
 #ifndef _LINUX_LIST_H
 #define _LINUX_LIST_H
 
+#include <stddef.h>
+
 /*
  * These are non-NULL pointers that will result in page faults
  * under normal circumstances, used to verify that nobody uses
@@ -241,7 +243,6 @@ static inline void list_splice_init(struct list_head *list,
 	}
 }
 
-#define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 /**
  * container_of - cast a member of a structure out to the containing structure
  * @ptr:	the pointer to the member.

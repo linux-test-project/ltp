@@ -38,13 +38,6 @@ CONFIG_CPU_IDLE
 CONFIG_CPU_IDLE_GOV_LADDER
 CONFIG_CPU_IDLE_GOV_MENU
 
-for SCHED_MC tests:
-
-CONFIG_SCHED_MC
-
-The power management test automation suite helps run the power management functionality
-(e.g: cpu frequency, cpu idle etc..) tests and report results.
-
 Test Scripts for CPU FREQUENCY:
 change_freq.sh
 change_govr.sh
@@ -52,9 +45,6 @@ check_cpufreq_sysfs_files.sh
 
 Test Scripts for CPU IDLE:
 will be added soon
-
-Test Scripts for SCHED_MC:
-test_sched_mc.sh
 
 Common functionality:
 pm_include.sh
@@ -66,22 +56,3 @@ To run your tests you can execute the runpwtests.sh
 To run the tests individually :
 
 P.S. As of now the supporting architecture(s) are x86,x86_64
-
-Support of system:
------------------
-If you see some thing like following,
-
-Power Management    1  FAIL  :  Required kernel configuration for SCHED_MC NOT set
-or
-Power Management    1  FAIL  :  Required kernel configuration for CPU_FREQ NOT set
-
-Then either configuration is not set or the system won't support.
-
-For CPU consolidation verification ebizzy is included in utils directory of LTP.
-To run cpu consolidation test user has to provide -w <workload> -l <sched_mc_level>.
-Refer to README in LTPROOT/utils/benchmark/ebizzy-0.2 directory for details of ebizzy.
-
-To test CPU consolidation for sched_mc 2 kernbench has to run. Kernbench needs linux kernel source as input in /root directory . For example download from http://www.kernel.org/pub/linux/kernel/v2.6/linux-2.6.29.4.tar.bz2. If Linux kernel source not found kernbench wiil  not execute.
-CPU consolidation testcases will not execute if number of CPU's in package is less then 2. If system is hyper threaded but number of CPU is 1 only sched_smt testcases will be excuted. For better coverage of testcases select a system which is at least quad core and then hyper threaded so that you will observe 8 CPU's in each package.
-
-Timer migration interface test will execute on kernel versions 2.6.31 and above. Timer migration functionality verification testcases will be executed only on suitable architecture like quad core or the number of CPU's in each package should be at least 4 and above

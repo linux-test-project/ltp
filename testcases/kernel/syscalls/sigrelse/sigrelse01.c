@@ -108,7 +108,7 @@
 #include <time.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifdef __linux__
 /* glibc2.2 definition needs -D_XOPEN_SOURCE, which breaks other things. */
@@ -192,9 +192,6 @@ int main(int argc, char **argv)
 	 * parse standard options
 	 */
 	tst_parse_opts(argc, argv, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&child, "dd", &pipe_fd[1], &pipe_fd2[0]);
-#endif
 
 	/*
 	 * perform global setup for test
@@ -208,23 +205,12 @@ int main(int argc, char **argv)
 		/*
 		 * fork off a child process
 		 */
-		if ((pid = FORK_OR_VFORK()) < 0) {
+		if ((pid = tst_fork()) < 0)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork() failed");
-
-		} else if (pid > 0) {
+		else if (pid > 0)
 			parent();
-
-		} else {
-#ifdef UCLINUX
-			if (self_exec(argv[0], "dd", pipe_fd[1], pipe_fd2[0]) <
-			    0) {
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "self_exec() failed");
-			}
-#else
+		else
 			child();
-#endif
-		}
 
 	}
 
@@ -361,7 +347,7 @@ static void parent(void)
 		break;
 	case HANDLE_ERR:
 		/* more than one signal tried to be handled at the same time */
-		tst_resm(TBROK, "Error occured in signal handler.");
+		tst_resm(TBROK, "Error occurred in signal handler.");
 		break;
 	default:
 		tst_resm(TBROK, "Unexpected exit code %d from child", rv);
@@ -391,11 +377,11 @@ static void child(void)
 
 	/* set alarm in case something hangs */
 	if (set_timeout() < 0) {
-		/* an error occured - put mesg in note and send it back to parent */
+		/* an error occurred - put mesg in note and send it back to parent */
 		(void)strcpy(note, mesg);
 
 	} else if (setup_sigs() < 0) {
-		/* an error occured - put mesg in note and send it back to parent */
+		/* an error occurred - put mesg in note and send it back to parent */
 		(void)strcpy(note, mesg);
 
 	} else {
@@ -495,17 +481,18 @@ static void child(void)
 
 	/*
 	 * If we are error free so far...
-	 * check the sig_array array for one occurence of
+	 * check the sig_array array for one occurrence of
 	 * each of the catchable signals.  If this is true,
 	 * then PASS, otherwise FAIL.
 	 */
 
-	if (exit_val == EXIT_OK) {
-		(void)memcpy(note, (char *)sig_array, sizeof(sig_array));
-	}
-
 	/* send note to parent and exit */
-	if (write_pipe(pipe_fd[1], note) < 0) {
+	if (exit_val == EXIT_OK) {
+		if (write(pipe_fd[1], sig_array, sizeof(sig_array)) < 0) {
+			tst_resm(TBROK | TERRNO, "write() pipe failed");
+			exit(WRITE_BROK);
+		}
+	} else if (write_pipe(pipe_fd[1], note) < 0) {
 		/*
 		 * write_pipe() failed.  Set exit value to WRITE_BROK to let
 		 * parent know what happened
@@ -602,7 +589,7 @@ static char *read_pipe(int fd)
 
 	/* set timeout alarm in case the pipe is blocked */
 	if (set_timeout() < 0) {
-		/* an error occured, message in mesg */
+		/* an error occurred, message in mesg */
 		return NULL;
 	}
 
@@ -636,7 +623,7 @@ static int write_pipe(int fd, char *msg)
 	printf("write_pipe: pid=%d, sending %s.\n", getpid(), msg);
 #endif
 
-	if (write(fd, msg, MAXMESG) < 0) {
+	if (write(fd, msg, strlen(msg) + 1) < 0) {
 		(void)sprintf(mesg, "write() pipe failed. error:%d %s.",
 			      errno, strerror(errno));
 
@@ -752,8 +739,10 @@ int choose_sig(int sig)
 
 	}
 
-	return 1;
+	if (sig < 32)
+		return 1;
 
+	return sig >= SIGRTMIN && sig <= SIGRTMAX;
 }
 
 void setup(void)

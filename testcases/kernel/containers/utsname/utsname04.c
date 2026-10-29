@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Drop root privileges, create a container with CLONE_NEWUTS and verify that
  * we receive a permission error.
  */
@@ -20,7 +18,10 @@ static char *str_op;
 
 static void run(void)
 {
-	const struct tst_clone_args cargs = { CLONE_NEWUTS, SIGCHLD };
+	const struct tst_clone_args cargs = {
+		.flags = CLONE_NEWUTS,
+		.exit_signal = SIGCHLD,
+	};
 	struct passwd *pw;
 
 	tst_res(TINFO, "Dropping root privileges");
@@ -52,7 +53,6 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
 	.options = (struct tst_option[]) {
 		{ "m:", &str_op, "Test execution mode <clone|unshare>" },
 		{},

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
+ */
+
+/*\
+ * Block on a :manpage:`futex(2)` and wait for wakeup.
  *
- * Block on a futex and wait for wakeup.
- *
- * This tests uses shared memory page to store the mutex variable.
+ * Test uses shared memory page to store the mutex variable.
  */
 
 #include <sys/mman.h>

@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2020 SUSE LLC <mdoucha@suse.cz>
- *
+ */
+
+/*\
  * CVE-2018-18559
  *
- * Test for race condition vulnerability in bind() on AF_PACKET socket.
- * Fixed in:
+ * Test for race condition vulnerability in :manpage:`bind(2)` on AF_PACKET
+ * socket.
  *
- *  commit 15fe076edea787807a7cdc168df832544b58eba6
- *  Author: Eric Dumazet <edumazet@google.com>
- *  Date:   Tue Nov 28 08:03:30 2017 -0800
- *
- *  net/packet: fix a race in packet_bind() and packet_notifier()
+ * Fixed in kernel v4.15-rc2:
+ * 15fe076edea7 ("net/packet: fix a race in packet_bind() and packet_notifier()")
  */
 
 #include <sys/socket.h>
@@ -92,7 +91,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 300,
+	.min_runtime = 300,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",
@@ -100,11 +99,11 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "15fe076edea7"},
+		{"linux-git", "15fe076edea787807a7cdc168df832544b58eba6"},
 		{"CVE", "2018-18559"},
 		{}
 	}

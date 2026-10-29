@@ -1,0 +1,10 @@
+# Configuration for the `b4` tool
+# See https://b4.docs.kernel.org/en/latest/config.html
+[b4]
+    send-series-to = Linux Test Project <ltp@lists.linux.it>
+    pw-url = https://patchwork.kernel.org/
+    pw-project = ltp
+
+    # other checkpatch.pl options from .checkpatch.conf are used
+    prep-perpatch-check-cmd = ./scripts/checkpatch.pl -q --mailback --showfile --no-f
+    am-perpatch-check-cmd = ./scripts/checkpatch.pl -q --mailback

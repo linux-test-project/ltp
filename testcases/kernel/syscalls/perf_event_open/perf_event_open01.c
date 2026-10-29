@@ -43,7 +43,7 @@
 
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "perf_event_open01";
 
@@ -148,7 +148,7 @@ static void verify(struct test_case_t *tc)
 	TEST(perf_event_open(&pe, 0, -1, -1, 0));
 	if (TEST_RETURN == -1) {
 		if (TEST_ERRNO == ENOENT || TEST_ERRNO == EOPNOTSUPP ||
-		    TEST_ERRNO == ENODEV) {
+		    TEST_ERRNO == ENODEV || TEST_ERRNO == EINVAL) {
 			tst_resm(TCONF | TTERRNO,
 			         "perf_event_open for %s not supported",
 			         tc->config_name);

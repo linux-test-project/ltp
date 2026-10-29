@@ -1,6 +1,0 @@
-#POWER_MANAGEMENT exclusive
-runpwtests_exclusive01 runpwtests_exclusive01.sh
-runpwtests_exclusive02 runpwtests_exclusive02.sh
-runpwtests_exclusive03 runpwtests_exclusive03.sh
-runpwtests_exclusive04 runpwtests_exclusive04.sh
-runpwtests_exclusive05 runpwtests_exclusive05.sh

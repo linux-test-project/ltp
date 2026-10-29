@@ -2,22 +2,24 @@
 /*
  * Copyright (c) 2018 CTERA Networks.  All Rights Reserved.
  * Author: Amir Goldstein <amir73il@gmail.com>
+ */
+
+/*\
+ * Check that inotify work for an overlayfs directory after copy up and
+ * drop caches.
  *
- * DESCRIPTION
- *     Check that inotify work for an overlayfs directory after copy up and
- *     drop caches.
+ * An inotify watch pins the directory inode in cache, but not the dentry.
+ * The watch will not report events on the directory if overlayfs does not
+ * obtain the pinned inode to the new allocated dentry after drop caches.
  *
- *     An inotify watch pins the directory inode in cache, but not the dentry.
- *     The watch will not report events on the directory if overlayfs does not
- *     obtain the pinned inode to the new allocated dentry after drop caches.
+ * The problem has been fixed by commit:
+ * 31747eda41ef ("ovl: hash directory inodes for fsnotify").
  *
- *     The problem has been fixed by commit:
- *       31747eda41ef "ovl: hash directory inodes for fsnotify"
+ * [Algorithm]
  *
- * ALGORITHM
- *     Add watch on an overlayfs lower directory then chmod directory and drop
- *     dentry and inode caches. Execute operations on directory and child and
- *     expect events to be reported on directory watch.
+ * Add watch on an overlayfs lower directory then chmod directory and drop
+ * dentry and inode caches. Execute operations on directory and child and
+ * expect events to be reported on directory watch.
  */
 
 #include "config.h"
@@ -86,12 +88,7 @@ void verify_inotify(void)
 	strcpy(event_set[test_cnt].name, FILE_NAME);
 	test_cnt++;
 
-	int len = read(fd_notify, event_buf, EVENT_BUF_LEN);
-	if (len == -1 && errno != EAGAIN) {
-		tst_brk(TBROK | TERRNO,
-			"read(%d, buf, %zu) failed",
-			fd_notify, EVENT_BUF_LEN);
-	}
+	int len = SAFE_READ(SAFE_READ_ANY_EAGAIN, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	int i = 0, test_num = 0;
 	while (i < len) {
@@ -156,7 +153,7 @@ static void setup(void)
 	tst_res(TINFO, DIR_PATH " ino=%lu", buf.st_ino);
 
 	/* Drop dentry caches, so overlayfs will allocate a new dentry */
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "2");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "2");
 
 	/* Copy up directory to make it a merge directory */
 	SAFE_CHMOD(DIR_PATH, 0700);
@@ -178,6 +175,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_root = 1,
 	.mount_device = 1,
 	.needs_overlay = 1,

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2017-2024 Linux Test Project
  */
 
 #define _GNU_SOURCE
@@ -9,6 +10,7 @@
 #include <errno.h>
 #include <sched.h>
 #include <sys/ptrace.h>
+#include <sys/prctl.h>
 #include "config.h"
 #ifdef HAVE_SYS_FANOTIFY_H
 # include <sys/fanotify.h>
@@ -225,8 +227,8 @@ int safe_setresuid(const char *file, const int lineno,
 }
 
 int safe_sigaction(const char *file, const int lineno,
-                   int signum, const struct sigaction *act,
-                   struct sigaction *oldact)
+				   int signum, const struct sigaction *act,
+				   struct sigaction *oldact)
 {
 	int rval;
 
@@ -246,7 +248,7 @@ int safe_sigaction(const char *file, const int lineno,
 }
 
 int safe_sigaddset(const char *file, const int lineno,
-                    sigset_t *sigs, int signo)
+				   sigset_t *sigs, int signo)
 {
 	int rval;
 
@@ -265,8 +267,7 @@ int safe_sigaddset(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigdelset(const char *file, const int lineno,
-                    sigset_t *sigs, int signo)
+int safe_sigdelset(const char *file, const int lineno, sigset_t *sigs, int signo)
 {
 	int rval;
 
@@ -285,8 +286,7 @@ int safe_sigdelset(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigemptyset(const char *file, const int lineno,
-                      sigset_t *sigs)
+int safe_sigemptyset(const char *file, const int lineno, sigset_t *sigs)
 {
 	int rval;
 
@@ -334,7 +334,7 @@ static const char *strhow(int how)
 }
 
 int safe_sigprocmask(const char *file, const int lineno,
-                      int how, sigset_t *set, sigset_t *oldset)
+					 int how, sigset_t *set, sigset_t *oldset)
 {
 	int rval;
 
@@ -353,8 +353,7 @@ int safe_sigprocmask(const char *file, const int lineno,
 	return rval;
 }
 
-int safe_sigwait(const char *file, const int lineno,
-                  sigset_t *set, int *sig)
+int safe_sigwait(const char *file, const int lineno, sigset_t *set, int *sig)
 {
 	int rval;
 
@@ -548,6 +547,20 @@ int safe_dup2(const char *file, const int lineno, int oldfd, int newfd)
 	return rval;
 }
 
+void *safe_calloc(const char *file, const int lineno, size_t nmemb, size_t size)
+{
+	void *rval;
+
+	rval = calloc(nmemb, size);
+
+	if (rval == NULL) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"calloc(%zu, %zu) failed", nmemb, size);
+	}
+
+	return rval;
+}
+
 void *safe_realloc(const char *file, const int lineno, void *ptr, size_t size)
 {
 	void *ret;
@@ -590,4 +603,247 @@ void safe_cmd(const char *file, const int lineno, const char *const argv[],
 	default:
 		tst_brk_(file, lineno, TBROK, "%s failed (%d)", argv[0], rval);
 	}
+}
+
+int safe_msync(const char *file, const int lineno, void *addr,
+				size_t length, int flags)
+{
+	int rval;
+
+	rval = msync(addr, length, flags);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"msync(%p, %zu, %d) failed", addr, length, flags);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid msync(%p, %zu, %d) return value %d",
+			addr, length, flags, rval);
+	}
+
+	return rval;
+}
+
+void safe_print_file(const char *file, const int lineno, char *path)
+{
+	FILE *pfile;
+	char line[PATH_MAX];
+
+	tst_res(TINFO, "=== %s ===", path);
+
+	pfile = safe_fopen(file, lineno, NULL, path, "r");
+
+	while (fgets(line, sizeof(line), pfile))
+		fprintf(stderr, "%s", line);
+
+	safe_fclose(file, lineno, NULL, pfile);
+}
+
+int safe_sscanf(const char *file, const int lineno, const char *restrict buffer, const char *restrict format, ...)
+{
+	va_list args;
+
+	va_start(args, format);
+	int ret = vsscanf(buffer, format, args);
+
+	va_end(args);
+	int placeholders = tst_count_scanf_conversions(format);
+
+	if (ret == EOF)
+		tst_brk_(file, lineno, TBROK | TERRNO, "got EOF from sscanf()");
+
+	if (ret != placeholders)
+		tst_brk_(file, lineno, TBROK | TERRNO, "wrong number of conversion, expected %d, got %d", placeholders, ret);
+
+	return ret;
+}
+
+#define PROT_FLAG_STR(f) #f " | "
+void tst_prot_to_str(const int prot, char *buf)
+{
+	char *ptr = buf;
+
+	if (prot == PROT_NONE) {
+		strcpy(buf, "PROT_NONE");
+		return;
+	}
+
+	if (prot & PROT_READ) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_READ));
+		ptr += sizeof(PROT_FLAG_STR(PROT_READ)) - 1;
+	}
+
+	if (prot & PROT_WRITE) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_WRITE));
+		ptr += sizeof(PROT_FLAG_STR(PROT_WRITE)) - 1;
+	}
+
+	if (prot & PROT_EXEC) {
+		strcpy(ptr, PROT_FLAG_STR(PROT_EXEC));
+		ptr += sizeof(PROT_FLAG_STR(PROT_EXEC)) - 1;
+	}
+
+	if (buf != ptr)
+		ptr[-3] = 0;
+}
+
+int safe_mprotect(const char *file, const int lineno,
+	char *addr, size_t len, int prot)
+{
+	int rval;
+	char prot_buf[512];
+
+	tst_prot_to_str(prot, prot_buf);
+
+	tst_res_(file, lineno, TDEBUG,
+		"mprotect(%p, %zi, %s(%x))", addr, len, prot_buf, prot);
+
+	rval = mprotect(addr, len, prot);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %zi, %s(%x))", addr, len, prot_buf, prot);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"mprotect(%p, %zi, %s(%x)) return value %d",
+			addr, len, prot_buf, prot, rval);
+	}
+
+	return rval;
+}
+
+int safe_prctl(const char *file, const int lineno,
+	int option, unsigned long arg2, unsigned long arg3,
+	unsigned long arg4, unsigned long arg5)
+{
+	int rval;
+
+	rval = prctl(option, arg2, arg3, arg4, arg5);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"prctl(%d, %lu, %lu, %lu, %lu)",
+			option, arg2, arg3, arg4, arg5);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid prctl(%d, %lu, %lu, %lu, %lu) return value %d",
+			option, arg2, arg3, arg4, arg5, rval);
+	}
+
+	return rval;
+}
+
+ssize_t safe_readv(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt)
+{
+	ssize_t rval, nbyte;
+	int i;
+
+	for (i = 0, nbyte = 0; i < iovcnt; i++)
+		nbyte += iov[i].iov_len;
+
+	rval = readv(fildes, iov, iovcnt);
+
+	if (rval == -1 || (len_strict && rval != nbyte)) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"readv(%d,%p,%d) failed", fildes, iov, iovcnt);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid readv(%d,%p,%d) return value %zd",
+			fildes, iov, iovcnt, rval);
+	}
+
+	return rval;
+}
+
+int safe_symlinkat(const char *file, const int lineno,
+                 const char *oldpath, const int newdirfd, const char *newpath)
+{
+	int rval;
+
+	rval = symlinkat(oldpath, newdirfd, newpath);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"symlinkat(%s,%d,%s) failed", oldpath, newdirfd, newpath);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid symlinkat(%s,%d,%s) return value %d", oldpath,
+			newdirfd, newpath, rval);
+	}
+
+	return rval;
+}
+
+ssize_t safe_writev(const char *file, const int lineno, char len_strict,
+	int fildes, const struct iovec *iov, int iovcnt)
+{
+	ssize_t rval, nbyte;
+	int i;
+
+	for (i = 0, nbyte = 0; i < iovcnt; i++)
+		nbyte += iov[i].iov_len;
+
+	rval = writev(fildes, iov, iovcnt);
+
+	if (rval == -1 || (len_strict && rval != nbyte)) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"writev(%d,%p,%d) failed", fildes, iov, iovcnt);
+	} else if (rval < 0) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid writev(%d,%p,%d) return value %zd",
+			fildes, iov, iovcnt, rval);
+	}
+
+	return rval;
+}
+
+char *safe_ptsname(const char *const file, const int lineno, int masterfd)
+{
+	char *name;
+
+	name = ptsname(masterfd);
+
+	if (!name) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"ptsname(%d) failed", masterfd);
+	}
+
+	return name;
+}
+
+int safe_statvfs(const char *file, const int lineno,
+                              const char *path, struct statvfs *buf)
+{
+	int rval;
+
+	rval = statvfs(path, buf);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"statvfs(%s,%p) failed", path, buf);
+	} else if (rval) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid statvfs(%s,%p) return value %d", path, buf,
+			rval);
+	}
+
+	return rval;
+}
+
+int safe_poll(const char *const file, const int lineno, struct pollfd *fds,
+		nfds_t nfds, int timeout)
+{
+	int rval;
+
+	rval = poll(fds, nfds, timeout);
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"poll(%p, %li, %i) failed", fds, (long)nfds, timeout);
+	} else if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid poll(%p, %li, %i) return value %i",
+			fds, (long)nfds, timeout, rval);
+	}
+
+	return rval;
 }

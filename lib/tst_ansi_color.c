@@ -31,6 +31,9 @@ char* tst_ttype2color(int ttype)
 	case TINFO:
 		return ANSI_COLOR_BLUE;
 	break;
+	case TDEBUG:
+		return ANSI_COLOR_WHITE;
+	break;
 	default:
 		return "";
 	}

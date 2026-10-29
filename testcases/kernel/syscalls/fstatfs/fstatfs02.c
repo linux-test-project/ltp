@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check if fstatfs() sets errno correctly.
  */
 

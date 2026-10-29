@@ -11,6 +11,20 @@
 MEMCG_TESTFUNC=do_test
 MEMCG_SHMMAX=1
 TST_TEST_DATA="--mmap-anon --mmap-file --shm"
+TST_SETUP=do_setup
+TST_CLEANUP=do_cleanup
+
+do_setup()
+{
+	memcg_setup
+	swapoff -a
+}
+
+do_cleanup()
+{
+	swapon -a
+	memcg_cleanup
+}
 
 do_test()
 {

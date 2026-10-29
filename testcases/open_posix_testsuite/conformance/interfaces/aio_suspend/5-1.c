@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (sysconf(_SC_ASYNCHRONOUS_IO) != 200112L ||
 	    sysconf(_SC_MONOTONIC_CLOCK) < 200112L)

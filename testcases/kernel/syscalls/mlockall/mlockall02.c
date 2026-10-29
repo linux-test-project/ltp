@@ -77,7 +77,7 @@
 #include <pwd.h>
 #include <sys/mman.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include <sys/resource.h>
 
 void setup();
@@ -98,8 +98,6 @@ struct test_case_t {
 	MCL_CURRENT, EPERM, "Not a superuser"}, {
 	0, EINVAL, "Unknown flag"}
 };
-
-#if !defined(UCLINUX)
 
 int main(int ac, char **av)
 {
@@ -258,13 +256,3 @@ void cleanup(void)
 {
 	return;
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */

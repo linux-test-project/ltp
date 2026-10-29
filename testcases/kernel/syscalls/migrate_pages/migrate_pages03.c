@@ -49,7 +49,7 @@ static void setup(void)
 	int n;
 	unsigned long nodemask_size;
 
-	if (access(PATH_KSM, F_OK))
+	if (access(PATH_MM_KSM, F_OK))
 		tst_brk(TCONF, "KSM configuration was not enabled");
 
 	if (get_allowed_nodes_arr(NH_MEMS, &num_nodes, &nodes) < 0)
@@ -93,8 +93,8 @@ static void setup(void)
 		memset(test_pages[n], 0, page_size);
 	}
 
-	SAFE_FILE_SCANF(PATH_KSM "run", "%d", &orig_ksm_run);
-	SAFE_FILE_PRINTF(PATH_KSM "run", "%d", 1);
+	SAFE_FILE_SCANF(PATH_MM_KSM_RUN, "%d", &orig_ksm_run);
+	SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "%d", 1);
 	wait_ksmd_full_scan();
 }
 
@@ -111,7 +111,7 @@ static void cleanup(void)
 	free(new_nodes[1]);
 
 	if (orig_ksm_run != -1)
-		SAFE_FILE_PRINTF(PATH_KSM "run", "%d", orig_ksm_run);
+		SAFE_FILE_PRINTF(PATH_MM_KSM_RUN, "%d", orig_ksm_run);
 }
 
 static void migrate_test(void)
@@ -139,13 +139,13 @@ static void migrate_test(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 300,
+	.runtime = 300,
 	.needs_root = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = migrate_test,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "4b0ece6fa016"},
+		{"linux-git", "4b0ece6fa0167b22c004ff69e137dc94ee2e469e"},
 		{}
 	}
 };

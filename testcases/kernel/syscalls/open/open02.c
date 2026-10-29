@@ -2,15 +2,13 @@
 /*
  * Copyright (c) International Business Machines Corp., 2001
  * Ported to LTP: Wayne Boyer
- *	06/2017 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
+ * 06/2017 Modified by Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
 /*\
- * [Description]
- *
- * 1. open a new file without O_CREAT, ENOENT should be returned.
- * 2. open a file with O_RDONLY | O_NOATIME and the caller was not
- * privileged, EPERM should be returned.
+ * 1. Open a new file without O_CREAT, ENOENT should be returned.
+ * 2. Open a file with O_RDONLY | O_NOATIME and the caller was not
+ *    privileged, EPERM should be returned.
  */
 
 #define _GNU_SOURCE
@@ -31,7 +29,7 @@ static struct tcase {
 	{TEST_FILE2, O_RDONLY | O_NOATIME, EPERM, "unprivileged O_RDONLY | O_NOATIME"},
 };
 
-void setup(void)
+static void setup(void)
 {
 	struct passwd *ltpuser;
 
@@ -47,10 +45,10 @@ static void verify_open(unsigned int n)
 	struct tcase *tc = &tcases[n];
 
 	TST_EXP_FAIL2(open(tc->filename, tc->flag, 0444),
-	             tc->exp_errno, "open() %s", tc->desc);
+			tc->exp_errno, "open() %s", tc->desc);
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	SAFE_SETEUID(0);
 }

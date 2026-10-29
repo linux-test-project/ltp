@@ -105,7 +105,7 @@ static int *writer(void *ID)
 	pthread_exit(NULL);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t rea[READ_NUM], wri[WRITE_NUM];
 	int ReadID[READ_NUM], WriteID[WRITE_NUM];

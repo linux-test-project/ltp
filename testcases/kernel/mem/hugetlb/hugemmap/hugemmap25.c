@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * The kernel has bug for mremap() on some architecture. mremap() can
  * cause crashes on architectures with holes in the address space
  * (like ia64) and on powerpc with it's distinct page size "slices".
@@ -76,7 +74,7 @@ static void run_test(void)
 	void *p;
 	int ret;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = map_align(3*hpage_size, hpage_size);
 
 	SAFE_MUNMAP(p, hpage_size);

@@ -8,13 +8,13 @@
  This program verifies that sigpause() removes sig from the signal mask.
 
  Steps:
- 1. From the main() function, create a new thread. Give the new thread a
+ 1. From the test_main() function, create a new thread. Give the new thread a
     a second to set up for receiving a signal, and to suspend itself using
     sigpause().
- 2. Have main() send the signal indicated by SIGTOTEST to the new thread,
+ 2. Have test_main() send the signal indicated by SIGTOTEST to the new thread,
     using pthread_kill(). After doing this, give the new thread a second
     to get to the signal handler.
- 3. In the main() thread, if the handler_called variable wasn't set to 1,
+ 3. In the test_main() thread, if the handler_called variable wasn't set to 1,
     then the test has failed, else it passed.
  */
 
@@ -49,7 +49,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

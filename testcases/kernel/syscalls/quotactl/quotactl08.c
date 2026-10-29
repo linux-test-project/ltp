@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * This testcases checks that quotactl(2) on ext4 filesystem succeeds to:
  *
  * - turn on quota with Q_QUOTAON flag for user
@@ -44,7 +43,7 @@
 #define MNTPOINT	"mntpoint"
 
 static int32_t fmt_id = QFMT_VFS_V1;
-static int test_id, mount_flag;
+static int test_id;
 static struct dqblk set_dq = {
 	.dqb_bsoftlimit = 100,
 	.dqb_valid = QIF_BLIMITS
@@ -153,13 +152,7 @@ static struct tcase {
 
 static void setup(void)
 {
-	const char *const fs_opts[] = { "-O quota", NULL};
-
 	quotactl_info();
-
-	SAFE_MKFS(tst_device->dev, tst_device->fs_type, fs_opts, NULL);
-	SAFE_MOUNT(tst_device->dev, MNTPOINT, tst_device->fs_type, 0, NULL);
-	mount_flag = 1;
 
 	fd = SAFE_OPEN(MNTPOINT, O_RDONLY);
 	TEST(do_quotactl(fd, QCMD(Q_GETNEXTQUOTA, USRQUOTA), tst_device->dev,
@@ -172,8 +165,6 @@ static void cleanup(void)
 {
 	if (fd > -1)
 		SAFE_CLOSE(fd);
-	if (mount_flag && tst_umount(MNTPOINT))
-		tst_res(TWARN | TERRNO, "umount(%s)", MNTPOINT);
 }
 
 static void verify_quota(unsigned int n)
@@ -209,20 +200,28 @@ static void verify_quota(unsigned int n)
 
 static struct tst_test test = {
 	.needs_root = 1,
-	.needs_drivers = (const char *const []) {
-		"quota_v2",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_QFMT_V2",
 		NULL
 	},
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
-	.needs_device = 1,
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]){
+				"-O quota", NULL
+			},
+		},
+		{}
+	},
+	.mount_device = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
-	.needs_cmds = (const char *[]) {
-		"mkfs.ext4 >= 1.43.0",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "mkfs.ext4 >= 1.43.0"},
+		{}
 	}
 };

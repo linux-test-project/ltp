@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, epoll_pwait() and epoll_pwait2() return -1 and set errno to
  * EFAULT with a sigmask points outside user's accessible address space.
  */
@@ -22,7 +20,7 @@ static void *bad_addr;
 
 static void run(void)
 {
-	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, -1, bad_addr),
+	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, NULL, bad_addr),
 		     EFAULT, "with an invalid sigmask pointer");
 }
 

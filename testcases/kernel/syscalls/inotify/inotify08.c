@@ -2,22 +2,24 @@
 /*
  * Copyright (c) 2018 CTERA Networks.  All Rights Reserved.
  * Author: Amir Goldstein <amir73il@gmail.com>
+ */
+
+/*\
+ * Check that inotify work for an overlayfs file after copy up and
+ * drop caches.
  *
- * DESCRIPTION
- *     Check that inotify work for an overlayfs file after copy up and
- *     drop caches.
+ * An inotify watch pins the file inode in cache, but not the dentry.
+ * The watch will not report events on the file if overlayfs does not
+ * obtain the pinned inode to the new allocated dentry after drop caches.
  *
- *     An inotify watch pins the file inode in cache, but not the dentry.
- *     The watch will not report events on the file if overlayfs does not
- *     obtain the pinned inode to the new allocated dentry after drop caches.
+ * The problem has been fixed by commit:
+ * 764baba80168 ("ovl: hash non-dir by lower inode for fsnotify").
  *
- *     The problem has been fixed by commit:
- *       764baba80168 "ovl: hash non-dir by lower inode for fsnotify"
+ * [Algorithm]
  *
- * ALGORITHM
- *     Add watch on an overlayfs lower file then chmod file and drop dentry
- *     and inode caches. Execute operations on file and expect events to be
- *     reported on file watch.
+ * Add watch on an overlayfs lower file then chmod file and drop dentry
+ * and inode caches. Execute operations on file and expect events to be
+ * reported on file watch.
  */
 
 #include "config.h"
@@ -84,12 +86,7 @@ void verify_inotify(void)
 	SAFE_TOUCH(OVL_LOWER"/"FILE_NAME, 0644, NULL);
 	SAFE_TOUCH(OVL_UPPER"/"FILE_NAME, 0644, NULL);
 
-	int len = read(fd_notify, event_buf, EVENT_BUF_LEN);
-	if (len == -1 && errno != EAGAIN) {
-		tst_brk(TBROK | TERRNO,
-			"read(%d, buf, %zu) failed",
-			fd_notify, EVENT_BUF_LEN);
-	}
+	int len = SAFE_READ(SAFE_READ_ANY_EAGAIN, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	int i = 0, test_num = 0;
 	while (i < len) {
@@ -149,7 +146,7 @@ static void setup(void)
 			major(buf.st_dev), minor(buf.st_dev));
 
 	/* Drop dentry caches, so overlayfs will allocate a new dentry */
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "2");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "2");
 
 	/* Copy up file */
 	SAFE_CHMOD(FILE_PATH, 0600);
@@ -172,6 +169,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_root = 1,
 	.mount_device = 1,
 	.needs_overlay = 1,

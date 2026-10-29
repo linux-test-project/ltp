@@ -9,7 +9,8 @@ TST_TESTFUNC=generate_runfile
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="sed"
 
-LVM_DIR="${LVM_DIR:-/tmp}"
+TMPDIR="${TMPDIR:-/tmp}"
+LVM_DIR="${LVM_DIR:-$TMPDIR}"
 LVM_TMPDIR="$LVM_DIR/ltp/growfiles"
 
 generate_runfile()

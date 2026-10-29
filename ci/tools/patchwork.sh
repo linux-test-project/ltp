@@ -1,0 +1,293 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Shell script to communicate with Patchwork via REST API.
+# It has been mainly created for CI purposes, but it can be used in the shell
+# by satisfying minimum requirements.
+#
+# Copyright (c) 2025 Andrea Cervesato <andrea.cervesato@suse.com>
+
+PATCHWORK_URL="${PATCHWORK_URL:-https://patchwork.kernel.org}"
+PATCHWORK_SINCE="${PATCHWORK_SINCE:-3600}"
+PATCHWORK_MAX_SINCE="${PATCHWORK_MAX_SINCE:-86400}"
+PATCHWORK_CI_PREFIX="${PATCHWORK_CI_PREFIX:-github-build}"
+
+command_exists() {
+        local cmd
+
+        for cmd in "$@"; do
+                if ! command -v "$cmd" >/dev/null 2>&1; then
+                        echo "'$1' must be present in the system" >&2
+                        exit 1
+                fi
+        done
+}
+
+command_exists "curl" "jq"
+
+fetch_series() {
+        local current_time=$(date +%s)
+        local since_time
+        local date
+
+        if [ -n "$PATCHWORK_SINCE_DATE" ]; then
+                since_time=$(date -u -d "$PATCHWORK_SINCE_DATE" +%s)
+                local max_since_time=$(expr $current_time - $PATCHWORK_MAX_SINCE)
+
+                if [ "$since_time" -lt "$max_since_time" ]; then
+                        since_time=$max_since_time
+                fi
+        else
+                since_time=$(expr $current_time - $PATCHWORK_SINCE)
+        fi
+
+        date=$(date -u -d @$since_time +"%Y-%m-%dT%H:%M:%S")
+        local stdout
+
+        stdout=$(curl -k -G "$PATCHWORK_URL/api/events/" \
+                --data "category=series-completed" \
+                --data "project=ltp" \
+                --data "state=new" \
+                --data "since=$date" \
+                --data "archive=no")
+
+        [ $? -eq 0 ] || exit 1
+
+        printf '%s\n' "$stdout" | jq -r '.[] | "\(.payload.series.id) \(.payload.series.mbox)"'
+}
+
+get_patches() {
+        local series_id="$1"
+        local stdout
+
+        stdout="$(curl -k -G $PATCHWORK_URL/api/patches/ \
+                --data project=ltp \
+                --data series=$series_id)"
+
+        [ $? -eq 0 ] || exit 1
+
+        printf '%s\n' "$stdout" | jq -r '.[] | "\(.id)"'
+}
+
+verify_token_exists() {
+        if [ -z "$PATCHWORK_TOKEN" ]; then
+                echo "For this feature you need \$PATCHWORK_TOKEN"
+                exit 1
+        fi
+}
+
+set_patch_state() {
+        local patch_id="$1"
+        local state="$2"
+
+        verify_token_exists
+
+        curl -k -X PATCH \
+                -H "Authorization: Token $PATCHWORK_TOKEN" \
+                -F "state=$state" \
+                "$PATCHWORK_URL/api/patches/$patch_id/"
+
+        [ $? -eq 0 ] || exit 1
+}
+
+set_series_state() {
+        if [ $# -ne 2 ]; then
+            echo "'state' command expects 2 parameters ($#)"
+            exit 1
+        fi
+
+        local series_id="$1"
+        local state="$2"
+
+        get_patches "$series_id" | while read -r patch_id; do
+                if [ "$patch_id" ]; then
+                        set_patch_state "$patch_id" "$state"
+                fi
+        done
+}
+
+get_checks() {
+        local patch_id="$1"
+        local prefix="$2"
+        local stdout
+
+        stdout="$(curl -k -G $PATCHWORK_URL/api/patches/$patch_id/checks/)"
+
+        [ $? -eq 0 ] || exit 1
+
+        if [ -n "$prefix" ]; then
+                printf '%s\n' "$stdout" | jq -r \
+                        --arg pfx "$prefix" \
+                        '.[] | select(.context | startswith($pfx)) | "\(.id)"'
+        else
+                printf '%s\n' "$stdout" | jq -r '.[] | "\(.id)"'
+        fi
+}
+
+already_tested() {
+        local series_id="$1"
+
+        get_patches "$series_id" | while read -r patch_id; do
+                [ "$patch_id" ] || continue
+
+                get_checks "$patch_id" "$PATCHWORK_CI_PREFIX" | while read -r check_id; do
+                        if [ -n "$check_id" ]; then
+                                echo "$check_id"
+                                return
+                        fi
+                done
+        done
+}
+
+verify_new_patches() {
+        local tmp=$(mktemp -d)
+        local output="$tmp/series_ids.txt"
+
+        touch "$output"
+
+        fetch_series | while read -r series_id series_mbox; do
+                [ "$series_id" ] || continue
+
+                tested=$(already_tested "$series_id")
+                [ "$tested" ] && continue
+
+                echo "$series_id|$series_mbox" >>"$output"
+        done
+
+        cat "$output"
+}
+
+send_results() {
+        if [ $# -ne 4 -a $# -ne 5 ]; then
+            echo "'check' command expects 4 or 5 parameters ($#)"
+            exit 1
+        fi
+
+        local series_id="$1"
+        local target_url="$2"
+
+        verify_token_exists
+
+        local context="$PATCHWORK_CI_PREFIX-$(echo "$3" | sed 's/:/_/g; s/\//-/g; s/\./-/g')"
+
+        [ "$CC" ] && context="${context}_${CC}"
+        [ "$ARCH" ] && context="${context}_${ARCH}"
+
+        local result="$4"
+        [ "$result" = "cancelled" ] && return
+
+        local description="${5:-$result}"
+
+        local state="fail"
+
+        # patchwork REST API allowed states: pending, success, warning, fail.
+        # https://github.com/getpatchwork/patchwork/blob/main/docs/api/schemas/v1.2/patchwork.yaml#L708
+        # https://patchwork.readthedocs.io/en/latest/api/rest/schemas/v1.2/#get--api-1.2-patches-patch_id-checks
+        case "$result" in
+            success|pending) state=$result;;
+        esac
+
+        get_patches "$series_id" | while read -r patch_id; do
+                [ "$patch_id" ] || continue
+
+                curl -k -X POST \
+                        -H "Authorization: Token $PATCHWORK_TOKEN" \
+                        -F "state=$state" \
+                        -F "context=$context" \
+                        -F "target_url=$target_url" \
+                        -F "description=$description" \
+                        "$PATCHWORK_URL/api/patches/$patch_id/checks/"
+
+                [ $? -eq 0 ] || exit 1
+        done
+}
+
+apply_series() {
+        if [ $# -ne 1 ]; then
+                echo "'apply' command expects 1 parameter ($#)" >&2
+                exit 1
+        fi
+
+        local series_id="$1"
+        local stdout
+        local patch_ids
+
+        stdout="$(curl -f -k -s --retry 3 "$PATCHWORK_URL/api/1.2/series/$series_id/")"
+        if [ $? -ne 0 ] || [ -z "$stdout" ]; then
+                echo "Failed to fetch series $series_id from $PATCHWORK_URL" >&2
+                exit 1
+        fi
+
+        if ! patch_ids="$(printf '%s\n' "$stdout" | jq -r '.patches[].id')"; then
+                echo "Failed to parse series $series_id from $PATCHWORK_URL" >&2
+                exit 1
+        fi
+
+        if [ -z "$patch_ids" ]; then
+                echo "No patches found for series $series_id" >&2
+                exit 1
+        fi
+
+        local tmp_dir
+        tmp_dir="$(mktemp -d)"
+        trap 'rm -rf "$tmp_dir"' EXIT
+
+        local count=0
+        for patch_id in $patch_ids; do
+                local patch_json
+                patch_json="$(curl -f -k -s --retry 3 "$PATCHWORK_URL/api/1.2/patches/$patch_id/")"
+                if [ $? -ne 0 ] || [ -z "$patch_json" ]; then
+                        echo "Failed to fetch patch $patch_id from $PATCHWORK_URL" >&2
+                        exit 1
+                fi
+
+                count=$((count + 1))
+                local patch_file
+                patch_file="$(printf "%s/%04d-%s.patch" "$tmp_dir" "$count" "$patch_id")"
+
+                if ! printf '%s\n' "$patch_json" | jq -r '
+                        "From " + (.headers["Message-Id"] // .msgid // "patchwork") + " Mon Sep 07 00:00:00 2026",
+                        "From: " + (.headers.From // ((.submitter.name // "Unknown") + " <" + (.submitter.email // "unknown@example.com") + ">")),
+                        "Date: " + (.headers.Date // .date // ""),
+                        "Subject: " + (.headers.Subject // .name // "No subject"),
+                        "Message-Id: " + (.headers["Message-Id"] // .msgid // ""),
+                        "MIME-Version: 1.0",
+                        "Content-Type: text/plain; charset=UTF-8",
+                        "Content-Transfer-Encoding: 8bit",
+                        "",
+                        .content,
+                        "",
+                        .diff,
+                        ""
+                ' > "$patch_file"; then
+                        echo "Failed to parse patch $patch_id from $PATCHWORK_URL" >&2
+                        exit 1
+                fi
+        done
+
+        git am --3way "$tmp_dir"/*.patch
+        local ret=$?
+        if [ $ret -ne 0 ]; then
+                git am --abort 2>/dev/null || true
+                exit $ret
+        fi
+}
+
+case "$1" in
+apply)
+        apply_series "$2"
+        ;;
+state)
+        set_series_state "$2" "$3"
+        ;;
+check)
+        send_results "$2" "$3" "$4" "$5" "$6"
+        ;;
+verify)
+        verify_new_patches
+        ;;
+*)
+        echo "Available commands: apply, state, check, verify" >&2
+        exit 1
+        ;;
+esac

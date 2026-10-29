@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (sched_yield() == 0) {
 		printf("Test PASSED\n");

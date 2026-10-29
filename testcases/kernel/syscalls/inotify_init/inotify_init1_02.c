@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that inotify_init1() returns a file descriptor and sets the
  * O_NONBLOCK file status flag on the open file description referred
  * to by the new file descriptor only when called with IN_NONBLOCK.

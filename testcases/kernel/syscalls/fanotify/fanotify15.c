@@ -7,14 +7,13 @@
  */
 
 /*\
- * [Description]
- * Test file that has been purposely designed to verify FAN_REPORT_FID
- * functionality while using newly defined dirent events.
+ * Verify FAN_REPORT_FID functionality while using newly defined
+ * :manpage:`fanotify_init(2)` dirent events.
  */
 
 /*
- * Test case #1 is a regression test for commit f367a62a7cad:
- *      fanotify: merge duplicate events on parent and child
+ * Test case #1 is a regression test for commit
+ * f367a62a7cad ("fanotify: merge duplicate events on parent and child")
  */
 
 #define _GNU_SOURCE
@@ -52,6 +51,7 @@ struct event_t {
 };
 
 static int fanotify_fd;
+static int filesystem_mark_unsupported;
 static char events_buf[EVENT_BUF_LEN];
 static struct event_t event_set[EVENT_MAX];
 
@@ -84,6 +84,11 @@ static void do_test(unsigned int number)
 	struct fanotify_fid_t root_fid, dir_fid, file_fid;
 
 	tst_res(TINFO, "Test #%d: %s", number, tc->tname);
+
+	if (filesystem_mark_unsupported && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+		return;
+	}
 
 	SAFE_FANOTIFY_MARK(fanotify_fd, FAN_MARK_ADD | mark->flag, tc->mask |
 				FAN_CREATE | FAN_DELETE | FAN_MOVE |
@@ -137,7 +142,7 @@ static void do_test(unsigned int number)
 	SAFE_UNLINK(FILE2);
 
 	/* Read file events from the event queue */
-	len = SAFE_READ(0, fanotify_fd, events_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf, EVENT_BUF_LEN);
 
 	/*
 	 * Generate a sequence of events on a directory. Subsequent events
@@ -175,7 +180,8 @@ static void do_test(unsigned int number)
 	SAFE_RMDIR(DIR2);
 
 	/* Read dir events from the event queue */
-	len += SAFE_READ(0, fanotify_fd, events_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * Cleanup the mark
@@ -274,6 +280,10 @@ static void do_setup(void)
 {
 	SAFE_MKDIR(TEST_DIR, 0755);
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, TEST_DIR);
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+						MOUNT_POINT);
+
 	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_REPORT_FID, O_RDONLY);
 }
 
@@ -293,7 +303,7 @@ static struct tst_test test = {
 	.setup = do_setup,
 	.cleanup = do_cleanup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "f367a62a7cad"},
+		{"linux-git", "f367a62a7cad2447d835a9f14fc63997a9137246"},
 		{}
 	}
 };

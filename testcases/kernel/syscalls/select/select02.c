@@ -3,9 +3,10 @@
  * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Check that select() timeouts correctly.
+/*\
+ * Check that :manpage:`select(2)` timeouts correctly.
  */
+
 #include <unistd.h>
 #include <errno.h>
 #include <sys/time.h>

@@ -1,111 +1,60 @@
-/*************************************************************************
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
  * Copyright (c) Crackerjack Project., 2007
  * Copyright (c) Manas Kumar Nayak <maknayak@in.ibm.com>
  * Copyright (c) Cyril Hrubis <chrubis@suse.cz> 2011
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;  if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- *
- ************************************************************************/
+ * Copyright (c) 2025 SUSE LLC Ricardo B. Marlière <rbm@suse.com>
+ */
 
-#include "set_thread_area.h"
+/*\
+ * Basic test of i386 thread-local storage for set_thread_area and
+ * get_thread_area syscalls. It verifies a simple write and read of an entry
+ * works.
+ *
+ * [Algorithm]
+ *
+ * - Call set_thread_area to a struct user_desc pointer with entry_number = -1,
+ *   which will be set to a free entry_number upon exiting.
+ * - Call get_thread_area to read the new entry.
+ * - Use the new entry_number in another pointer and call get_thread_area.
+ * - Make sure they have the same data.
+ */
 
-char *TCID = "set_thread_area_01";
-int TST_TOTAL = 6;
+#include "tst_test.h"
 
-#if defined(HAVE_ASM_LDT_H) && defined(HAVE_STRUCT_USER_DESC)
+#include "lapi/ldt.h"
 
-static void cleanup(void)
+static struct user_desc *u_info1;
+static struct user_desc *u_info2;
+
+static void run(void)
 {
+	TST_EXP_PASS_SILENT(set_thread_area(u_info1));
+	TST_EXP_PASS_SILENT(get_thread_area(u_info1));
+
+	u_info2->entry_number = u_info1->entry_number;
+	TST_EXP_PASS_SILENT(get_thread_area(u_info2));
+
+	TST_EXP_PASS(memcmp(u_info1, u_info2, sizeof(struct user_desc)));
 }
 
 static void setup(void)
 {
-	TEST_PAUSE;
+	/* When set_thread_area() is passed an entry_number of -1, it  searches
+	 * for a free TLS entry. If set_thread_area() finds a free TLS entry,
+	 * the value of u_info->entry_number is set upon return to show which
+	 * entry was changed.
+	 */
+	u_info1->entry_number = -1;
 }
 
-struct test {
-	int syscall;
-	const char *const syscall_name;
-	thread_area_s *u_info;
-	int exp_ret;
-	int exp_errno;
+static struct tst_test test = {
+	.setup = setup,
+	.test_all = run,
+	.supported_archs = (const char *const[]){ "x86", NULL },
+	.bufs = (struct tst_buffers[]) {
+			{ &u_info1, .size = sizeof(struct user_desc) },
+			{ &u_info2, .size = sizeof(struct user_desc) },
+			{},
+		},
 };
-
-/*
- * The set_thread_area uses a free entry_number if entry number is set to -1
- * and upon the syscall exit the entry number is set to entry which was used.
- * So when we call get_thread_area on u_info1, the entry number is initalized
- * corectly by the previous set_thread_area.
- */
-static struct user_desc u_info1 = {.entry_number = -1 };
-static struct user_desc u_info2 = {.entry_number = -2 };
-
-#define VALUE_AND_STRING(val) val, #val
-
-static struct test tests[] = {
-	{VALUE_AND_STRING(__NR_set_thread_area), &u_info1, 0, 0},
-	{VALUE_AND_STRING(__NR_get_thread_area), &u_info1, 0, 0},
-	{VALUE_AND_STRING(__NR_set_thread_area), &u_info2, -1, EINVAL},
-	{VALUE_AND_STRING(__NR_get_thread_area), &u_info2, -1, EINVAL},
-	{VALUE_AND_STRING(__NR_set_thread_area), (void *)-9, -1, EFAULT},
-	{VALUE_AND_STRING(__NR_get_thread_area), (void *)-9, -1, EFAULT},
-};
-
-int main(int argc, char *argv[])
-{
-	int lc;
-	unsigned i;
-
-	tst_parse_opts(argc, argv, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-		for (i = 0; i < sizeof(tests) / sizeof(struct test); i++) {
-			TEST(tst_syscall(tests[i].syscall, tests[i].u_info));
-
-			if (TEST_RETURN != tests[i].exp_ret) {
-				tst_resm(TFAIL, "%s returned %li expected %i",
-					 tests[i].syscall_name,
-					 TEST_RETURN, tests[i].exp_ret);
-				continue;
-			}
-
-			if (TEST_ERRNO != tests[i].exp_errno) {
-				tst_resm(TFAIL,
-					 "%s failed with %i (%s) expected %i (%s)",
-					 tests[i].syscall_name, TEST_ERRNO,
-					 strerror(TEST_ERRNO),
-					 tests[i].exp_errno,
-					 strerror(tests[i].exp_errno));
-				continue;
-			}
-
-			tst_resm(TPASS, "%s returned %li errno %i (%s)",
-				 tests[i].syscall_name, TEST_RETURN,
-				 TEST_ERRNO, strerror(TEST_ERRNO));
-		}
-	}
-
-	cleanup();
-	tst_exit();
-}
-#else
-int main(void)
-{
-	tst_brkm(TCONF, NULL,
-		 "set_thread_area isn't available for this architecture");
-}
-#endif

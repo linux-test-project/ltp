@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Creates a multi-level CGroup hierarchy with the cpu controller
  * enabled. The leaf groups are populated with "busy" processes which
  * simulate intermittent cpu load. They spin for some time then sleep
@@ -37,7 +35,7 @@
 
 static struct tst_cg_group *cg_level2, *cg_level3a, *cg_level3b;
 static struct tst_cg_group *cg_workers[3];
-static int may_have_waiters = 0;
+static int may_have_waiters;
 
 static void set_cpu_quota(const struct tst_cg_group *const cg,
 			  const float quota_percent)
@@ -174,7 +172,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.max_runtime = 20,
+	.timeout = 20,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_CFS_BANDWIDTH",
@@ -182,12 +180,12 @@ static struct tst_test test = {
 	},
 	.needs_cgroup_ctrls = (const char *const []){"cpu", NULL},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "39f23ce07b93"},
-		{"linux-git", "b34cb07dde7c"},
-		{"linux-git", "fe61468b2cbc"},
-		{"linux-git", "5ab297bab984"},
-		{"linux-git", "6d4d22468dae"},
-		{"linux-git", "fdaba61ef8a2"},
+		{"linux-git", "39f23ce07b9355d05a64ae303ce20d1c4b92b957"},
+		{"linux-git", "b34cb07dde7c2346dec73d053ce926aeaa087303"},
+		{"linux-git", "fe61468b2cbc2b7ce5f8d3bf32ae5001d4c434e9"},
+		{"linux-git", "5ab297bab984310267734dfbcc8104566658ebef"},
+		{"linux-git", "6d4d22468dae3d8757af9f8b81b848a76ef4409d"},
+		{"linux-git", "fdaba61ef8a268d4136d0a113d153f7a89eb9984"},
 		{ }
 	}
 };

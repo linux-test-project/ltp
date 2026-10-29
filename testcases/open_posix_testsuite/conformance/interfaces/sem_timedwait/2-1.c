@@ -20,20 +20,45 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <time.h>
+#include <sys/mman.h>
 #include "posixtest.h"
+#include "proc.h"
 
 #define TEST "2-1"
+#define SHM_NAME "/posixtest_2-1"
 #define FUNCTION "sem_timedwait"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
-	sem_t mysemp;
+	sem_t *mysemp;
 	struct timespec ts;
-	int pid;
+	int fd, pid;
+
+	fd = shm_open(SHM_NAME, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+	if (fd == -1) {
+		perror(ERROR_PREFIX "shm_open()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (ftruncate(fd, sizeof(*mysemp)) == -1) {
+		perror(ERROR_PREFIX "ftruncate()");
+		return PTS_UNRESOLVED;
+	}
+
+	if (shm_unlink(SHM_NAME) != 0) {
+		perror(ERROR_PREFIX "shm_unlink()");
+		return PTS_UNRESOLVED;
+	}
+
+	mysemp = mmap(NULL, sizeof(*mysemp), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (mysemp == MAP_FAILED) {
+		perror(ERROR_PREFIX "mmap");
+		return PTS_UNRESOLVED;
+	}
 
 	/* Semaphore started out locked */
-	if (sem_init(&mysemp, 0, 0) == -1) {
+	if (sem_init(mysemp, 1, 0) == -1) {
 		perror(ERROR_PREFIX "sem_init");
 		return PTS_UNRESOLVED;
 	}
@@ -44,19 +69,20 @@ int main(void)
 		ts.tv_sec = time(NULL) + 2;
 		ts.tv_nsec = 0;
 
-		if (sem_timedwait(&mysemp, &ts) == -1) {
+		if (sem_timedwait(mysemp, &ts) == -1) {
 			puts("TEST FAILED");
 			return PTS_FAIL;
 		} else {
 			puts("TEST PASSED");
-			sem_destroy(&mysemp);
+			sem_destroy(mysemp);
 			return PTS_PASS;
 		}
 	} else if (pid > 0)	// parent to unlock semaphore
 	{
 		int i;
-		sleep(1);
-		if (sem_post(&mysemp) == -1) {
+
+		tst_process_state_wait3(pid, 'S', 1);
+		if (sem_post(mysemp) == -1) {
 			perror(ERROR_PREFIX "sem_post");
 			return PTS_FAIL;
 		}
@@ -65,12 +91,18 @@ int main(void)
 			return PTS_UNRESOLVED;
 		}
 
-		if (!WEXITSTATUS(i)) {
+		if (!WIFEXITED(i) || WEXITSTATUS(i)) {
 			return PTS_FAIL;
 		}
 		puts("TEST PASSED");
-		sem_destroy(&mysemp);
+		sem_destroy(mysemp);
+		if (munmap(mysemp, sizeof(*mysemp)) == -1) {
+			perror(ERROR_PREFIX "munmap");
+			return PTS_UNRESOLVED;
+		}
 		return PTS_PASS;
 	}
+
+	close(fd);
 	return PTS_UNRESOLVED;
 }

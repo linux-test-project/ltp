@@ -18,7 +18,7 @@
 static pthread_cond_t cond1, cond2;
 static pthread_cond_t cond3 = PTHREAD_COND_INITIALIZER;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_condattr_t condattr;
 	int rc;

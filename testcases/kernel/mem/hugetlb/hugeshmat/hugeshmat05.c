@@ -39,7 +39,7 @@ void setup(void)
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:") * 1024;
 }
 
-void shm_test(int size)
+void shm_test(size_t size)
 {
 	int shmid;
 	char *shmaddr;
@@ -56,7 +56,7 @@ void shm_test(int size)
 	}
 
 	shmaddr[0] = 1;
-	tst_res(TINFO, "allocated %d huge bytes", size);
+	tst_res(TINFO, "allocated %zu huge bytes", size);
 
 	if (shmdt((const void *)shmaddr) != 0) {
 		shmctl(shmid, IPC_RMID, NULL);
@@ -70,7 +70,7 @@ static void test_hugeshmat(void)
 {
 	unsigned int i;
 
-	const int tst_sizes[] = {
+	const size_t tst_sizes[] = {
 		N * hpage_size - page_size,
 		N * hpage_size - page_size - 1,
 		hpage_size,
@@ -90,10 +90,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.hugepages = {N+1, TST_NEEDS},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "091d0d55b286"},
-		{"linux-git", "af73e4d9506d"},
-		{"linux-git", "42d7395feb56"},
-		{"linux-git", "40716e29243d"},
+		{"linux-git", "091d0d55b286c9340201b4ed4470be87fc568228"},
+		{"linux-git", "af73e4d9506d3b797509f3c030e7dcd554f7d9c4"},
+		{"linux-git", "42d7395feb56f0655cd8b68e06fc6063823449f8"},
+		{"linux-git", "40716e29243de46720e5773797791466c28904ec"},
 		{}
 	}
 };

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check whether dup3() supports O_CLOEXEC flag.
  */
 

@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_getevents invoked via libaio with invalid ctx and expects it to
  * return -EINVAL.
  */

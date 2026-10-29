@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Linux Test Project, 2006-2021
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test of libc wrapper of reboot(2) system call.
  *
  * Test LINUX_REBOOT_CMD_CAD_ON, LINUX_REBOOT_CMD_CAD_OFF commands,

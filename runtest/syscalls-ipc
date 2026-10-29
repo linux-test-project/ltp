@@ -4,11 +4,9 @@ msgctl03 msgctl03
 msgctl04 msgctl04
 msgctl05 msgctl05
 msgctl06 msgctl06
-msgstress01 msgstress01
-msgstress02 msgstress02
-msgstress03 msgstress03
-msgstress04 msgstress04
 msgctl12 msgctl12
+
+msgstress01 msgstress01
 
 msgget01 msgget01
 msgget02 msgget02
@@ -49,6 +47,7 @@ semop03 semop03
 
 shmat01 shmat01
 shmat02 shmat02
+shmat04 shmat04
 
 shmctl01 shmctl01
 shmctl02 shmctl02

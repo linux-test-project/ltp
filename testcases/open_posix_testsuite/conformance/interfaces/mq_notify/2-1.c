@@ -39,7 +39,7 @@ static void mqclean(mqd_t queue, const char *qname)
 	mq_unlink(qname);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[NAMESIZE];
 	mqd_t mqdes;

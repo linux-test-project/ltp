@@ -4,9 +4,7 @@
  */
 
 /*\
- * [Description]
- *
- * This test verifies EINVAL for futex_waitv syscall.
+ * This test verifies EINVAL for :manpage:`futex_waitv(2)`.
  */
 
 #include <time.h>

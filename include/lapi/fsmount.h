@@ -11,12 +11,11 @@
 #include "config.h"
 #include <sys/syscall.h>
 #include <sys/types.h>
-#include <sys/mount.h>
 
-#ifndef HAVE_FSOPEN
-# ifdef HAVE_LINUX_MOUNT_H
-#  include <linux/mount.h>
-# endif
+#if !defined(HAVE_FSOPEN) && defined(HAVE_LINUX_MOUNT_H)
+# include <linux/mount.h>
+#else
+# include <sys/mount.h>
 #endif
 
 #include "lapi/fcntl.h"
@@ -106,6 +105,14 @@ static inline int open_tree(int dirfd, const char *pathname, unsigned int flags)
 }
 #endif /* HAVE_OPEN_TREE */
 
+#ifndef HAVE_OPEN_TREE_ATTR
+static inline int open_tree_attr(int dirfd, const char *pathname, unsigned int flags,
+				 struct mount_attr *attr, size_t size)
+{
+	return tst_syscall(__NR_open_tree_attr, dirfd, pathname, flags, attr, size);
+}
+#endif /* HAVE_OPEN_TREE_ATTR */
+
 #ifndef HAVE_MOUNT_SETATTR
 static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned int flags,
 				struct mount_attr *attr, size_t size)
@@ -118,6 +125,10 @@ static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned i
 /*
  * New headers added in kernel after 5.2 release, create them for old userspace.
 */
+
+#ifndef MOVE_MOUNT_BENEATH
+# define MOVE_MOUNT_BENEATH 		0x00000200
+#endif
 
 #ifndef OPEN_TREE_CLONE
 
@@ -136,7 +147,7 @@ static inline int mount_setattr(int dirfd, const char *from_pathname, unsigned i
 #define MOVE_MOUNT_T_SYMLINKS		0x00000010 /* Follow symlinks on to path */
 #define MOVE_MOUNT_T_AUTOMOUNTS		0x00000020 /* Follow automounts on to path */
 #define MOVE_MOUNT_T_EMPTY_PATH		0x00000040 /* Empty to path permitted */
-#define MOVE_MOUNT__MASK		0x00000077
+#define MOVE_MOUNT__MASK		0x00000377
 
 /*
  * fsopen() flags.

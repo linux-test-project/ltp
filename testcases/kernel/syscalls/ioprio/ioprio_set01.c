@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic ioprio_set() test. Gets the current process I/O priority and
  * bumps it up one notch, then down two notches and checks that the
  * new priority is reported back correctly.

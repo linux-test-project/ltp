@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2014-2017 Oracle and/or its affiliates. All Rights Reserved.
-# Copyright (c) 2016-2023 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2016-2024 Petr Vorel <pvorel@suse.cz>
 # Author: Alexey Kodanev <alexey.kodanev@oracle.com>
 
 [ -n "$TST_LIB_NET_LOADED" ] && return 0
@@ -42,10 +42,29 @@ tst_net_usage()
 	if [ -n "$TST_USAGE_CALLER" ]; then
 		$TST_USAGE_CALLER
 	else
-		echo "Usage: $0 [-6]"
-		echo "OPTIONS"
+	cat << EOF
+Usage: $0 [-6]
+
+OPTIONS (network tests only)
+----------------------------
+EOF
 	fi
-	echo "-6      IPv6 tests"
+
+	cat << EOF
+-6      IPv6 tests
+
+Environment Variables (network tests only)
+------------------------------------------
+TST_NET_RHOST_RUN_DEBUG=1
+Print commands used by tst_rhost_run()
+
+LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1
+Ignore performance failure and test only the network functionality in tests
+which use tst_netload_compare().
+
+OPTIONS
+-------
+EOF
 }
 
 tst_net_remote_tmpdir()
@@ -175,7 +194,9 @@ init_ltp_netspace()
 		tst_require_cmds ip tst_ns_create tst_ns_exec tst_ns_ifmove
 		tst_require_root
 
-		tst_require_drivers veth
+		if [ -z "$TST_USE_LEGACY_API" ]; then
+			tst_require_drivers veth
+		fi
 		ROD ip link add name ltp_ns_veth1 type veth peer name ltp_ns_veth2
 		pid="$(ROD tst_ns_create net,mnt)"
 		mkdir -p /var/run/netns
@@ -209,6 +230,7 @@ tst_net_use_netns()
 # Options:
 # -b run in background
 # -c CMD specify command to run (this must be binary, not shell builtin/function)
+# -Q ignore stderr
 # -s safe option, if something goes wrong, will exit with TBROK
 # -u USER for ssh (default root)
 # RETURN: 0 on success, 1 on failure
@@ -218,16 +240,18 @@ tst_rhost_run()
 	local post_cmd=' || echo RTERR'
 	local user="root"
 	local ret=0
+	local stderr='2>&1'
 	local cmd out output pre_cmd rcmd sh_cmd safe use
 
 	local OPTIND
-	while getopts :bc:su: opt; do
+	while getopts :bc:Qsu: opt; do
 		case "$opt" in
 		b) [ "${TST_USE_NETNS:-}" ] && pre_cmd= || pre_cmd="nohup"
-		   post_cmd=" > /dev/null 2>&1 &"
+		   post_cmd=" > /dev/null $stderr &"
 		   out="1> /dev/null"
 		;;
 		c) cmd="$OPTARG" ;;
+		Q) stderr= ;;
 		s) safe=1 ;;
 		u) user="$OPTARG" ;;
 		*) tst_brk_ TBROK "tst_rhost_run: unknown option: $OPTARG" ;;
@@ -240,6 +264,9 @@ tst_rhost_run()
 		tst_res_ TWARN "tst_rhost_run: command not defined"
 		return 1
 	fi
+
+	# go to $TST_TMPDIR before executing the command (once directory created)
+	[ "$TST_TMPDIR_RHOST" = 1 ] && cmd="cd $TST_TMPDIR; $cmd"
 
 	sh_cmd="$pre_cmd $cmd $post_cmd"
 
@@ -254,16 +281,16 @@ tst_rhost_run()
 
 	if [ "$TST_NET_RHOST_RUN_DEBUG" = 1 ]; then
 		tst_res_ TINFO "tst_rhost_run: cmd: $cmd"
-		tst_res_ TINFO "$use: $rcmd \"$sh_cmd\" $out 2>&1"
+		tst_res_ TINFO "$use: $rcmd \"$sh_cmd\" $out $stderr"
 	fi
 
-	output=$($rcmd "$sh_cmd" $out 2>&1 || echo 'RTERR')
+	output=$($rcmd "$sh_cmd" $out $stderr || echo 'RTERR')
 
 	echo "$output" | grep -q 'RTERR$' && ret=1
 	if [ $ret -eq 1 ]; then
 		output=$(echo "$output" | sed 's/RTERR//')
 		[ "$safe" ] && \
-			tst_brk_ TBROK "'$cmd' failed on '$RHOST': '$output'"
+			tst_brk_ TBROK "'$cmd' failed on $use: '$output'"
 	fi
 
 	[ -z "$out" -a -n "$output" ] && echo "$output"
@@ -663,7 +690,7 @@ tst_del_ipaddr()
 }
 
 # tst_restore_ipaddr [TYPE] [LINK]
-# Restore default ip addresses defined in network.sh
+# Restore the default ip addresses.
 # TYPE: { lhost | rhost }; Default value is 'lhost'.
 # LINK: link number starting from 0. Default value is '0'.
 tst_restore_ipaddr()
@@ -711,11 +738,21 @@ tst_wait_ipv6_dad()
 	done
 }
 
-tst_netload_brk()
+tst_netload_print_log()
 {
 	tst_rhost_run -c "cat $TST_TMPDIR/netstress.log"
 	cat tst_netload.log
-	tst_brk_ $1 $2
+}
+
+tst_netload_brk()
+{
+	tst_netload_print_log
+	if [ "$1" != TBROK -a "$1" != TCONF ]; then
+		tst_res_ $1 $2
+		tst_brk_ TBROK "quit due previous failures"
+	else
+		tst_brk_ $1 $2
+	fi
 }
 
 # Run network load test, see 'netstress -h' for option description
@@ -745,12 +782,12 @@ tst_netload()
 	fi
 
 	OPTIND=0
-	while getopts :a:H:d:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
+	while getopts :a:c:H:n:N:r:R:S:b:t:T:fFe:m:A:D: opt; do
 		case "$opt" in
 		a) c_num="$OPTARG" ;;
 		H) c_opts="${c_opts}-H $OPTARG "
 		   hostopt="$OPTARG" ;;
-		d) rfile="$OPTARG" ;;
+		c) rfile="$OPTARG" ;;
 		n) c_opts="${c_opts}-n $OPTARG " ;;
 		N) c_opts="${c_opts}-N $OPTARG " ;;
 		r) c_requests="$OPTARG" ;;
@@ -766,7 +803,7 @@ tst_netload()
 		f) cs_opts="${cs_opts}-f " ;;
 		F) cs_opts="${cs_opts}-F " ;;
 		e) expect_res="$OPTARG" ;;
-		D) [ "$TST_NETLOAD_BINDTODEVICE" = 1 ] && cs_opts="${cs_opts}-D $OPTARG "
+		D) [ "$TST_NETLOAD_BINDTODEVICE" = 1 ] && cs_opts="${cs_opts}-d $OPTARG "
 		   bind_to_device=0 ;;
 		*) tst_brk_ TBROK "tst_netload: unknown option: $OPTARG" ;;
 		esac
@@ -776,8 +813,8 @@ tst_netload()
 	[ "$setup_srchost" = 1 ] && s_opts="${s_opts}-S $hostopt "
 
 	if [ "$bind_to_device" = 1 -a "$TST_NETLOAD_BINDTODEVICE" = 1 ]; then
-		c_opts="${c_opts}-D $(tst_iface) "
-		s_opts="${s_opts}-D $(tst_iface rhost) "
+		c_opts="${c_opts}-d $(tst_iface) "
+		s_opts="${s_opts}-d $(tst_iface rhost) "
 	fi
 
 	local expect_ret=0
@@ -790,7 +827,7 @@ tst_netload()
 	fi
 
 	s_opts="${cs_opts}${s_opts}-R $s_replies -B $TST_TMPDIR"
-	c_opts="${cs_opts}${c_opts}-a $c_num -r $((c_requests / run_cnt)) -d $PWD/$rfile"
+	c_opts="${cs_opts}${c_opts}-a $c_num -r $((c_requests / run_cnt)) -c $PWD/$rfile"
 
 	tst_res_ TINFO "run server 'netstress $s_opts'"
 	tst_res_ TINFO "run client 'netstress -l $c_opts' $run_cnt times"
@@ -832,12 +869,12 @@ tst_netload()
 				tst_netload_brk TFAIL "expected '$expect_res' but ret: '$ret'"
 
 			tst_res_ TWARN "netstress failed, ret: $ret"
+			tst_netload_print_log
 			was_failure=1
 			continue
 		fi
 
-		[ ! -f $rfile ] && \
-			tst_netload_brk TFAIL "can't read $rfile"
+		[ ! -f $rfile ] && tst_netload_brk TBROK "can't read $rfile"
 
 		results="$results $(cat $rfile)"
 		passed=$((passed + 1))
@@ -863,22 +900,33 @@ tst_netload()
 # TIME: time that is compared to the base one
 # THRESHOD_LOW: lower limit for TFAIL
 # THRESHOD_HIGH: upper limit for TWARN
+#
+# Slow performance can be ignored with setting environment variable
+# LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1
 tst_netload_compare()
 {
 	local base_time=$1
 	local new_time=$2
 	local threshold_low=$3
 	local threshold_hi=$4
+	local ttype='TFAIL'
+	local msg res
 
 	if [ -z "$base_time" -o -z "$new_time" -o -z "$threshold_low" ]; then
 		tst_brk_ TBROK "tst_netload_compare: invalid argument(s)"
 	fi
 
-	local res=$(((base_time - new_time) * 100 / base_time))
-	local msg="performance result is ${res}%"
+	res=$(((base_time - new_time) * 100 / base_time))
+	msg="performance result is ${res}%"
 
 	if [ "$res" -lt "$threshold_low" ]; then
-		tst_res_ TFAIL "$msg < threshold ${threshold_low}%"
+		if [ "$LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE" = 1 ]; then
+			ttype='TINFO';
+			tst_res_ TINFO "WARNING: slow performance is not treated as error due LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1"
+		else
+			tst_res_ TINFO "Following slow performance can be ignored with LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1"
+		fi
+		tst_res_ $ttype "$msg < threshold ${threshold_low}%"
 		return
 	fi
 
@@ -917,7 +965,10 @@ tst_ping()
 		c) ping_count="$OPTARG";;
 		s) msg_sizes="$OPTARG";;
 		p) pattern_opt="-p $OPTARG";;
-		I) src_iface="$OPTARG";;
+		I) src_iface="$OPTARG"
+		   tst_ping_opt_unsupported -I $OPTARG && \
+			   tst_brk_ TCONF "unsupported ping version (ping from inetutils?)"
+		   ;;
 		H) dst_addr="$OPTARG";;
 		*) tst_brk_ TBROK "tst_ping: unknown option: $OPTARG";;
 		esac
@@ -1044,7 +1095,7 @@ tst_net_setup_network()
 	tst_net_use_netns && init_ltp_netspace
 
 	eval $(tst_net_iface_prefix $IPV4_LHOST || echo "exit $?")
-	eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
+	eval $(tst_rhost_run -Q -c 'tst_net_iface_prefix -r '$IPV4_RHOST \
 		|| echo "exit $?")
 	eval $(tst_net_vars $IPV4_LHOST/$IPV4_LPREFIX \
 		$IPV4_RHOST/$IPV4_RPREFIX || echo "exit $?")
@@ -1052,7 +1103,7 @@ tst_net_setup_network()
 	if [ "$TST_NET_IPV6_ENABLED" = 1 ]; then
 		tst_net_check_ifaces_ipv6
 		eval $(tst_net_iface_prefix $IPV6_LHOST || echo "exit $?")
-		eval $(tst_rhost_run -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
+		eval $(tst_rhost_run -Q -c 'tst_net_iface_prefix -r '$IPV6_RHOST \
 			|| echo "exit $?")
 		eval $(tst_net_vars $IPV6_LHOST/$IPV6_LPREFIX \
 			$IPV6_RHOST/$IPV6_RPREFIX || echo "exit $?")
@@ -1096,9 +1147,6 @@ tst_net_detect_ipv6
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
-export PASSWD="${PASSWD:-}"
-# Don't use it in new tests, use tst_rhost_run() from tst_net.sh instead.
-export LTP_RSH="${LTP_RSH:-ssh -nq}"
 
 # Test Links
 # IPV{4,6}_{L,R}HOST can be set with or without prefix (e.g. IP or IP/prefix),
@@ -1129,7 +1177,6 @@ export NS_DURATION="${NS_DURATION:-10}"
 export NS_TIMES="${NS_TIMES:-10}"
 export CONNECTION_TOTAL="${CONNECTION_TOTAL:-10}"
 export IP_TOTAL="${IP_TOTAL:-100}"
-export IP_TOTAL_FOR_TCPIP="${IP_TOTAL_FOR_TCPIP:-100}"
 export ROUTE_TOTAL="${ROUTE_TOTAL:-100}"
 export MTU_CHANGE_TIMES="${MTU_CHANGE_TIMES:-100}"
 export IF_UPDOWN_TIMES="${IF_UPDOWN_TIMES:-100}"

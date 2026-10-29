@@ -18,25 +18,25 @@
 # include "mbind.h"
 #endif
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #ifdef HAVE_NUMA_V2
 
 static size_t page_size;
-static struct tst_nodemap *nodes;
+static struct tse_nodemap *nodes;
 
 static void setup(void)
 {
 	page_size = getpagesize();
 
-	nodes = tst_get_nodemap(TST_NUMA_MEM, 2 * page_size / 1024);
+	nodes = tse_get_nodemap(TST_NUMA_MEM, 2 * page_size / 1024);
 	if (nodes->cnt <= 1)
 		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 }
 
 static void cleanup(void)
 {
-	tst_nodemap_free(nodes);
+	tse_nodemap_free(nodes);
 }
 
 static void verify_policy(int mode, unsigned flag)
@@ -47,11 +47,11 @@ static void verify_policy(int mode, unsigned flag)
 	unsigned long size = page_size;
 	unsigned int node = 0;
 
-	ptr = tst_numa_map(NULL, size);
-	tst_nodemap_reset_counters(nodes);
-	tst_numa_fault(ptr, size);
-	tst_nodemap_count_pages(nodes, ptr, size);
-	tst_nodemap_print_counters(nodes);
+	ptr = tse_numa_map(NULL, size);
+	tse_nodemap_reset_counters(nodes);
+	tse_numa_fault(ptr, size);
+	tse_nodemap_count_pages(nodes, ptr, size);
+	tse_nodemap_print_counters(nodes);
 
 	for (i = 0; i < nodes->cnt; i++) {
 		if (!nodes->counters[i]) {
@@ -67,15 +67,15 @@ static void verify_policy(int mode, unsigned flag)
 	if (TST_RET) {
 		tst_res(TFAIL | TTERRNO,
 		        "mbind(%s, %s) node %u",
-		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
+		        tse_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 		goto exit;
 	} else {
 		tst_res(TPASS, "mbind(%s, %s) node %u succeded",
-		        tst_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
+		        tse_mempolicy_mode_name(mode), mbind_flag_name(flag), node);
 	}
 
-	tst_nodemap_reset_counters(nodes);
-	tst_nodemap_count_pages(nodes, ptr, size);
+	tse_nodemap_reset_counters(nodes);
+	tse_nodemap_count_pages(nodes, ptr, size);
 
 	for (i = 0; i < nodes->cnt; i++) {
 		if (nodes->map[i] == node) {
@@ -95,7 +95,7 @@ static void verify_policy(int mode, unsigned flag)
 	}
 
 exit:
-	tst_numa_unmap(ptr, size);
+	tse_numa_unmap(ptr, size);
 	numa_free_nodemask(bm);
 }
 

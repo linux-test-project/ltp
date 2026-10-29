@@ -26,6 +26,28 @@ static unsigned int tcases[] = {
 };
 
 static int fds[2];
+static unsigned int reap_child_num;
+static unsigned int reap_count;
+static int *reap_pids;
+
+static int reap_children_once(void)
+{
+	unsigned int i;
+	int ret;
+
+	while ((ret = waitpid(-1, NULL, WNOHANG)) > 0) {
+		reap_count++;
+		for (i = 0; i < reap_child_num; i++) {
+			if (reap_pids[i] == ret)
+				reap_pids[i] = 0;
+		}
+	}
+	if (ret < 0 && errno != ECHILD)
+		tst_brk(TBROK | TERRNO, "waitpid()");
+	return reap_count;
+}
+
+#define ALL_CHILDREN_REAPED(cnt) ((unsigned int)(cnt) >= reap_child_num)
 
 static void do_child(unsigned int i)
 {
@@ -33,7 +55,7 @@ static void do_child(unsigned int i)
 
 	SAFE_CLOSE(fds[1]);
 	TST_CHECKPOINT_WAKE(i);
-	int ret = SAFE_READ(0, fds[0], &buf, 1);
+	int ret = SAFE_READ(SAFE_READ_ANY, fds[0], &buf, 1);
 	if (ret != 0)
 		tst_res(TFAIL, "Wrong return from read %i", ret);
 	exit(0);
@@ -41,8 +63,7 @@ static void do_child(unsigned int i)
 
 static void verify_pipe(unsigned int n)
 {
-	int ret;
-	unsigned int i, cnt = 0, sleep_us = 1, fail = 0;
+	unsigned int i, fail = 0;
 	unsigned int child_num = tcases[n];
 	int pid[child_num];
 
@@ -60,21 +81,10 @@ static void verify_pipe(unsigned int n)
 	SAFE_CLOSE(fds[0]);
 	SAFE_CLOSE(fds[1]);
 
-	while (cnt < child_num && sleep_us < 1000000) {
-		ret = waitpid(-1, NULL, WNOHANG);
-		if (ret < 0)
-			tst_brk(TBROK | TERRNO, "waitpid()");
-		if (ret > 0) {
-			cnt++;
-			for (i = 0; i < child_num; i++) {
-				if (pid[i] == ret)
-					pid[i] = 0;
-			}
-			continue;
-		}
-		usleep(sleep_us);
-		sleep_us *= 2;
-	}
+	reap_child_num = child_num;
+	reap_count = 0;
+	reap_pids = pid;
+	TST_RETRY_FN_EXP_BACKOFF(reap_children_once(), ALL_CHILDREN_REAPED, 1);
 
 	for (i = 0; i < child_num; i++) {
 		if (pid[i]) {
@@ -97,7 +107,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "6551d5c56eb"},
+		{"linux-git", "6551d5c56eb0d02db2274d7a8d26c333deba7fd2"},
 		{}
 	}
 };

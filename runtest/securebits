@@ -1,4 +1,0 @@
-#DESCRIPTION:securebits tests
-check_keepcaps01 check_keepcaps 1
-check_keepcaps02 check_keepcaps 2
-check_keepcaps03 check_keepcaps 3

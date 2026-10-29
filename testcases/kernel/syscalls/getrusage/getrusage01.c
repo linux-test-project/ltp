@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * AUTHOR: Saji Kumar.V.R <saji.kumar@wipro.com>
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that getrusage() with RUSAGE_SELF and RUSAGE_CHILDREN succeeds.
  */
 

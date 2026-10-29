@@ -1,6 +1,0 @@
-/ltp_fw_load.ko
-/*.cmd
-/modules.order
-/Module.symvers
-/ltp_fw_load.mod.c
-/.tmp_versions/

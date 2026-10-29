@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setuid(2) returns 0 and effective uid has
  * been set successfully as a normal or super user.
  */

@@ -6,46 +6,47 @@
  */
 
 /*\
- * [Description]
+ * Basic test for ``ICMP6_FILTER``.
  *
- * Basic test for ICMP6_FILTER.
- *
- * For ICMP6_FILTER usage, refer to: https://man.openbsd.org/icmp6.
+ * For ``ICMP6_FILTER`` usage, refer to: https://man.openbsd.org/icmp6.
  *
  * Because of the extra functionality of ICMPv6 in comparison to ICMPv4, a
  * larger number of messages may be potentially received on an ICMPv6 socket.
  * Input filters may therefore be used to restrict input to a subset of the
  * incoming ICMPv6 messages so only interesting messages are returned by the
- * recv(2) family of calls to an application.
+ * :manpage:`recv(2)` family of calls to an application.
 
  * The icmp6_filter structure may be used to refine the input message set
  * according to the ICMPv6 type. By default, all messages types are allowed
  * on newly created raw ICMPv6 sockets. The following macros may be used to
  * refine the input set, thus being tested:
  *
- * void ICMP6_FILTER_SETPASSALL(struct icmp6_filter *filterp)
- * &ndash; Allow all incoming messages. filterp is modified to allow all message types.
+ * - ``void ICMP6_FILTER_SETPASSALL(struct icmp6_filter *filterp)`` -- Allow all
+ *   incoming messages. filterp is modified to allow all message types.
  *
- * void ICMP6_FILTER_SETBLOCKALL(struct icmp6_filter *filterp)
- * &ndash; Ignore all incoming messages. filterp is modified to ignore all message types.
+ * - ``void ICMP6_FILTER_SETBLOCKALL(struct icmp6_filter *filterp)`` -- Ignore
+ *   all incoming messages. filterp is modified to ignore all message types.
  *
- * void ICMP6_FILTER_SETPASS(int, struct icmp6_filter *filterp)
- * &ndash; Allow ICMPv6 messages with the given type. filterp is modified to allow such
- * messages.
+ * - ``void ICMP6_FILTER_SETPASS(int, struct icmp6_filter *filterp)`` -- Allow
+ *   ICMPv6 messages with the given type. filterp is modified to allow such
+ *   messages.
  *
- * void ICMP6_FILTER_SETBLOCK(int, struct icmp6_filter *filterp)
- * &ndash; Ignore ICMPv6 messages with the given type. filterp is modified to ignore
- * such messages.
+ * - ``void ICMP6_FILTER_SETBLOCK(int, struct icmp6_filter *filterp)``
+ *   -- Ignore ICMPv6 messages with the given type. filterp is modified to
+ *   ignore such messages.
  *
- * int ICMP6_FILTER_WILLPASS(int, const struct icmp6_filter *filterp)
- * &ndash; Determine if the given filter will allow an ICMPv6 message of the given type.
+ * - ``int ICMP6_FILTER_WILLPASS(int, const struct icmp6_filter *filterp)``
+ *   -- Determine if the given filter will allow an ICMPv6 message of the given
+ *   type.
  *
- * int ICMP6_FILTER_WILLBLOCK(int, const struct icmp6_filter *)
- * &ndash; Determine if the given filter will ignore an ICMPv6 message of the given type.
+ * - ``int ICMP6_FILTER_WILLBLOCK(int, const struct icmp6_filter *)`` --
+ *   Determine if the given filter will ignore an ICMPv6 message of the given
+ *   type.
  *
- * The getsockopt(2) and setsockopt(2) calls may be used to obtain and install
- * the filter on ICMPv6 sockets at option level IPPROTO_ICMPV6 and name ICMP6_FILTER
- * with a pointer to the icmp6_filter structure as the option value.
+ * The :manpage:`getsockopt(2)` and :manpage:`setsockopt(2)` calls may be used
+ * to obtain and install the filter on ICMPv6 sockets at option level
+ * ``IPPROTO_ICMPV6`` and name ``ICMP6_FILTER`` with a pointer to the
+ * icmp6_filter structure as the option value.
  */
 
 #include <netinet/icmp6.h>

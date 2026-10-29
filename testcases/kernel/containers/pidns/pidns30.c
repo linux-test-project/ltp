@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag, register notification on a posix
  * mqueue and send a mqueue message from the parent. Then check if signal
  * notification contains si_pid of the parent.
@@ -88,7 +86,10 @@ static void cleanup(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 
 	remove_mqueue(mqd);
 	received = 0;
@@ -115,4 +116,8 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.needs_root = 1,
 	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

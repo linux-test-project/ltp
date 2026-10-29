@@ -37,7 +37,7 @@ static struct unique {
 	0, 0}
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int policy, invalid_priority, tmp, result = PTS_PASS;
 	struct sched_param param;

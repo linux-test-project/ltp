@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename() does nothing and returns a success status when
  * oldpath and newpath are existing hard links referring to the same file.
  */

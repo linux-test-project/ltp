@@ -2,9 +2,10 @@
 /*
  * Copyright (c) 2008 FUJITSU LIMITED
  * Copyright (c) 2021 Joerg Vehlow <joerg.vehlow@aox-tech.de>
- *
  * Author: Li Zefan <lizf@cn.fujitsu.com>
- *
+ */
+
+/*\
  * Generate a specified process event (fork, exec, uid, gid or exit).
  */
 

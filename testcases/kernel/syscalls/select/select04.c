@@ -5,9 +5,7 @@
  */
 
 /*\
- * [Description]
- *
- * Test to check if fd set bits are cleared by select().
+ * Test to check if fd set bits are cleared by :manpage:`select(2)`.
  *
  * [Algorithm]
  *  - Check that writefds flag is cleared on full pipe

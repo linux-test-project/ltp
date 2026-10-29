@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2011  Red Hat, Inc.
  * Copyright (C) 2021 Xie Ziyao <xieziyao@huawei.com>
  */
 
 /*\
- * [Description]
- *
  * Child program executed by getrusage03.
  */
 

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the pidfd_send_signal
  * system call.
  *

@@ -127,7 +127,7 @@ static void *fn_rd_2(void *arg PTS_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int cnt = 0;
 

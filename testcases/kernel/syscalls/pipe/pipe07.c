@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, pipe(2) syscall can open the maximum number of
  * file descriptors permitted.
  */
@@ -45,6 +43,8 @@ static int record_open_fds(void)
 		opened_fds[num_opened_fds++] = fd;
 	}
 
+	SAFE_CLOSEDIR(dir);
+
 	return num_opened_fds;
 }
 
@@ -56,8 +56,8 @@ static void setup(void)
 	tst_res(TINFO, "getdtablesize() = %d", max_fds);
 	pipe_fds = SAFE_MALLOC(max_fds * sizeof(int));
 
-	exp_num_pipes = (max_fds - record_open_fds()) / 2;
-	tst_res(TINFO, "expected max fds to be opened by pipe(): %d", exp_num_pipes * 2);
+	exp_num_pipes = (max_fds - record_open_fds()) / 2 * 2;
+	tst_res(TINFO, "expected max fds to be opened by pipe(): %d", exp_num_pipes);
 }
 
 static void run(void)
@@ -73,7 +73,7 @@ static void run(void)
 	} while (!TST_RET);
 
 	TST_EXP_EQ_LI(errno, EMFILE);
-	TST_EXP_EQ_LI(exp_num_pipes * 2, num_pipe_fds);
+	TST_EXP_EQ_LI(exp_num_pipes, num_pipe_fds);
 
 	for (int i = 0; i < num_pipe_fds; i++)
 		SAFE_CLOSE(pipe_fds[i]);

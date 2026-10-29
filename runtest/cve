@@ -1,6 +1,6 @@
 # Tests which check for vulnerabilities by CVE number
-cve-2011-0999 thp01 -I 120
-cve-2011-2183 ksm05 -I 10
+cve-2011-0999 thp01
+cve-2011-2183 ksm05
 cve-2011-2496 vma03
 cve-2012-0957 uname04
 cve-2014-0196 cve-2014-0196
@@ -85,7 +85,22 @@ cve-2022-0847 dirtypipe
 cve-2022-2590 dirtyc0w_shmem
 cve-2022-23222 bpf_prog07
 cve-2023-1829 tcindex01
+cve-2023-0461 setsockopt10
+cve-2023-31248 nft02
+cve-2023-52879 fanotify25
+cve-2026-43499 ghostlock
+cve-2026-53362 setsockopt11
+cve-2026-64600 refluxfs
 # Tests below may cause kernel memory leak
 cve-2020-25704 perf_event_open03
 cve-2022-0185 fsconfig03
 cve-2022-4378 cve-2022-4378
+cve-2025-38236 cve-2025-38236
+cve-2025-21756 cve-2025-21756
+cve-2026-31431 af_alg08
+cve-2026-43284 xfrm01
+cve-2026-43494 io_uring04
+cve-2026-46300 xfrm02
+cve-2026-46300-skb-segment xfrm03
+cve-2026-46331 cve-2026-46331
+cve-2026-64564 sctphantom

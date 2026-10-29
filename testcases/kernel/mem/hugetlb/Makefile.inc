@@ -33,6 +33,3 @@ CPPFLAGS		+= -I$(abs_srcdir)/$(LIBIPCDIR)
 LDFLAGS			+= -L$(abs_builddir)/$(LIBIPCDIR)
 LDLIBS			+= -lhugetlb
 MAKE_DEPS		+= $(LIBIPC)
-
-include $(top_srcdir)/testcases/kernel/mem/include/libmem.mk
-# vim: syntax=make

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the pidfd_open syscall.
  *
  * - EBADF pidfd is not a valid PID file descriptor

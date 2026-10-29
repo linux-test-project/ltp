@@ -16,7 +16,7 @@ $ ./can_filter
 $ ./can_rcv_own_msgs
 
 3) To let LTP run the tests from $LTPROOT, execute:
-$ ./runltp -f can
+$ kirk -f can
 
 4) Clean up using:
 $ make clean

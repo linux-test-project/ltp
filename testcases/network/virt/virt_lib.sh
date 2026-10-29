@@ -44,10 +44,6 @@ virt_lib_setup()
 {
 	case "$virt_type" in
 	vxlan|geneve)
-		if [ "$TST_IPV6" ] && tst_kvcmp -lt "3.12"; then
-			tst_brk TCONF "test must be run with kernels >= 3.12"
-		fi
-
 		# newer versions of 'ip' complain if this option not set
 		ip link add type vxlan help 2>&1 | grep -q dstport && vxlan_dstport=1
 	;;
@@ -175,7 +171,7 @@ virt_multiple_add_test()
 
 	for i in $(seq $start_id $max); do
 		virt_add ltp_v$i id $i $opt || \
-			tst_brk TFAIL "failed to create 'ltp_v0 $opt'"
+			tst_brk TBROK "failed to create 'ltp_v$i $opt'"
 		ROD_SILENT "ip link set ltp_v$i up"
 	done
 
@@ -197,7 +193,7 @@ virt_add_delete_test()
 
 	for i in $(seq 0 $max); do
 		virt_add ltp_v0 $opt || \
-			tst_brk TFAIL "failed to create 'ltp_v0 $opt'"
+			tst_brk TBROK "failed to create 'ltp_v0 $opt'"
 		ROD_SILENT "ip link set ltp_v0 up"
 		ROD_SILENT "ip link delete ltp_v0"
 	done
@@ -284,10 +280,10 @@ virt_compare_netperf()
 	local expect_res="${1:-pass}"
 	local opts="$2"
 
-	tst_netload -H $ip_virt_remote $opts -d res_ipv4 -e $expect_res \
+	tst_netload -H $ip_virt_remote $opts -c res_ipv4 -e $expect_res \
 		-D ltp_v0 || ret1="fail"
 
-	tst_netload -H ${ip6_virt_remote} $opts -d res_ipv6 -e $expect_res \
+	tst_netload -H ${ip6_virt_remote} $opts -c res_ipv6 -e $expect_res \
 		-D ltp_v0 || ret2="fail"
 
 	[ "$ret1" = "fail" -o "$ret2" = "fail" ] && return
@@ -295,7 +291,7 @@ virt_compare_netperf()
 	local vt="$(cat res_ipv4)"
 	local vt6="$(cat res_ipv6)"
 
-	tst_netload -H $(tst_ipaddr rhost) $opts -d res_lan
+	tst_netload -H $(tst_ipaddr rhost) $opts -c res_lan
 
 	local lt="$(cat res_lan)"
 	tst_res TINFO "time lan IPv${TST_IPVER}($lt) $virt_type IPv4($vt) and IPv6($vt6) ms"

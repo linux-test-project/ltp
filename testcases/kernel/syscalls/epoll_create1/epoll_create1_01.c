@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_create1 sets the close-on-exec flag for the returned
  * file descriptor with EPOLL_CLOEXEC.
  */

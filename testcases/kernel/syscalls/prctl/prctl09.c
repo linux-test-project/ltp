@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a timer sample test that timer slack is 200us.
  */
 

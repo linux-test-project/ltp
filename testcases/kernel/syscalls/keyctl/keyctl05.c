@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
+/*\
  * Regression test for commit 63a0b0509e70 ("KEYS: fix freeing uninitialized
  * memory in key_update()").  Try to reproduce the crash in two different ways:
  *
@@ -30,6 +31,8 @@
 
 #include "tst_test.h"
 #include "lapi/keyctl.h"
+
+#define MODULE "dns_resolver"
 
 /*
  * A valid payload for the "asymmetric" key type.  This is an x509 certificate
@@ -190,6 +193,9 @@ static void test_update_setperm_race(void)
 
 static void setup(void)
 {
+	/* There is no way to trigger automatic dns_resolver module loading. */
+	tst_cmd((const char*[]){"modprobe", MODULE, NULL}, NULL, NULL, 0);
+
 	fips_enabled = tst_fips_enabled();
 }
 
@@ -198,8 +204,17 @@ static void do_test(unsigned int i)
 	/*
 	 * We need to pass check in dns_resolver_preparse(),
 	 * give it dummy server list request.
+	 * From v6.8-rc1 commit acc657692aed438e9931438f8c923b2b107aebf9:
+	 * the incoming data for add_key() sysdall should be not less than 6
+	 * bytes, because struct dns_server_list_v1_header is 6 bytes.
+	 * The minimum payload will be tested here for boundary testing.
+	 *
+	 * Set status (byte 4) to 0x01 (DNS_LOOKUP_GOOD) so the kernel does
+	 * not treat it as a failed lookup and set a 1s expiry (prep->expiry
+	 * = now + 1), which causes keyctl_update() to fail with EKEYEXPIRED
+	 * on slow systems (e.g., QEMU).
 	 */
-	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x00 };
+	static char dns_res_payload[] = { 0x00, 0x00, 0x01, 0xff, 0x01, 0x00 };
 
 	switch (i) {
 	case 0:
@@ -207,7 +222,7 @@ static void do_test(unsigned int i)
 					 x509_cert, sizeof(x509_cert));
 		break;
 	case 1:
-		test_update_nonupdatable("dns_resolver", dns_res_payload,
+		test_update_nonupdatable(MODULE, dns_res_payload,
 			sizeof(dns_res_payload));
 		break;
 	case 2:
@@ -217,12 +232,14 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
+	.needs_root = 1,
 	.tcnt = 3,
 	.setup = setup,
 	.test = do_test,
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "63a0b0509e70"},
+		{"linux-git", "63a0b0509e700717a59f049ec6e4e04e903c7fe2"},
+		{"linux-git", "acc657692aed438e9931438f8c923b2b107aebf9"},
 		{}
 	}
 };

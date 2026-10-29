@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the kernel allows at least 32 nested levels of user namespaces.
  */
 
@@ -22,7 +20,10 @@
 
 static void child_fn1(const int level)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid;
 	int parentuid;
 	int parentgid;
@@ -53,7 +54,10 @@ static void child_fn1(const int level)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid;
 	int parentuid;
 	int parentgid;
@@ -89,7 +93,7 @@ static struct tst_test test = {
 		NULL,
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/unprivileged_userns_clone", "1", TST_SR_SKIP},
+		{PATH_KERN_UNPRIVILEGED_USERNS_CLONE, "1", TST_SR_SKIP},
 		{}
 	},
 };

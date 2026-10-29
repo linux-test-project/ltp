@@ -32,7 +32,7 @@
 
 #define TNAME "aio_cancel/9-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	if (sysconf(_SC_ASYNCHRONOUS_IO) < 200112L)

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the PR_CAP_AMBIENT of prctl(2).
  *
  * Reads or changes the ambient capability set of the calling thread,

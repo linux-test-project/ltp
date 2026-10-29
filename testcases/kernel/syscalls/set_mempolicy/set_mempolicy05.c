@@ -4,8 +4,6 @@
  */
 /*\
  *
- * [Description]
- *
  * This will reproduce an information leak in the set_mempolicy 32-bit
  * compat syscall. The catch is that the 32-bit compat syscall is not
  * used in x86_64 upstream. So at the time of writing, 32-bit programs
@@ -117,9 +115,13 @@ static struct tst_test test = {
 		"ppc",
 		NULL
 	},
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_NUMA=y",
+		NULL
+	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "cf01fb9985e8"},
-		{"CVE", "CVE-2017-7616"},
+		{"linux-git", "cf01fb9985e8deb25ccf0ea54d916b8871ae0e62"},
+		{"CVE", "2017-7616"},
 		{}
 	}
 };

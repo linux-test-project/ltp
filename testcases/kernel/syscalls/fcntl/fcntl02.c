@@ -36,10 +36,10 @@ static void verify_fcntl(unsigned int n)
 	if (TST_RET < min_fd) {
 		tst_res(TFAIL, "fcntl(%s, F_DUPFD, %i) returned %ld < %i",
 			fname, min_fd, TST_RET, min_fd);
+	} else {
+		tst_res(TPASS, "fcntl(%s, F_DUPFD, %i) returned %ld",
+			fname, min_fd, TST_RET);
 	}
-
-	tst_res(TPASS, "fcntl(%s, F_DUPFD, %i) returned %ld",
-		fname, min_fd, TST_RET);
 
 	SAFE_CLOSE(TST_RET);
 }

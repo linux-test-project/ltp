@@ -2,18 +2,16 @@
 /*
  * Copyright (c) International Business Machines  Corp., 2001
  * Author: Wayne Boyer
+ */
+
+/*\
+ * Verify that, fchmod(2) will succeed to change the mode of a directory
+ * but fails to set the setgid bit on it if invoked by non-root (uid != 0)
+ * process with the following constraints:
  *
- * Test Description:
- *  Verify that, fchmod(2) will succeed to change the mode of a directory
- *  but fails to set the setgid bit on it if invoked by non-root (uid != 0)
- *  process with the following constraints,
- *	- the process is the owner of the directory.
- *	- the effective group ID or one of the supplementary group ID's of the
- *	  process is not equal to the group ID of the directory.
- *
- * Expected Result:
- *  fchmod() should return value 0 on success and though succeeds to change
- *  the mode of a directory but fails to set setgid bit on it.
+ * - The process is the owner of the directory.
+ * - The effective group ID or one of the supplementary group ID's of the
+ *   process is not equal to the group ID of the directory.
  */
 
 #include <pwd.h>
@@ -58,13 +56,8 @@ static void setup(void)
 
 	SAFE_MKDIR(TESTDIR, DIR_MODE);
 
-	if (setgroups(1, &ltpuser->pw_gid) == -1) {
-		tst_brk(TBROK, "Couldn't change supplementary group Id: %s",
-			tst_strerrno(TST_ERR));
-	}
-
+	SAFE_SETGROUPS(1, &ltpuser->pw_gid);
 	SAFE_CHOWN(TESTDIR, ltpuser->pw_uid, free_gid);
-
 	SAFE_SETEGID(ltpuser->pw_gid);
 	SAFE_SETEUID(ltpuser->pw_uid);
 

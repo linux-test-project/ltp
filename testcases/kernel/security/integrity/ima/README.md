@@ -8,6 +8,18 @@ CONFIG_INTEGRITY=y
 CONFIG_IMA=y
 ```
 
+### Loading policy for testing (optional)
+Setting environment variable `LTP_IMA_LOAD_POLICY=1` tries to load example
+policy if available. This should be used only if tooling running LTP tests
+allows to reboot afterwards because policy may be writable only once, e.g.
+missing `CONFIG_IMA_WRITE_POLICY=y`, or policies can influence each other.
+
+Loading may fail due various reasons (e.g. previously mentioned missing
+`CONFIG_IMA_WRITE_POLICY=y` and policy already loaded or when secure boot is
+enabled and the kernel is configured with `CONFIG_IMA_ARCH_POLICY` enabled, an
+`appraise func=POLICY_CHECK appraise_type=imasig` rule is loaded, requiring the
+IMA policy itself to be signed).
+
 ### IMA measurement tests
 `ima_measurements.sh` require builtin IMA tcb policy to be loaded
 (`ima_policy=tcb` kernel parameter).

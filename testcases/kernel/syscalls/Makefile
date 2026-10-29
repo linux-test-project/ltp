@@ -10,11 +10,6 @@ top_srcdir		?= ../../..
 
 include	$(top_srcdir)/include/mk/env_pre.mk
 
-ifeq ($(UCLINUX),1)
-FILTER_OUT_DIRS	+= capget capset chmod chown clone fork getcontext llseek \
-		   mincore mprotect nftw profil remap_file_pages sbrk
-endif
-
 ifeq ($(UCLIBC),1)
 FILTER_OUT_DIRS	+= profil
 endif

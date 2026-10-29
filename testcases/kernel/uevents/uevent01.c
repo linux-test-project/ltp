@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2019-2023
  */
 
-/*
+/*\
  * Very simple uevent netlink socket test.
  *
  * We fork a child that listens for a kernel events while parents attaches and
@@ -56,10 +57,10 @@ static void verify_uevent(void)
 		tst_brk(TBROK, "Failed to find free loop device");
 
 	snprintf(ev_msg, sizeof(ev_msg),
-	         "change@/devices/virtual/block/loop%i", dev_num);
+		"change@/devices/virtual/block/loop%i", dev_num);
 
 	snprintf(ev_dev_path, sizeof(ev_dev_path),
-	         "DEVPATH=/devices/virtual/block/loop%i", dev_num);
+		"DEVPATH=/devices/virtual/block/loop%i", dev_num);
 
 	snprintf(ev_dev_minor, sizeof(ev_dev_minor), "MINOR=%i", dev_num);
 	snprintf(ev_dev_name, sizeof(ev_dev_name), "DEVNAME=loop%i", dev_num);
@@ -89,8 +90,8 @@ static struct tst_test test = {
 	.test_all = verify_uevent,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	},
 	.needs_root = 1

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test for CVE-2022-0185.
  *
  * References links:
@@ -53,12 +51,14 @@ static void run(void)
 
 		if (!TST_RET) {
 			tst_res(TFAIL, "fsconfig() passed unexpectedly");
+			break;
 		} else if (TST_RET != -1) {
 			tst_brk(TBROK | TTERRNO,
 				"Invalid fsconfig() return value %ld", TST_RET);
 		} else if (TST_ERR != EINVAL) {
 			tst_res(TFAIL | TTERRNO,
 				"fsconfig() failed with unexpected error");
+			break;
 		}
 	}
 
@@ -80,6 +80,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
@@ -90,7 +91,7 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.skip_filesystems = (const char *const []){"fuse", NULL},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "722d94847de29"},
+		{"linux-git", "722d94847de29310e8aa03fcbdb41fc92c521756"},
 		{"CVE", "2022-0185"},
 		{}
 	}

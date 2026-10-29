@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 #else /* LARGE_FILE */
 	if (lseek(rofd, sparseoff, SEEK_SET) == -1) {
 #endif /* LARGE_FILE */
-		CLEANERROR("couldn't lseek to begining to verify contents");
+		CLEANERROR("couldn't lseek to beginning to verify contents");
 		anyfail();	/* LTP Port */
 	}
 	if (munmap(mapaddr, holesize + 2 * pagesize) == -1) {

@@ -1,23 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2015 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2015 Fujitsu Ltd.
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2016-2023
+ */
 
-/*
-* Test Name: pwritev01
-*
-* Test Description:
-* Testcase to check the basic functionality of the pwritev(2).
-* pwritev(2) should succeed to write the expected content of data
-* and after writing the file, the file offset is not changed.
-*/
+/*\
+ * Testcase to check the basic functionality of the pwritev(2).
+ *
+ * pwritev(2) should succeed to write the expected content of data
+ * and after writing the file, the file offset is not changed.
+ */
 
 #define _GNU_SOURCE
 #include <string.h>
 #include <sys/uio.h>
 #include "tst_test.h"
-#include "pwritev.h"
+#include "lapi/uio.h"
 #include "tst_safe_prw.h"
 
 #define	CHUNK		64

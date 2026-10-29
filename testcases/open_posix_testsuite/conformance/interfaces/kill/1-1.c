@@ -32,7 +32,7 @@ static void handler(int signo)
 	_exit(PTS_PASS);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigaction act;
 

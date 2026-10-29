@@ -9,27 +9,27 @@
  kernel to deliver a specified signal to a specified thread.
 
  Using two global values of sem1 (INTHREAD and INMAIN), we are going to
- control  when we want execution to be in main() and when we want
- execution to be a_thread_func(). When the main() function sets sem1 to
+ control  when we want execution to be in test_main() and when we want
+ execution to be a_thread_func(). When the test_main() function sets sem1 to
  INTHREAD and keeps looping until sem1 gets changed back to INMAIN, the
  a_thread_func() will be exclusively running. Similarly, when the
  a_thread_func() sets sem1 to INMAIN and keeps looping until sem1 gets
- changed back to INTHREAD, the main() function will be exclusively
+ changed back to INTHREAD, the test_main() function will be exclusively
  running.
 
  Steps:
- 1. From the main() function, create a new thread. Using the above
+ 1. From the test_main() function, create a new thread. Using the above
     methodology, let the new thread run "exclusively."
  2. Inside the new thread, prepare for catching the signal indicated by
     SIGTOTEST, and calling a handler that sets handler_called to 1. Now
-    let the main() thread run "exclusively".
- 3. Have main() send the signal indicated by SIGTOTEST to the new thread,
+    let the test_main() thread run "exclusively".
+ 3. Have test_main() send the signal indicated by SIGTOTEST to the new thread,
     using pthread_kill(). Let the new thread continue running,
-    and from the main function, wait until handler_called is set to
+    and from the test_main function, wait until handler_called is set to
     something other than 0.
  4. In the new thread, if the handler wasn't called for more than 5
     seconds, then set handler_called to -1, otherwise set it to 1.
- 5. In either case, the main() function will continue execution and return
+ 5. In either case, the test_main() function will continue execution and return
     a PTS_PASS if handler_called was 1, and a PTS_FAIL if handler_called
     was -1.
  */
@@ -75,7 +75,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

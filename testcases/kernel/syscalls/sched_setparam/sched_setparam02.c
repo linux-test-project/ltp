@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Checks functionality for sched_setparam(2)
  *
  * This test changes the scheduling priority for current process
@@ -37,6 +35,8 @@ static void run(unsigned int n)
 	struct test_cases_t *tc = &tcases[n];
 	struct sched_variant *tv = &sched_variants[tst_variant];
 	struct sched_param p = { .sched_priority = tc->param };
+
+	tst_check_rt_group_sched_support();
 
 	TST_EXP_PASS_SILENT(tv->sched_setscheduler(0, tc->policy, &p));
 

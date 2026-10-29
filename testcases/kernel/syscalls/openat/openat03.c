@@ -25,7 +25,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/fcntl.h"
 #include "openat.h"
 
@@ -129,7 +129,7 @@ static void read_file(int fd)
 	SAFE_LSEEK(cleanup, fd, 0, SEEK_SET);
 
 	for (i = 0; i < blocks_num; ++i) {
-		SAFE_READ(cleanup, 0, fd, tmp, size);
+		SAFE_READ(cleanup, SAFE_READ_ANY, fd, tmp, size);
 		if (memcmp(buf, tmp, size))
 			tst_brkm(TFAIL, cleanup, "got unexepected data");
 	}

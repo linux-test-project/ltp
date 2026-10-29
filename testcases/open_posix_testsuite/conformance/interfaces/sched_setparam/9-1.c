@@ -105,7 +105,7 @@ static void kill_children(int *child_pid, int count)
 	free(child_pid);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int *child_pid, oldcount, newcount, shm_id, i;
 	struct sched_param param;

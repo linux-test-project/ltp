@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests for adjtimex() error conditions:
  *
  * - EPERM with SET_MODE as nobody

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setfsuid() correctly updates the filesystem user ID
  * to the value given in fsuid argument.
  */

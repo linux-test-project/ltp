@@ -22,7 +22,7 @@
 
 #define MAX_RUNTIME_SECONDS 15
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	clock_t c1, c2;
 	double sec1, sec2;

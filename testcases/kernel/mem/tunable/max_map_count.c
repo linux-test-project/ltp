@@ -1,43 +1,43 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
+ * Copyright (c) Linux Test Project, 2012-2025
  * Copyright (C) 2012-2017  Red Hat, Inc.
+ */
+
+/*\
+ * Test ``/proc/sys/vm/max_map_count`` tunable file.
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * :kernel_doc:`admin-guide/sysctl/vm` claims:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
- * Description:
- *
- * The program is designed to test max_map_count tunable file
- *
- * The kernel Documentation say that:
- * /proc/sys/vm/max_map_count contains the maximum number of memory map
- * areas a process may have. Memory map areas are used as a side-effect
- * of calling malloc, directly by mmap and mprotect, and also when
- * loading shared libraries.
+ *    /proc/sys/vm/max_map_count contains the maximum number of memory map
+ *    areas a process may have. Memory map areas are used as a side-effect
+ *    of calling malloc, directly by mmap and mprotect, and also when
+ *    loading shared libraries.
  *
  * Each process has his own maps file: /proc/[pid]/maps, and each line
  * indicates a map entry, so it can caculate the amount of maps by reading
  * the file lines' number to check the tunable performance.
  *
- * The program tries to invoke mmap() endlessly until it triggers MAP_FAILED,
- * then reads the process's maps file /proc/[pid]/maps, save the line number to
- * map_count variable, and compare it with /proc/sys/vm/max_map_count,
- * map_count should be greater than max_map_count by 1;
+ * The program tries to invoke :manpage:`mmap(2)` endlessly until it triggers
+ * ``MAP_FAILED``, then reads the process's maps file /proc/[pid]/maps, save
+ * the line number to map_count variable, and compare it with
+ * ``/proc/sys/vm/max_map_count``, map_count should be greater than
+ * max_map_count by 1.
  *
- * Note: On some architectures there is a special vma VSYSCALL, which
+ * NOTE: On some architectures there is a special vma VSYSCALL, which
  * is allocated without incrementing mm->map_count variable. On these
  * architectures each /proc/<pid>/maps has at the end:
- * ...
- * ...
- * ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0   [vsyscall]
  *
- * so we ignore this line during /proc/[pid]/maps reading.
+ * ::
+ *
+ *    ...
+ *    ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0   [vsyscall]
+ *
+ * Therefore this line is ignored during /proc/[pid]/maps reading.
+ *
+ * [References]
+ *
+ * - :kernel_doc:`admin-guide/sysctl/vm`
  */
 
 #define _GNU_SOURCE
@@ -48,10 +48,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/utsname.h>
-#include "mem.h"
+#include "tst_test.h"
 
 #define MAP_COUNT_DEFAULT	1024
-#define MAX_MAP_COUNT		65536L
+#define MAX_MAP_COUNT_MAX	65536L
+
+#define OVERCOMMIT_MEMORY "/proc/sys/vm/overcommit_memory"
+#define MAX_MAP_COUNT "/proc/sys/vm/max_map_count"
 
 /* This is a filter to exclude map entries which aren't accounted
  * for in the vm_area_struct's map_count.
@@ -140,15 +143,15 @@ static void max_map_count_test(void)
 	memfree = SAFE_READ_MEMINFO("CommitLimit:") - SAFE_READ_MEMINFO("Committed_AS:");
 	/* 64 used as a bias to make sure no overflow happen */
 	max_iters = memfree / sysconf(_SC_PAGESIZE) * 1024 - 64;
-	if (max_iters > MAX_MAP_COUNT)
-		max_iters = MAX_MAP_COUNT;
+	if (max_iters > MAX_MAP_COUNT_MAX)
+		max_iters = MAX_MAP_COUNT_MAX;
 
 	max_maps = MAP_COUNT_DEFAULT;
 	if (max_iters < max_maps)
 		tst_brk(TCONF, "test requires more free memory");
 
 	while (max_maps <= max_iters) {
-		set_sys_tune("max_map_count", max_maps, 1);
+		TST_SYS_CONF_LONG_SET(MAX_MAP_COUNT, max_maps, 1);
 
 		switch (pid = SAFE_FORK()) {
 		case 0:
@@ -192,8 +195,8 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.test_all = max_map_count_test,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", "0", TST_SR_TBROK},
-		{"/proc/sys/vm/max_map_count", NULL, TST_SR_TBROK},
+		{OVERCOMMIT_MEMORY, "0", TST_SR_TBROK},
+		{MAX_MAP_COUNT, NULL, TST_SR_TBROK},
 		{}
 	},
 };

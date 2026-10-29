@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Descripiton]
- *
  * At one stage, a misconversion of hugetlb_vmtruncate_list to a
  * prio_tree meant that on 32-bit machines, truncates at or above 4GB
  * could truncate lower pages, resulting in BUG_ON()s.
@@ -123,7 +121,7 @@ static void setup(void)
 {
 	page_size = getpagesize();
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:")*1024;
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -134,7 +132,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "856fc2950555"},
+		{"linux-git", "856fc29505556cf263f3dcda2533cf3766c14ab6"},
 		{}
 	},
 	.needs_root = 1,

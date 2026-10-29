@@ -23,7 +23,7 @@
 #define ERR_MSG(f, rc) printf("Failed: func: %s rc: %s (%u)\n", \
 					f, strerror(rc), rc)
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int rc1;
 	int rc2;

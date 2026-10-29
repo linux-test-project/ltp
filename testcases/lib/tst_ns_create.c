@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Creates a child process in the new specified namespace(s), child is then
  * daemonized and is running in the background. PID of the daemonized child
  * process is printed on the stdout. As the new namespace(s) is(are) maintained
@@ -22,12 +20,6 @@
 #include <string.h>
 #include "tst_test.h"
 #include "tst_ns_common.h"
-
-extern struct tst_test *tst_test;
-
-static struct tst_test test = {
-	.forks_child = 1, /* Needed by SAFE_CLONE */
-};
 
 static void print_help(void)
 {
@@ -57,7 +49,7 @@ static void child_fn(void)
 
 int main(int argc, char *argv[])
 {
-	struct tst_clone_args args = { 0, SIGCHLD };
+	struct tst_clone_args args = { .exit_signal = SIGCHLD };
 	char *token;
 	int pid;
 
@@ -65,8 +57,6 @@ int main(int argc, char *argv[])
 		print_help();
 		return 1;
 	}
-
-	tst_test = &test;
 
 	while ((token = strsep(&argv[1], ","))) {
 		struct param *p = get_param(token);
@@ -80,7 +70,12 @@ int main(int argc, char *argv[])
 		args.flags |= p->flag;
 	}
 
-	pid = SAFE_CLONE(&args);
+	pid = tst_clone(&args);
+	if (pid < 0) {
+		printf("clone() failed");
+		return 1;
+	}
+
 	if (!pid) {
 		child_fn();
 		return 0;

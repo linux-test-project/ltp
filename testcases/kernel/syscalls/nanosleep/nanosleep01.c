@@ -5,10 +5,9 @@
  * Copyright (C) 2015-2017 Cyril Hrubis <chrubis@suse.cz>
  */
 
-/*
- * Test Description:
- *  nanosleep() should return with value 0 and the process should be
- *  suspended for time specified by timespec structure.
+/*\
+ * Verify that nanosleep() should return with value 0 and the process should be
+ * suspended for time specified by timespec structure.
  */
 
 #include <errno.h>

@@ -6,15 +6,16 @@
  *   Copyright (c) International Business Machines  Corp., 2002
  *   Copyright (c) Cyril Hrubis <chrubis@suse.cz> 2014
  *
- * Test checks that when a child is killed by its parent with sig, it
- * returns the correct values(sig and core dump bit) to the waiting parent.
- *
  * RESTRICTIONS
  * The ulimit for core file size must be greater than 0.
  */
 
+/*\
+ * Test checks that when a child is killed by its parent with sig, it
+ * returns the correct values(sig and core dump bit) to the waiting parent.
+ */
+
 #define _GNU_SOURCE
-#include <errno.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <stdlib.h>

@@ -406,7 +406,7 @@ static void sighdl(int sig)
 	while (do_it);
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret, i, j;
 	struct sigaction sa;

@@ -6,22 +6,22 @@
  */
 
 /*\
- * [Description]
+ * This is a regression test of the `Stack Clash
+ * <https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash>`_
+ * vulnerability. This tests that there is at least 256 PAGE_SIZE of stack guard
+ * gap which is considered hard to hop above. Code is based on a reproducer from
+ * https://bugzilla.suse.com/show_bug.cgi?id=CVE-2017-1000364.
  *
- * This is a regression test of the Stack Clash [1] vulnerability. This tests
- * that there is at least 256 PAGE_SIZE of stack guard gap which is considered
- * hard to hop above. Code adapted from the Novell's bugzilla [2].
- *
- * The code `mmap(2)`s region close to the stack end. The code then allocates
+ * The code :manpage:`mmap(2)` region close to the stack end. The code then allocates
  * memory on stack until it hits guard page and SIGSEGV or SIGBUS is generated
  * by the kernel. The signal handler checks that fault address is further than
  * THRESHOLD from the mmapped area.
  *
- * We read /proc/self/maps to examine exact top of the stack and `mmap(2)`
+ * We read /proc/self/maps to examine exact top of the stack and :manpage:`mmap(2)`
  * our region exactly GAP_PAGES * PAGE_SIZE away. We read /proc/cmdline to
  * see if a different stack_guard_gap size is configured. We set stack limit
  * to infinity and preallocate REQ_STACK_SIZE bytes of stack so that no calls
- * after `mmap` are moving stack further.
+ * after mmap() are moving stack further.
  *
  * If the architecture meets certain requirements (only x86_64 is verified)
  * then the test also tests that new mmap()s can't be placed in the stack's
@@ -29,11 +29,8 @@
  * assumptions are that the stack grows down (start gap) and either:
  *
  * 1. The default search is top down, and will switch to bottom up if
- *      space is exhausted.
+ *    space is exhausted.
  * 2. The default search is bottom up and the stack is above mmap base.
- *
- * [1] https://blog.qualys.com/securitylabs/2017/06/19/the-stack-clash
- * [2] https://bugzilla.novell.com/show_bug.cgi?id=CVE-2017-1000364
  */
 
 #include <sys/wait.h>
@@ -44,6 +41,7 @@
 #include <stdlib.h>
 
 #include "tst_test.h"
+#include "tst_kconfig.h"
 #include "tst_safe_stdio.h"
 #include "lapi/mmap.h"
 
@@ -92,6 +90,7 @@ void segv_handler(int sig, siginfo_t *info, void *data LTP_ATTRIBUTE_UNUSED)
 		_exit(EXIT_SUCCESS);
 }
 
+#ifdef __x86_64__
 static void force_bottom_up(void)
 {
 	FILE *fh;
@@ -134,6 +133,7 @@ static void force_bottom_up(void)
 out:
 	SAFE_FCLOSE(fh);
 }
+#endif
 
 unsigned long read_stack_addr_from_proc(unsigned long *stack_size)
 {
@@ -179,7 +179,7 @@ void dump_proc_self_maps(void)
 	tst_cmd(cmd, NULL, NULL, 0);
 }
 
-void __attribute__((noinline)) preallocate_stack(unsigned long required)
+void LTP_ATTRIBUTE_NOINLINE preallocate_stack(unsigned long required)
 {
 	volatile char *garbage;
 
@@ -187,6 +187,7 @@ void __attribute__((noinline)) preallocate_stack(unsigned long required)
 	garbage[0] = garbage[required - 1] = '\0';
 }
 
+#ifdef __x86_64__
 static void do_mmap_placement_test(unsigned long stack_addr, unsigned long gap)
 {
 	void *map_test_gap;
@@ -208,6 +209,7 @@ static void do_mmap_placement_test(unsigned long stack_addr, unsigned long gap)
 		SAFE_MUNMAP(map_test_gap, MAPPED_LEN);
 	}
 }
+#endif
 
 void do_child(void)
 {
@@ -268,19 +270,14 @@ void do_child(void)
 
 void setup(void)
 {
-	char buf[4096], *p;
-
 	page_size = sysconf(_SC_PAGESIZE);
 	page_mask = ~(page_size - 1);
 
-	buf[4095] = '\0';
-	SAFE_FILE_SCANF("/proc/cmdline", "%4095[^\n]", buf);
+	struct tst_kcmdline_var params = TST_KCMDLINE_INIT("stack_guard_gap");
+	tst_kcmdline_parse(&params, 1);
 
-	if ((p = strstr(buf, "stack_guard_gap=")) != NULL) {
-		if (sscanf(p, "stack_guard_gap=%ld", &GAP_PAGES) != 1) {
-			tst_brk(TBROK | TERRNO, "sscanf");
-			return;
-		}
+	if (params.found) {
+		GAP_PAGES= atol(params.value);
 		tst_res(TINFO, "stack_guard_gap = %ld", GAP_PAGES);
 	}
 
@@ -334,9 +331,13 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.setup = setup,
 	.test_all = stack_clash_test,
+	.ulimit = (const struct tst_ulimit_val[]) {
+		{RLIMIT_AS, RLIM_INFINITY},
+		{}
+	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-1000364"},
-		{"linux-git", "58c5d0d6d522"},
+		{"linux-git", "58c5d0d6d522112577c7eeb71d382ea642ed7be4"},
 		{}
 	}
 };

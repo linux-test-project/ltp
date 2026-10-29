@@ -31,7 +31,7 @@ static unsigned invalidpri[NUMINVALID] = {
 	MQ_PRIO_MAX, MQ_PRIO_MAX + 1, MQ_PRIO_MAX + 5
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

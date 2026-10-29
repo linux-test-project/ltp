@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * *Test 1*
  *
  * This is a regression test for the race condition between move_pages()
@@ -76,10 +74,8 @@
 
 #ifdef HAVE_NUMA_V2
 
-#define LOOPS	1000
+#define LOOPS	10000
 #define PATH_MEMINFO	"/proc/meminfo"
-#define PATH_NR_HUGEPAGES	"/proc/sys/vm/nr_hugepages"
-#define PATH_HUGEPAGES	"/sys/kernel/mm/hugepages/"
 #define TEST_NODES	2
 
 static struct tcase {
@@ -102,7 +98,7 @@ static void *addr;
 static int do_soft_offline(int tpgs)
 {
 	if (madvise(addr, tpgs * hpsz, MADV_SOFT_OFFLINE) == -1) {
-		if (errno != EINVAL && errno != EBUSY)
+		if (errno != EINVAL && errno != EBUSY && errno != ENOMEM)
 			tst_res(TFAIL | TERRNO, "madvise failed");
 		return errno;
 	}
@@ -153,6 +149,8 @@ static void do_test(unsigned int n)
 	void *ptr;
 	pid_t cpid = -1;
 	int status;
+
+	SAFE_FILE_PRINTF("/proc/sys/vm/compact_memory", "1");
 
 	addr = SAFE_MMAP(NULL, tcases[n].tpages * hpsz, PROT_READ | PROT_WRITE,
 		MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
@@ -259,7 +257,7 @@ static void setup(void)
 
 	check_config(TEST_NODES);
 
-	if (access(PATH_HUGEPAGES, F_OK))
+	if (access(PATH_MM_HUGEPAGES, F_OK))
 		tst_brk(TCONF, "Huge page not supported");
 
 	ret = get_allowed_nodes(NH_MEMS, TEST_NODES, &node1, &node2);
@@ -269,6 +267,7 @@ static void setup(void)
 	pgsz = (int)get_page_size();
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "Hugepagesize: %d", &hpsz);
 
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
 	SAFE_FILE_LINES_SCANF(PATH_MEMINFO, "MemFree: %ld", &memfree);
 	tst_res(TINFO, "Free RAM %ld kB", memfree);
 
@@ -306,10 +305,10 @@ static void setup(void)
 	hpsz *= 1024;
 
 	if (orig_hugepages_node1 == -1 || orig_hugepages_node2 == -1) {
-		SAFE_FILE_SCANF(PATH_NR_HUGEPAGES, "%ld", &orig_hugepages);
+		SAFE_FILE_SCANF(PATH_VM_NR_HPAGES, "%ld", &orig_hugepages);
 		tst_res(TINFO, "Increasing global hugepages pool to %ld",
 			orig_hugepages + 8);
-		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages + 8);
+		SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%ld", orig_hugepages + 8);
 	}
 
 	alloc_free_huge_on_node(node1, 4L * hpsz);
@@ -319,7 +318,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (orig_hugepages != -1)
-		SAFE_FILE_PRINTF(PATH_NR_HUGEPAGES, "%ld", orig_hugepages);
+		SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%ld", orig_hugepages);
 
 	if (orig_hugepages_node1 != -1) {
 		SAFE_FILE_PRINTF(path_hugepages_node1,
@@ -339,12 +338,12 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(tcases),
-	.max_runtime = 240,
+	.runtime = 240,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e66f17ff7177"},
-		{"linux-git", "c9d398fa2378"},
-		{"linux-git", "4643d67e8cb0"},
-		{"linux-git", "3f4b815a439a"},
+		{"linux-git", "e66f17ff71772b209eed39de35aaa99ba819c93d"},
+		{"linux-git", "c9d398fa237882ea07167e23bcfc5e6847066518"},
+		{"linux-git", "4643d67e8cb0b3536ef0ab5cddd1cedc73fa14ad"},
+		{"linux-git", "3f4b815a439adfb8f238335612c4b28bc10084d8"},
 		{}
 	}
 };

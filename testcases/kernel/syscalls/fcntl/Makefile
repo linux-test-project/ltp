@@ -17,6 +17,6 @@ include $(abs_srcdir)/../utils/newer_64.mk
 
 %_64: CPPFLAGS += -D_FILE_OFFSET_BITS=64
 
-CPPFLAGS		+= -D_GNU_SOURCE
+CPPFLAGS		+= -D_GNU_SOURCE -D_LARGEFILE64_SOURCE
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

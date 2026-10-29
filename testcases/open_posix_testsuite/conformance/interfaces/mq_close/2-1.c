@@ -40,7 +40,7 @@ static int child_process(char *qname, int read_pipe, int write_pipe);
 static mqd_t open_queue(char *qname, int oflag, int mode);
 static int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[50];
 	pid_t pid;
@@ -175,12 +175,18 @@ static int child_process(char *qname, int read_pipe, int write_pipe)
 	if (queue == (mqd_t) - 1) {
 		return PTS_UNRESOLVED;
 	}
-	// try notify while parent still has queue open - should fail
+	// try notify while parent still has queue open - should fail with EBUSY
 	se.sigev_notify = SIGEV_SIGNAL;
+	se.sigev_signo = SIGUSR1;
 	if (!mq_notify(queue, &se)) {
 		puts(ERROR_PREFIX "mq_notify (2): " "should have failed");
 		return PTS_UNRESOLVED;
 	}
+	if (errno != EBUSY) {
+		perror(ERROR_PREFIX "mq_notify (2): expected EBUSY");
+		return PTS_UNRESOLVED;
+	}
+
 	// send 'b' - signal parent to close queue
 	rval = send_receive(read_pipe, write_pipe, 'b', &reply);
 	if (rval) {
@@ -193,7 +199,7 @@ static int child_process(char *qname, int read_pipe, int write_pipe)
 	}
 	// try notify after parent closed queue - should succeed
 	se.sigev_notify = SIGEV_SIGNAL;
-	se.sigev_signo = 0;
+	se.sigev_signo = SIGUSR1;
 	rval = mq_notify(queue, &se);
 
 	// send 'd' for success and 'e' for failure

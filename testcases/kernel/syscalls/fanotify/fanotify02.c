@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
@@ -6,8 +6,7 @@
  */
 
 /*\
- * [Description]
- * Check that fanotify work for children of a directory.
+ * Check that :manpage:`fanotify(7)` works for children of a directory.
  */
 
 #define _GNU_SOURCE
@@ -70,7 +69,7 @@ static void test01(void)
 	 * Get list of events so far. We get events here to avoid
 	 * merging of following events with the previous ones.
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf,
 			EVENT_BUF_LEN);
 	len = ret;
 
@@ -78,7 +77,7 @@ static void test01(void)
 	event_set[tst_count] = FAN_OPEN;
 	tst_count++;
 
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[tst_count] = FAN_ACCESS;
 	tst_count++;
 
@@ -89,7 +88,7 @@ static void test01(void)
 	/*
 	 * get next events
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -117,7 +116,7 @@ static void test01(void)
 	/*
 	 * Check events got generated only for the directory
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 

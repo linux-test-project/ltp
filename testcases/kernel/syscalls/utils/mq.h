@@ -12,9 +12,9 @@
 
 #define MAX_MSGSIZE	8192
 #define MSG_LENGTH	10
-#define QUEUE_NAME	"/test_mqueue"
-#define QUEUE_NAME_NONBLOCK	"/test_mqueue_nonblock"
 
+static char queue_name[64];
+static char queue_name_nonblock[64];
 static char smsg[MAX_MSGSIZE];
 static struct sigaction act;
 
@@ -29,8 +29,8 @@ static void cleanup_common(void)
 	if (fd_nonblock > 0)
 		SAFE_CLOSE(fd_nonblock);
 
-	mq_unlink(QUEUE_NAME);
-	mq_unlink(QUEUE_NAME_NONBLOCK);
+	mq_unlink(queue_name);
+	mq_unlink(queue_name_nonblock);
 }
 
 static void sighandler(int sig LTP_ATTRIBUTE_UNUSED) { }
@@ -39,14 +39,17 @@ static void setup_common(void)
 {
 	int i;
 
+	snprintf(queue_name, sizeof(queue_name), "/test_mqueue_%d", getpid());
+	snprintf(queue_name_nonblock, sizeof(queue_name_nonblock), "/test_mqueue_nonblock_%d", getpid());
+
 	act.sa_handler = sighandler;
 	sigaction(SIGINT, &act, NULL);
 
 	cleanup_common();
 
 	fd_root = SAFE_OPEN("/", O_RDONLY);
-	fd = SAFE_MQ_OPEN(QUEUE_NAME, O_CREAT | O_EXCL | O_RDWR, 0700, NULL);
-	fd_nonblock = SAFE_MQ_OPEN(QUEUE_NAME_NONBLOCK, O_CREAT | O_EXCL | O_RDWR |
+	fd = SAFE_MQ_OPEN(queue_name, O_CREAT | O_EXCL | O_RDWR, 0700, NULL);
+	fd_nonblock = SAFE_MQ_OPEN(queue_name_nonblock, O_CREAT | O_EXCL | O_RDWR |
 		O_NONBLOCK, 0700, NULL);
 
 	for (i = 0; i < MAX_MSGSIZE; i++)

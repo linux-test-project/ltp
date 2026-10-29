@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test based on Syzkaller reproducer:
  * https://syzkaller.appspot.com/bug?id=680c24ff647dd7241998e19da52e8136d2fd3523
  *
@@ -148,19 +146,20 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test = do_test,
-	.tcnt = 9,
+	.tcnt = ARRAY_SIZE(ldiscs) - 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.max_runtime = 30,
+	.runtime = 30,
+	.min_runtime = 16,
 	.needs_kconfigs = (const char *const[]){
 		"CONFIG_SERIO_SERPORT",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "0ace17d568241"},
+		{"linux-git", "0ace17d56824165c7f4c68785d6b58971db954dd"},
 		{"CVE", "2020-14416"},
-		{"linux-git", "dd42bf1197144"},
+		{"linux-git", "dd42bf1197144ede075a9d4793123f7689e164bc"},
 		{}
 	}
 };

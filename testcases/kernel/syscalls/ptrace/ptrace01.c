@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2019 SUSE LLC
@@ -26,8 +26,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <config.h>
-#include "ptrace.h"
+#include <sys/ptrace.h>
 #include "tst_test.h"
 
 static struct tcase {

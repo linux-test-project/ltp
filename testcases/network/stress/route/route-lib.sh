@@ -97,10 +97,14 @@ test_netlink()
 	tst_res TINFO "running $cmd $opt"
 	$cmd $opt || ret=$?
 	if [ "$ret" -ne 0 ]; then
-		[ $((ret & 3)) -ne 0 ] && \
-			tst_brk TFAIL "$cmd failed"
+		if [ $((ret & 3)) -ne 0 ]; then
+			tst_res TFAIL "$cmd failed"
+			return
+		fi
+
 		[ $((ret & 32)) -ne 0 ] && \
 			tst_brk TCONF "not supported configuration"
+
 		[ $((ret & 4)) -ne 0 ] && \
 			tst_res TWARN "$cmd has warnings"
 	fi

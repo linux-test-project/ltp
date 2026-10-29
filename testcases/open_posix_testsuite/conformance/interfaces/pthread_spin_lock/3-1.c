@@ -31,7 +31,7 @@ static void sig_handler()
 	pthread_exit((void *)PTS_PASS);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int rc;
 	pthread_spinlock_t spinlock;

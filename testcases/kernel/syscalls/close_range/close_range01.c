@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Taken from the kernel self tests, which in turn were based on
  * a Syzkaller reproducer.
@@ -10,8 +10,6 @@
  * Copyright (c) 2021 SUSE LLC, other copyrights may apply.
  */
 /*\
- * [Description]
- *
  * We check that close_range()
  *
  * - closes FDs
@@ -48,7 +46,7 @@ static inline void do_close_range(unsigned int fd, unsigned int max_fd,
 			tst_brk(TCONF | TERRNO, "No CLOSE_RANGE_CLOEXEC");
 	}
 
-	tst_brk(TBROK | TERRNO, "close_range(%d, %d, %d)", fd, max_fd, flags);
+	tst_brk(TBROK | TERRNO, "close_range(%u, %u, %u)", fd, max_fd, flags);
 }
 
 static void setup(void)
@@ -191,6 +189,7 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.tcnt = 4,
 	.forks_child = 1,
 	.mount_device = 1,
@@ -205,7 +204,7 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "fec8a6a69103"},
+		{"linux-git", "fec8a6a691033f2538cd46848f17f337f0739923"},
 		{},
 	},
 };

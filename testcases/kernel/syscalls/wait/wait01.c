@@ -4,8 +4,6 @@
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
  */
 /*\
- * [Description]
- *
  * Check that if the calling process does not have any unwaited-for children
  * wait() will return ECHILD.
  */
@@ -16,7 +14,7 @@
 
 static void verify_wait(void)
 {
-	TST_EXP_FAIL(wait(NULL), ECHILD);
+	TST_EXP_FAIL2(wait(NULL), ECHILD);
 }
 
 static struct tst_test test = {

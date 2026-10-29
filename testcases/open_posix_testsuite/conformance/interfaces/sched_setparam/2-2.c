@@ -80,7 +80,7 @@ static void sigterm_handler(int signum PTS_ATTRIBUTE_UNUSED)
 	exit(0);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int child_count, i;
 	struct sched_param param;

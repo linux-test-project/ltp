@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and verifies that siginfo->si_pid is
  * set to 0 if sender (parent process) is not in the receiver's namespace.
  */
@@ -45,7 +43,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 	int pid;
 
 	pid = SAFE_CLONE(&args);

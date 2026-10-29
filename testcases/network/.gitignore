@@ -31,14 +31,7 @@
 /stress/ns-tools/ns-igmp_querier
 /stress/ns-tools/ns-mcast_join
 /stress/ns-tools/ns-mcast_receiver
-/stress/ns-tools/ns-tcpclient
-/stress/ns-tools/ns-tcpserver
-/stress/ns-tools/ns-udpclient
 /stress/ns-tools/ns-udpsender
-/stress/ns-tools/ns-udpserver
-/tcp_cmds/echo/createfile
-/tcp_cmds/echo/echoes
-/tcp_cmds/echo/echoes6
 /tcp_cmds/sendfile/testsf_c
 /tcp_cmds/sendfile/testsf_c6
 /tcp_cmds/sendfile/testsf_s

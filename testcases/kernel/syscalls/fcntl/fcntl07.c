@@ -51,7 +51,7 @@
 #include <limits.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 static void setup(void);
 static void cleanup(void);
@@ -101,7 +101,7 @@ static void verify_cloexec(struct tcase *tc)
 
 	sprintf(pidname, "%d", fd);
 
-	switch (pid = FORK_OR_VFORK()) {
+	switch (pid = tst_fork()) {
 	case -1:
 		tst_resm(TBROK | TERRNO, "fork() failed");
 		return;

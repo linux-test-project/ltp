@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and verifies that siginfo->si_pid is
  * set to 0 if sender (parent process) sent the signal. Then send signal from
  * container itself and check if siginfo->si_pid is set to 1.
@@ -56,7 +54,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t pid;
 
 	signal_pid = -1;
@@ -81,4 +82,8 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_checkpoints = 1,
 	.forks_child = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

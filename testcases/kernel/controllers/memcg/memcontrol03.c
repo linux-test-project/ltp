@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*\
  *
- * [Description]
- *
- * Conversion of the third kself test in cgroup/test_memcontrol.c.
+ * Conversion of the third kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
  * Original description:
  * "First, this test creates the following hierarchy:
- * A       memory.min = 50M,  memory.max = 200M
+ * A       memory.min = 0,    memory.max = 200M
  * A/B     memory.min = 50M,  memory.current = 50M
  * A/B/C   memory.min = 75M,  memory.current = 50M
  * A/B/D   memory.min = 25M,  memory.current = 50M
@@ -17,20 +15,21 @@
  * Usages are pagecache, but the test keeps a running
  * process in every leaf cgroup.
  * Then it creates A/G and creates a significant
- * memory pressure in it.
+ * memory pressure in A.
  *
  * A/B    memory.current ~= 50M
- * A/B/C  memory.current ~= 33M
- * A/B/D  memory.current ~= 17M
+ * A/B/C  memory.current ~= 29M
+ * A/B/D  memory.current ~= 21M
  * A/B/E  memory.current ~= 0
+ * (for origin of the numbers, see model in memcg_protection.m.)
  *
  * After that it tries to allocate more than there is unprotected
  * memory in A available, and checks that memory.min protects
  * pagecache even in this case."
  *
  * memory.min doesn't appear to exist on V1 so we only test on V2 like
- * the selftest. We do test on more file systems, but not tempfs
- * becaue it can't evict the page cache without swap. Also we avoid
+ * the selftest. We do test on more file systems, but not tmpfs
+ * because it can't evict the page cache without swap. Also we avoid
  * filesystems which allocate extra memory for buffer heads.
  *
  * The tolerances have been increased from the self tests.
@@ -38,11 +37,7 @@
 
 #define _GNU_SOURCE
 
-#include <inttypes.h>
-
 #include "memcontrol_common.h"
-
-#define TMPDIR "mntdir"
 
 static struct tst_cg_group *trunk_cg[3];
 static struct tst_cg_group *leaf_cg[4];
@@ -96,17 +91,23 @@ static void cleanup_sub_groups(void)
 }
 
 static void alloc_anon_in_child(const struct tst_cg_group *const cg,
-				const size_t size, const int expect_oom)
+	size_t size, const int expect_oom)
 {
 	int status;
 	const pid_t pid = SAFE_FORK();
+	size_t cgmem;
 
 	if (!pid) {
 		SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
+		SAFE_CG_SCANF(cg, "memory.current", "%zu", &cgmem);
+		size = size > cgmem ? size - cgmem : 0;
 
-		tst_res(TINFO, "Child %d in %s: Allocating anon: %"PRIdPTR,
-		getpid(), tst_cg_group_name(cg), size);
-		alloc_anon(size);
+		tst_res(TINFO, "Child %d in %s: Allocating anon: %zu",
+			getpid(), tst_cg_group_name(cg), size);
+
+		if (size)
+			alloc_anon(size);
+
 		exit(0);
 	}
 
@@ -130,9 +131,10 @@ static void alloc_anon_in_child(const struct tst_cg_group *const cg,
 }
 
 static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
-				     const size_t size)
+	size_t size)
 {
 	const pid_t pid = SAFE_FORK();
+	size_t cgmem;
 
 	if (pid) {
 		TST_CHECKPOINT_WAIT(CHILD_IDLE);
@@ -140,10 +142,16 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 	}
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
+	SAFE_CG_SCANF(cg, "memory.current", "%zu", &cgmem);
+	size = size > cgmem ? size - cgmem : 0;
 
-	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %"PRIdPTR,
+	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %zu",
 		getpid(), tst_cg_group_name(cg), size);
-	alloc_pagecache(fd, size);
+
+	if (size)
+		alloc_pagecache(fd, size);
+
+	SAFE_FSYNC(fd);
 
 	TST_CHECKPOINT_WAKE(CHILD_IDLE);
 	TST_CHECKPOINT_WAIT(TEST_DONE);
@@ -186,7 +194,6 @@ static void test_memcg_min(void)
 		alloc_pagecache_in_child(leaf_cg[i], MB(50));
 	}
 
-	SAFE_CG_PRINT(trunk_cg[A], "memory.min", "50M");
 	SAFE_CG_PRINT(trunk_cg[B], "memory.min", "50M");
 	SAFE_CG_PRINT(leaf_cg[C], "memory.min", "75M");
 	SAFE_CG_PRINT(leaf_cg[D], "memory.min", "25M");
@@ -210,10 +217,10 @@ static void test_memcg_min(void)
 	for (i = 0; i < ARRAY_SIZE(leaf_cg); i++)
 		SAFE_CG_SCANF(leaf_cg[i], "memory.current", "%ld", c + i);
 
-	TST_EXP_EXPR(values_close(c[0], MB(33), 20),
-		     "(A/B/C memory.current=%ld) ~= %d", c[0], MB(33));
-	TST_EXP_EXPR(values_close(c[1], MB(17), 20),
-		     "(A/B/D memory.current=%ld) ~= %d", c[1], MB(17));
+	TST_EXP_EXPR(values_close(c[0], MB(29), 20),
+		     "(A/B/C memory.current=%ld) ~= %d", c[0], MB(29));
+	TST_EXP_EXPR(values_close(c[1], MB(21), 20),
+		     "(A/B/D memory.current=%ld) ~= %d", c[1], MB(21));
 	TST_EXP_EXPR(values_close(c[2], 0, 1),
 		     "(A/B/E memory.current=%ld) ~= 0", c[2]);
 
@@ -239,7 +246,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = test_memcg_min,
 	.mount_device = 1,
-	.dev_min_size = 256,
 	.mntpoint = TMPDIR,
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *const[]){

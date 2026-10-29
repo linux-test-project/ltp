@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include "test.h"
 
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 static void sighandler(int sig);
 static void cleanup(void);
@@ -89,7 +89,7 @@ int main(int ac, char **av)
 		addr = SAFE_MMAP(cleanup, 0, sizeof(buf), PROT_READ,
 				 MAP_SHARED, fd, 0);
 
-		if ((pid = FORK_OR_VFORK()) == -1)
+		if ((pid = tst_fork()) == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork #1 failed");
 
 		if (pid == 0) {
@@ -118,7 +118,7 @@ int main(int ac, char **av)
 		TEST(mprotect(addr, sizeof(buf), PROT_WRITE));
 
 		if (TEST_RETURN != -1) {
-			if ((pid = FORK_OR_VFORK()) == -1)
+			if ((pid = tst_fork()) == -1)
 				tst_brkm(TBROK | TERRNO, cleanup,
 					 "fork #2 failed");
 

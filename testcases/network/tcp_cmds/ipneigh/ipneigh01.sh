@@ -57,8 +57,10 @@ do_test()
 
 	for i in $(seq 1 $NUMLOOPS); do
 
-		ping$TST_IPV6 -q -c1 $(tst_ipaddr rhost) -I $(tst_iface) > /dev/null || \
-			tst_brk TFAIL "cannot ping $(tst_ipaddr rhost)"
+		if ! ping$TST_IPV6 -q -c1 $(tst_ipaddr rhost) -I $(tst_iface) > /dev/null; then
+			tst_res TFAIL "cannot ping $(tst_ipaddr rhost)"
+			return
+		fi
 
 		local k
 		local ret=1
@@ -66,19 +68,22 @@ do_test()
 			$SHOW_CMD | grep -q $(tst_ipaddr rhost)
 			if [ $? -eq 0 ]; then
 				ret=0
-				break;
+				break
 			fi
 			tst_sleep 100ms
 		done
 
-		[ "$ret" -ne 0 ] && \
-			tst_brk TFAIL "$entry_name entry '$(tst_ipaddr rhost)' not listed"
+		if [ "$ret" -ne 0 ]; then
+			tst_res TFAIL "$entry_name entry '$(tst_ipaddr rhost)' not listed"
+			return
+		fi
 
 		$DEL_CMD
 
-		$SHOW_CMD | grep -q "$(tst_ipaddr rhost).*$(tst_hwaddr rhost)" && \
-			tst_brk TFAIL "'$DEL_CMD' failed, entry has " \
-				"$(tst_hwaddr rhost)' $i/$NUMLOOPS"
+		if $SHOW_CMD | grep -q "$(tst_ipaddr rhost).*$(tst_hwaddr rhost)"; then
+			tst_res TFAIL "'$DEL_CMD' failed, entry has $(tst_hwaddr rhost)' $i/$NUMLOOPS"
+			return
+		fi
 	done
 
 	tst_res TPASS "verified adding/removing $entry_name cache entry"

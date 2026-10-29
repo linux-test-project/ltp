@@ -7,7 +7,6 @@ TST_SETUP="setup"
 TST_TESTFUNC="test"
 TST_CNT=2
 TST_CLEANUP="cleanup"
-TST_MIN_KVER="3.7"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="tc"
@@ -38,10 +37,6 @@ cleanup()
 
 setup()
 {
-	if tst_kvcmp -lt "3.16" && [ "$TST_IPV6" ]; then
-		tst_brk TCONF "test must be run with kernel 3.16 or newer"
-	fi
-
 	ROD tc qdisc add dev $(tst_iface) root netem delay 100
 }
 

@@ -27,7 +27,7 @@ static void print_pthread_error(const char *fname, int ret)
 	printf("Unexpected error at %s(): %s\n", fname, strerror(ret));
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	/* Make sure there is prioceiling capability. */

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic clone3() test.
  */
 
@@ -125,7 +123,7 @@ static void run(unsigned int n)
 	parent_received_signal = 0;
 	SAFE_SIGACTION(tc->exit_signal, &psig_action, NULL);
 
-	TEST(pid = clone3(args, sizeof(*args)));
+	TEST(pid = ltp_clone3_raw(args, sizeof(*args)));
 	if (pid < 0) {
 		tst_res(TFAIL | TTERRNO, "clone3() failed (%d)", n);
 		return;
@@ -178,6 +176,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_root = 1,
 	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 	.bufs = (struct tst_buffers []) {
 		{&args, .size = sizeof(*args)},
 		{},

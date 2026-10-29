@@ -108,13 +108,17 @@ static struct tst_test test = {
 	.test_all = tst_kvm_run,
 	.setup = tst_kvm_setup,
 	.cleanup = tst_kvm_cleanup,
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
+		NULL
+	},
 	.supported_archs = (const char *const []) {
 		"x86_64",
 		"x86",
 		NULL
 	},
 	.tags = (struct tst_tag[]){
-		{"linux-git", "0f923e07124d"},
+		{"linux-git", "0f923e07124df069ba68d8bb12324398f4b6b709"},
 		{"CVE", "2021-3653"},
 		{}
 	}

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is run for option 2 for sysfs(2).
  * Translate the filesystem type index fs_index into a null-terminated filesystem
  * identifier string. This string will be written to the buffer pointed to by buf.

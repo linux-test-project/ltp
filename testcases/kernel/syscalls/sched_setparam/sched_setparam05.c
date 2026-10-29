@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sched_setparam() fails if the user does not have proper
  * privileges.
  */

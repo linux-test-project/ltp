@@ -6,9 +6,7 @@
  */
 
 /*\
- * [Description]
- *
- * Tests ioctl() on loopdevice with LOOP_SET_DIRECT_IO flag.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_SET_DIRECT_IO flag.
  *
  * Tests whether LOOP_SET_DIRECT_IO can update a live loop device dio mode.
  * It requires the backing file also supports dio mode and the lo_offset is
@@ -18,8 +16,8 @@
  * return error when it coudln't be enabled, some silently fall back to regular
  * buffered I/O.
  *
- * The LOOP_SET_DIRECT_IO ioctl() may ignore all checks if it cannot get the
- * logical block size which is the case if the block device pointer in the
+ * The LOOP_SET_DIRECT_IO :manpage:`ioctl(2)` may ignore all checks if it cannot get
+ * the logical block size which is the case if the block device pointer in the
  * backing file inode is not set. In this case the direct I/O appears to be
  * enabled but falls back to buffered I/O later on. This is the case at least
  * for Btrfs. Because of that the test passes both with failure as well as
@@ -37,7 +35,8 @@
 #define DIO_MESSAGE "In dio mode"
 #define NON_DIO_MESSAGE "In non dio mode"
 
-static char dev_path[1024], sys_loop_diopath[1024], backing_file_path[1024];
+static char dev_path[1024], sys_loop_diopath[1024];
+static char *backing_file_path;
 static int dev_num, dev_fd, block_devfd, attach_flag, logical_block_size;
 
 static void check_dio_value(int flag)
@@ -124,7 +123,7 @@ static void setup(void)
 	 *   size of loop is bigger than the backing device's and the loop
 	 *   needn't transform transfer.
 	 */
-	sprintf(backing_file_path, "%s/test.img", tst_get_tmpdir());
+	backing_file_path = tst_tmpdir_genpath("test.img");
 	tst_find_backing_dev(backing_file_path, bd_path, sizeof(bd_path));
 	block_devfd = SAFE_OPEN(bd_path, O_RDWR);
 	SAFE_IOCTL(block_devfd, BLKSSZGET, &logical_block_size);
@@ -155,8 +154,8 @@ static struct tst_test test = {
 		"overlayfs",
 		NULL
 	},
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

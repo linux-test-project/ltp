@@ -92,7 +92,7 @@ void setup(void)
 	 * Make sure current process is NOT a session or pgrp leader
 	 */
 	if (getpgrp() == getpid()) {
-		if ((pid = FORK_OR_VFORK()) == -1) {
+		if ((pid = tst_fork()) == -1) {
 			tst_brkm(TBROK, cleanup,
 				 "fork() in setup() failed - errno %d", errno);
 		}

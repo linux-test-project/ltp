@@ -1,16 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2010-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
- *
+ */
+
+/*\
  * Kernel Samepage Merging (KSM)
  *
  * Basic tests were to start several programs with same and different
@@ -22,13 +15,14 @@
  * number of processes have same memory contents so it is possible to
  * test more advanced things like KSM + OOM etc.
  *
- * Prerequisites:
+ * [Prerequisites]
  *
- * 1) ksm and ksmtuned daemons need to be disabled. Otherwise, it could
- *    distrub the testing as they also change some ksm tunables depends
- *    on current workloads.
+ * ksm and ksmtuned daemons need to be disabled. Otherwise, it could
+ * distrub the testing as they also change some ksm tunables depends
+ * on current workloads.
  *
- * The test steps are:
+ * [Algorithm]
+ *
  * - Check ksm feature and backup current run setting.
  * - Change run setting to 1 - merging.
  * - 3 memory allocation programs have the memory contents that 2 of
@@ -56,7 +50,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
 #include "ksm_common.h"
 
 static void verify_ksm(void)
@@ -80,12 +74,14 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/sys/kernel/mm/ksm/run", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/sleep_millisecs", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/max_page_sharing", NULL,
+		{PATH_MM_KSM_RUN, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_SLEEP_MILLISECS, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_MAX_PAGE_SHARING, NULL,
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{"/sys/kernel/mm/ksm/merge_across_nodes", "1",
+		{PATH_MM_KSM_MERGE_ACROSS_NODES, "1",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
+		{PATH_MM_KSM_SMART_SCAN, "0",
+			TST_SR_SKIP_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 	.needs_kconfigs = (const char *const[]){

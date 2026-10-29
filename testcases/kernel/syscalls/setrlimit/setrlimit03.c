@@ -4,11 +4,12 @@
  * Copyright (c) 2017 Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * DESCRIPTION
- *  1) Test for EPERM when the super-user tries to increase RLIMIT_NOFILE
- *     beyond the system limit.
- *  2) Test for EINVAL when rlim->rlim_cur is greater than rlim->rlim_max.
+/*\
+ * Test :manpage:`setrlimit(2)` errnos:
+ *
+ * - EPERM when the super-user tries to increase RLIMIT_NOFILE  beyond the
+ *   system limit.
+ * - EINVAL when rlim->rlim_cur is greater than rlim->rlim_max.
  */
 
 #include <errno.h>
@@ -21,8 +22,6 @@
 // Taken from definition in /usr/include/linux/fs.h
 # define NR_OPEN (1024*1024)
 #endif
-
-#define NR_OPEN_PATH "/proc/sys/fs/nr_open"
 
 static struct rlimit rlim1, rlim2;
 static unsigned int nr_open = NR_OPEN;
@@ -58,8 +57,8 @@ static void verify_setrlimit(unsigned int n)
 
 static void setup(void)
 {
-	if (!access(NR_OPEN_PATH, F_OK))
-		SAFE_FILE_SCANF(NR_OPEN_PATH, "%u", &nr_open);
+	if (!access(PATH_FS_NR_OPEN, F_OK))
+		SAFE_FILE_SCANF(PATH_FS_NR_OPEN, "%u", &nr_open);
 
 	SAFE_GETRLIMIT(RLIMIT_NOFILE, &rlim1);
 	rlim2.rlim_max = rlim1.rlim_cur;

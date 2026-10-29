@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This checks copy-on-write semantics, specifically the semantics of a
  * MAP_PRIVATE mapping across a fork().  Some versions of the powerpc
  * kernel had a bug in huge_ptep_set_wrprotect() which would fail to
@@ -66,7 +64,7 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:")*1024;
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -77,7 +75,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "86df86424939"},
+		{"linux-git", "86df86424939d316b1f6cfac1b6204f0c7dee317"},
 		{}
 	},
 	.needs_root = 1,

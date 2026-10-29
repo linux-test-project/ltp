@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * 1. Create a high nice thread and a low nice thread, the main
  *    thread wake them at the same time
  * 2. Both threads run on the same CPU
@@ -154,5 +152,5 @@ static struct tst_test test = {
 	.setup = setup,
 	.test_all = verify_nice,
 	.needs_root = 1,
-	.max_runtime = 3,
+	.runtime = 3,
 };

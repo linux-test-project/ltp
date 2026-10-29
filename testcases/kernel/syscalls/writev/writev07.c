@@ -4,20 +4,24 @@
  *   Copyright (c) Linux Test Project, 2016
  */
 
-/*
- * Test Description:
- *   Verify writev() behaviour with partially valid iovec list.
- *   Kernel <4.8 used to shorten write up to first bad invalid
- *   iovec. Starting with 4.8, a writev with short data (under
- *   page size) is likely to get shorten to 0 bytes and return
- *   EFAULT.
+/*\
+ * Verify writev() behaviour with partially valid iovec list.
+ * Kernel <4.8 used to shorten write up to first bad invalid
+ * iovec. Starting with 4.8, a writev with short data (under
+ * page size) is likely to get shorten to 0 bytes and return
+ * EFAULT.
  *
- *   This test doesn't make assumptions how much will write get
- *   shortened. It only tests that file content/offset after
- *   syscall corresponds to return value of writev().
+ * This test doesn't make assumptions how much will write get
+ * shortened. It only tests that file content/offset after
+ * syscall corresponds to return value of writev().
  *
- *   See: [RFC] writev() semantics with invalid iovec in the middle
- *        https://marc.info/?l=linux-kernel&m=147388891614289&w=2
+ * See: [RFC] writev() semantics with invalid iovec in the middle
+ * https://marc.info/?l=linux-kernel&m=147388891614289&w=2.
+ *
+ * This is also regression test for kernel commits:
+ *
+ * * 20c64ec83a9f ("iomap: fix a regression for partial write errors")
+ * * 3ac974796e5d ("iomap: fix short copy in iomap_write_iter()")
  */
 
 #include <errno.h>
@@ -73,7 +77,7 @@ static void test_partially_valid_iovec(int initial_file_offset)
 		tst_res(TINFO, "got EFAULT");
 		/* initial file content remains untouched */
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_READ(1, fd, tmp, BUFSIZE);
+		SAFE_READ(SAFE_READ_ALL, fd, tmp, BUFSIZE);
 		if (memcmp(tmp, fpattern, BUFSIZE))
 			tst_res(TFAIL, "file was written to");
 		else
@@ -100,7 +104,7 @@ static void test_partially_valid_iovec(int initial_file_offset)
 
 	/* file content matches written bytes */
 	SAFE_LSEEK(fd, initial_file_offset, SEEK_SET);
-	SAFE_READ(1, fd, tmp, TST_RET);
+	SAFE_READ(SAFE_READ_ALL, fd, tmp, TST_RET);
 	if (memcmp(tmp, wr_iovec[0].iov_base, TST_RET) == 0) {
 		tst_res(TPASS, "file has expected content");
 	} else {
@@ -138,4 +142,9 @@ static struct tst_test test = {
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.test_all = test_writev,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "20c64ec83a9f779a750bbbcc1d07d065702313a5"},
+		{"linux-git", "3ac974796e5d94509b85a403449132ea660127c2"},
+		{},
+	}
 };

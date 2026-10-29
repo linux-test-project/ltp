@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  *  AUTHOR: William Roske, CO-PILOT: Dave Fenner
@@ -6,12 +6,11 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that mknod(2) successfully creates a filesystem node with
  * various modes.
  */
 
+#include <stdint.h>
 #include <sys/sysmacros.h>
 #include "tst_test.h"
 
@@ -28,7 +27,6 @@ static int tcases[] = {
 	S_IFREG | 06700,
 };
 
-
 static void run(unsigned int i)
 {
 	dev_t dev = 0;
@@ -37,8 +35,8 @@ static void run(unsigned int i)
 		dev = makedev(1, 3);
 
 	TST_EXP_PASS(mknod(PATH, tcases[i], dev),
-				"mknod(PATH, %o, %ld)",
-				tcases[i], dev);
+		     "mknod(PATH, %o, %ju)",
+		     tcases[i], (uintmax_t)dev);
 	SAFE_UNLINK(PATH);
 }
 

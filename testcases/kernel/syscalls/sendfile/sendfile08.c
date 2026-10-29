@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Bug in the splice code has caused the file position on the write side
  * of the sendfile system call to be incorrectly set to the read side file
  * position. This can result in the data being written to an incorrect offset.
@@ -38,7 +36,7 @@ static void run(void)
 	char buf[BUFSIZ];
 
 	SAFE_LSEEK(out_fd, 0, SEEK_SET);
-	SAFE_READ(0, out_fd, buf, BUFSIZ);
+	SAFE_READ(SAFE_READ_ANY, out_fd, buf, BUFSIZ);
 
 	if (!strncmp(buf, TEST_MSG_ALL, strlen(TEST_MSG_ALL))) {
 		tst_res(TPASS, "sendfile() copies data correctly");
@@ -72,7 +70,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = run,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "2cb4b05e76478"},
+		{"linux-git", "2cb4b05e7647891b46b91c07c9a60304803d1688"},
 		{}
 	}
 };

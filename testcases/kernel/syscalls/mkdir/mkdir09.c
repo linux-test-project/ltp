@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create multiple processes which create subdirectories in the
  * same directory multiple times within test time.
  */

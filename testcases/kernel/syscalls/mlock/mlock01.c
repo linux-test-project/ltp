@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test mlock with various valid addresses and lengths.
  */
 

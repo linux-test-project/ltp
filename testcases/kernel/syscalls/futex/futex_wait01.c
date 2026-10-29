@@ -5,10 +5,12 @@
  * Based on futextest (futext_wait_timeout.c and futex_wait_ewouldblock.c)
  * written by Darren Hart <dvhltc@us.ibm.com>
  *            Gowrishankar <gowrishankar.m@in.ibm.com>
- *
- * 1. Block on a futex and wait for timeout.
- * 2. Test if FUTEX_WAIT op returns -EWOULDBLOCK if the futex value differs
- *    from the expected one.
+ */
+
+/*\
+ * 1. Block on a :manpage:`futex(2)` and wait for timeout.
+ * 2. Test if FUTEX_WAIT op returns -EWOULDBLOCK if the :manpage:`futex(2)`
+ *    value differs from the expected one.
  */
 
 #include "futextest.h"

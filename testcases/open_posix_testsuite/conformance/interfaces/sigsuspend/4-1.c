@@ -71,7 +71,7 @@ static int is_changed(sigset_t set, int sig)
 	return 0;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 	pid = fork();

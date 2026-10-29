@@ -62,8 +62,12 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 	int i;
 	int r;
 
-	while ((fd = open(filename, O_RDONLY, 0666)) < 0)
+	while ((fd = open(filename, O_RDONLY, 0666)) < 0) {
+		if (!*run_child)
+			return;
+
 		usleep(100);
+	}
 
 	tst_res(TINFO, "child %i reading file", getpid());
 
@@ -74,7 +78,7 @@ static inline void io_read(const char *filename, int filesize, volatile int *run
 		SAFE_LSEEK(fd, SEEK_SET, 0);
 
 		for (i = 0; i < filesize + 1; i += sizeof(buff)) {
-			r = SAFE_READ(0, fd, buff, sizeof(buff));
+			r = SAFE_READ(SAFE_READ_ANY, fd, buff, sizeof(buff));
 			if (r > 0) {
 				bufoff = check_zero(buff, r);
 				if (bufoff) {
@@ -102,8 +106,12 @@ static inline void io_read_eof(const char *filename, volatile int *run_child)
 	int fd;
 	int r;
 
-	while ((fd = open(filename, O_RDONLY, 0666)) < 0)
+	while ((fd = open(filename, O_RDONLY, 0666)) < 0) {
+		if (!*run_child)
+			return;
+
 		usleep(100);
+	}
 
 	tst_res(TINFO, "child %i reading file", getpid());
 
@@ -113,7 +121,7 @@ static inline void io_read_eof(const char *filename, volatile int *run_child)
 
 		offset = SAFE_LSEEK(fd, SEEK_END, 0);
 
-		r = SAFE_READ(0, fd, buff, sizeof(buff));
+		r = SAFE_READ(SAFE_READ_ANY, fd, buff, sizeof(buff));
 		if (r > 0) {
 			bufoff = check_zero(buff, r);
 			if (bufoff) {

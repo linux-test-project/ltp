@@ -4,9 +4,9 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
+/*\
  * Testcase to check whether the sticky bit cleared.
- * Creat a new file, fstat.st_mode should have the 01000 bit off
+ * :manpage:`creat(2)` a new file, fstat.st_mode should have the 01000 bit off.
  */
 
 #include <errno.h>

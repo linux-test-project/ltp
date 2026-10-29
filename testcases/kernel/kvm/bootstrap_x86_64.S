@@ -12,6 +12,9 @@
 
 .set MSR_VM_HSAVE_PA, 0xc0010117
 
+.set VMX_VMCS_HOST_RSP, 0x6c14
+.set VMX_VMCS_HOST_RIP, 0x6c16
+
 /*
  * This section will be allocated at address 0x1000 and
  * jumped to from the reset stub provided by kvm_run.
@@ -319,6 +322,8 @@ kvm_read_sregs:
 	movw %ax, 8(%rdi)
 	mov %ss, %ax
 	movw %ax, 10(%rdi)
+	str %ax
+	movw %ax, 12(%rdi)
 	retq
 
 handle_interrupt:
@@ -482,15 +487,71 @@ kvm_svm_guest_entry:
 1:	hlt
 	jmp 1b
 
-.global kvm_svm_vmrun
-kvm_svm_vmrun:
+/* vcpu structure address must be in %rdi */
+.macro load_vcpu_regs
+	movq 0x08(%rdi), %rax
+	movq 0x10(%rdi), %rbx
+	movq 0x18(%rdi), %rcx
+	movq 0x20(%rdi), %rdx
+	/* load %rdi last */
+	movq 0x30(%rdi), %rsi
+	movq 0x38(%rdi), %rbp
+	/* skip %rsp */
+	movq 0x48(%rdi), %r8
+	movq 0x50(%rdi), %r9
+	movq 0x58(%rdi), %r10
+	movq 0x60(%rdi), %r11
+	movq 0x68(%rdi), %r12
+	movq 0x70(%rdi), %r13
+	movq 0x78(%rdi), %r14
+	movq 0x80(%rdi), %r15
+	movq 0x28(%rdi), %rdi
+.endm
+
+/* vcpu structure address must be on top of the stack */
+.macro save_vcpu_regs
+	pushq %rdi
+	movq 8(%rsp), %rdi
+	movq %rax, 0x08(%rdi)
+	movq %rbx, 0x10(%rdi)
+	movq %rcx, 0x18(%rdi)
+	movq %rdx, 0x20(%rdi)
+	popq %rax
+	movq %rax, 0x28(%rdi)
+	movq %rsi, 0x30(%rdi)
+	movq %rbp, 0x38(%rdi)
+	/* skip %rsp */
+	movq %r8,  0x48(%rdi)
+	movq %r9,  0x50(%rdi)
+	movq %r10, 0x58(%rdi)
+	movq %r11, 0x60(%rdi)
+	movq %r12, 0x68(%rdi)
+	movq %r13, 0x70(%rdi)
+	movq %r14, 0x78(%rdi)
+	movq %r15, 0x80(%rdi)
+.endm
+
+.macro push_local
 	pushq %rbx
 	pushq %rbp
 	pushq %r12
 	pushq %r13
 	pushq %r14
 	pushq %r15
+.endm
 
+.macro pop_local
+	popq %r15
+	popq %r14
+	popq %r13
+	popq %r12
+	popq %rbp
+	popq %rbx
+.endm
+
+.global kvm_svm_vmrun
+kvm_svm_vmrun:
+	push_local
 	clgi
 
 	/* Save full host state */
@@ -501,48 +562,19 @@ kvm_svm_vmrun:
 	vmsave
 	pushq %rax
 
-	/* Load guest registers */
 	pushq %rdi
-	movq (%rdi), %rax
-	/* %rax is loaded by vmrun from VMCB */
-	movq 0x10(%rdi), %rbx
-	movq 0x18(%rdi), %rcx
-	movq 0x20(%rdi), %rdx
-	movq 0x30(%rdi), %rsi
-	movq 0x38(%rdi), %rbp
-	/* %rsp is loaded by vmrun from VMCB */
-	movq 0x48(%rdi), %r8
-	movq 0x50(%rdi), %r9
-	movq 0x58(%rdi), %r10
-	movq 0x60(%rdi), %r11
-	movq 0x68(%rdi), %r12
-	movq 0x70(%rdi), %r13
-	movq 0x78(%rdi), %r14
-	movq 0x80(%rdi), %r15
-	movq 0x28(%rdi), %rdi
+	load_vcpu_regs
+	/* %rax = vcpu->vmcb; */
+	movq (%rsp), %rax
+	movq (%rax), %rax
 
 	vmload
 	vmrun
 	vmsave
 
-	/* Save guest registers */
-	movq %rdi, %rax
+	save_vcpu_regs
 	popq %rdi
-	movq %rbx, 0x10(%rdi)
-	movq %rcx, 0x18(%rdi)
-	movq %rdx, 0x20(%rdi)
-	/* %rax contains guest %rdi */
-	movq %rax, 0x28(%rdi)
-	movq %rsi, 0x30(%rdi)
-	movq %rbp, 0x38(%rdi)
-	movq %r8,  0x48(%rdi)
-	movq %r9,  0x50(%rdi)
-	movq %r10, 0x58(%rdi)
-	movq %r11, 0x60(%rdi)
-	movq %r12, 0x68(%rdi)
-	movq %r13, 0x70(%rdi)
-	movq %r14, 0x78(%rdi)
-	movq %r15, 0x80(%rdi)
+
 	/* copy guest %rax and %rsp from VMCB*/
 	movq (%rdi), %rsi
 	movq 0x5f8(%rsi), %rax
@@ -555,14 +587,59 @@ kvm_svm_vmrun:
 	vmload
 
 	stgi
-
-	popq %r15
-	popq %r14
-	popq %r13
-	popq %r12
-	popq %rbp
-	popq %rbx
+	pop_local
 	retq
+
+.global kvm_vmx_vmlaunch
+kvm_vmx_vmlaunch:
+	push_local
+	pushq %rdi
+
+	mov $VMX_VMCS_HOST_RSP, %rax
+	vmwrite %rsp, %rax
+	jna vmx_vmwrite_error
+	mov $VMX_VMCS_HOST_RIP, %rax
+	lea vmx_vm_exit, %rbx
+	vmwrite %rbx, %rax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmlaunch
+	jmp vmx_vm_exit
+
+.global kvm_vmx_vmresume
+kvm_vmx_vmresume:
+	push_local
+	pushq %rdi
+
+	movq $VMX_VMCS_HOST_RSP, %rax
+	vmwrite %rsp, %rax
+	jna vmx_vmwrite_error
+	movq $VMX_VMCS_HOST_RIP, %rax
+	lea vmx_vm_exit, %rbx
+	vmwrite %rbx, %rax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmresume
+
+vmx_vm_exit:
+	jna vmx_vmentry_error
+	save_vcpu_regs
+	xorq %rax, %rax
+
+vmx_vm_ret:
+	popq %rdi
+	pop_local
+	retq
+
+vmx_vmwrite_error:
+	movq $2, %rax
+	jmp vmx_vm_ret
+
+vmx_vmentry_error:
+	movq $1, %rax
+	jmp vmx_vm_ret
 
 .section .bss.pgtables, "aw", @nobits
 .global kvm_pagetable

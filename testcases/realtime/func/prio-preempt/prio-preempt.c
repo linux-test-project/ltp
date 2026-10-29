@@ -33,7 +33,7 @@
  *
  *       where Mi is the ith pthread_mutex_t and CVi is the ith conditional
  *       variable.So, at the end of this loop, 26 threads are all waiting on
- *       seperate condvars and mutexes.
+ *       separate condvars and mutexes.
  *     - Wakes up thread at priority 10 (T1) by executing:
  *	   pthread_mutex_lock(M1);
  *	   pthread_cond_signal(CV1);
@@ -59,6 +59,7 @@
  *
  *****************************************************************************/
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -67,7 +68,7 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/syscall.h>
-#include <librttest.h>
+#include "librttest.h"
 
 #define NUM_WORKERS	27
 #define CHECK_LIMIT	1
@@ -295,10 +296,10 @@ int main(int argc, char *argv[])
 	pass_criteria = CHECK_LIMIT;
 	rt_init("hin:", parse_args, argc, argv);
 
-	numcpus = sysconf(_SC_NPROCESSORS_ONLN);
+	numcpus = get_numcpus();
 
-	/* Max no. of busy threads should always be less than/equal the no. of cpus
-	   Otherwise, the box will hang */
+	/* Max no. of busy threads should always be less than/equal the no. of
+	   housekeeping cpus. Otherwise, the box will hang */
 
 	if (rt_threads == -1 || rt_threads > numcpus) {
 		rt_threads = numcpus;

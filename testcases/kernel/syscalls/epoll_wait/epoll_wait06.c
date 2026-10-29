@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that edge triggering is correctly handled by epoll, for both EPOLLIN
  * and EPOLLOUT.
  *
@@ -86,13 +84,13 @@ static void run(void)
 	tst_res(TINFO, "Read half bytes from channel: %zu bytes", read_size);
 
 	memset(buff, 0, write_size);
-	SAFE_READ(1, fds[0], buff, read_size);
+	SAFE_READ(SAFE_READ_ALL, fds[0], buff, read_size);
 
 	TST_EXP_EQ_LI(SAFE_EPOLL_WAIT(epfd, &evt_receive, 1, 0), 0);
 
 	tst_res(TINFO, "Read remaining bytes from channel: %zu bytes", read_size);
 
-	SAFE_READ(1, fds[0], buff + read_size, read_size);
+	SAFE_READ(SAFE_READ_ALL, fds[0], buff + read_size, read_size);
 	TST_EXP_FAIL(read(fds[0], buff, read_size), EAGAIN, "read() failed");
 
 	TST_EXP_EQ_LI(SAFE_EPOLL_WAIT(epfd, &evt_receive, 1, 0), 1);

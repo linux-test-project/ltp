@@ -57,6 +57,13 @@ int main(int argn, char *argc[])
 	}
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
+	if (clnt == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	if (run_mode == 1) {
 		printf("Client after creation : %p\n", clnt);
 	}

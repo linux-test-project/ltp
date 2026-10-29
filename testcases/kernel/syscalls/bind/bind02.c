@@ -6,9 +6,9 @@
  *   Copyright (c) 2019 Martin Doucha <mdoucha@suse.cz>
  */
 
-/*
- * Test Description:
- *  Make sure bind() of privileged port gives EACCESS error for non-root users.
+/*\
+ * Make sure :manpage:`bind(2)` of privileged port gives EACCESS error for
+ * non-root users.
  */
 
 #include <string.h>
@@ -37,7 +37,7 @@ static void run(void)
 	servaddr.sin_port = htons(TCP_PRIVILEGED_PORT);
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	TST_EXP_FAIL(bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)),
-	             EACCES, "bind()");
+				 EACCES, "bind()");
 	SAFE_CLOSE(sockfd);
 }
 

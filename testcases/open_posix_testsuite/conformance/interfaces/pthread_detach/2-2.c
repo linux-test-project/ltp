@@ -126,7 +126,7 @@ static void *threaded(void *arg)
 	return arg;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	pthread_t child;

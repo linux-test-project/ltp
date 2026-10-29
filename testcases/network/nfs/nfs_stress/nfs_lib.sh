@@ -4,13 +4,25 @@
 # Copyright (c) 2015-2018 Oracle and/or its affiliates. All Rights Reserved.
 # Copyright (c) International Business Machines  Corp., 2001
 
-VERSION=${VERSION:=3}
+VERSION=${VERSION:=4.2}
 NFILES=${NFILES:=1000}
-SOCKET_TYPE="${SOCKET_TYPE:-udp}"
+SOCKET_TYPE="${SOCKET_TYPE:-tcp}"
 NFS_TYPE=${NFS_TYPE:=nfs}
 
 nfs_usage()
 {
+	echo "Test Specific Environment Variables"
+	echo "-----------------------------------"
+
+	cat >&2 << EOF
+LTP_NFS_NETNS_USE_LO=1    NFS traffic will go through loopback interface instead
+                          of ltp_ns_veth* netns interfaces (useful for debugging
+                          whether test failures are related to veth/netns)
+EOF
+
+	echo
+	echo "Options"
+	echo "-------"
 	echo "-t x    Socket type, tcp or udp, default is udp"
 	echo "-v x    NFS version, default is '3'"
 }
@@ -33,7 +45,7 @@ TST_SKIP_FILESYSTEMS="exfat,ext2,ext3,fuse,ntfs,vfat,tmpfs"
 TST_MOUNT_DEVICE=1
 TST_FORMAT_DEVICE=1
 TST_NEEDS_ROOT=1
-TST_NEEDS_CMDS="$TST_NEEDS_CMDS mount exportfs mount.nfs"
+TST_NEEDS_CMDS="$TST_NEEDS_CMDS mount mount.nfs"
 TST_SETUP="${TST_SETUP:-nfs_setup}"
 TST_CLEANUP="${TST_CLEANUP:-nfs_cleanup}"
 TST_NEEDS_DRIVERS="nfsd"
@@ -43,17 +55,22 @@ TST_NEEDS_DRIVERS="nfsd"
 # debugging whether test failures are related to veth/netns).
 LTP_NFS_NETNS_USE_LO=${LTP_NFS_NETNS_USE_LO:-}
 
-get_socket_type()
+get_socket_type_bare()
 {
 	local t
 	local k=0
 	for t in $SOCKET_TYPE; do
 		if [ "$k" -eq "$1" ]; then
-			echo "${t}${TST_IPV6}"
+			echo "$t"
 			return
 		fi
 		k=$(( k + 1 ))
 	done
+}
+
+get_socket_type()
+{
+	echo "$(get_socket_type_bare "$1")${TST_IPV6}"
 }
 
 # directory mounted by NFS client
@@ -95,6 +112,49 @@ nfs_server_udp_enabled()
 	config=$(tst_rhost_run -c 'for f in $(grep ^include.*= '/etc/nfs.conf' | cut -d = -f2); do [ -f $f ] && printf "$f "; done')
 
 	tst_rhost_run -c "grep -q \"^[# ]*udp *= *y\" /etc/nfs.conf $config"
+}
+
+# nfs_server_vers_enabled VERS
+# Only returns false (1) when the server explicitly lists "-VERS" in
+# /proc/fs/nfsd/versions. If that file is unavailable or doesn't mention
+# VERS at all, defaults to true so the mount is still attempted.
+nfs_server_vers_enabled()
+{
+	local vers="$1"
+	local versions=" $(tst_rhost_run -c 'cat /proc/fs/nfsd/versions 2>/dev/null') "
+
+	case "$versions" in
+	*" -$vers "*) return 1;;
+	esac
+
+	return 0
+}
+
+# Drops NFS versions the server explicitly disabled from $VERSION, keeping
+# $SOCKET_TYPE entries aligned by position with what remains.
+nfs_filter_versions()
+{
+	local v type new_version new_socket_type
+	local n=0
+
+	for v in $VERSION; do
+		type=$(get_socket_type_bare $n)
+
+		if nfs_server_vers_enabled "$v"; then
+			[ "$new_version" ] && new_version="$new_version $v" || new_version="$v"
+			[ "$new_socket_type" ] && new_socket_type="$new_socket_type $type" || new_socket_type="$type"
+		else
+			tst_res TCONF "NFSv$v disabled on server, skipping"
+		fi
+
+		n=$(( n + 1 ))
+	done
+
+	[ "$new_version" ] || \
+		tst_brk TCONF "none of the requested NFS versions ($VERSION) are enabled on server"
+
+	VERSION="$new_version"
+	SOCKET_TYPE="$new_socket_type"
 }
 
 nfs_setup_server()
@@ -168,18 +228,25 @@ nfs_setup()
 	local local_dir
 	local remote_dir
 	local mount_dir
+	local nfs_opts
 
 	if [ "$(stat -f . | grep "Type: nfs")" ]; then
 		tst_brk TCONF "Cannot run nfs-stress test on mounted NFS"
 	fi
 
-	if tst_cmd_available pgrep; then
+	tst_rhost_run -c "command -v exportfs >/dev/null" ||
+		tst_brk TCONF "'exportfs' not found on rhost"
+
+	if tst_rhost_run -c "command -v pgrep >/dev/null"; then
+		tst_res TINFO "checking rpc.mountd/rpc.statd on rhost"
 		for i in rpc.mountd rpc.statd; do
-			pgrep $i > /dev/null || tst_brk TCONF "$i not running"
+			tst_rhost_run -c "pgrep $i > /dev/null" || tst_brk TCONF "$i not running on rhost"
 		done
 	fi
 
 	tst_res TINFO "$(mount.nfs -V)"
+
+	nfs_filter_versions
 
 	for i in $VERSION; do
 		type=$(get_socket_type $n)
@@ -191,7 +258,15 @@ nfs_setup()
 
 		remote_dir="$(get_remote_dir $i $type)"
 		nfs_setup_server "$remote_dir" "$(($$ + n))"
-		nfs_mount "$(get_local_dir $i $n)" "$remote_dir" "-o proto=$type,vers=$i"
+		local_dir="$(get_local_dir $i $n)"
+		nfs_opts="-o proto=$type,vers=$i"
+
+		if [ -n "$NFS_MOUNT_OPTS" ]; then
+			nfs_opts="$nfs_opts,$NFS_MOUNT_OPTS"
+		fi
+
+		tst_res TINFO "Mounting $local_dir"
+		nfs_mount "$local_dir" "$remote_dir" "$nfs_opts"
 
 		n=$(( n + 1 ))
 	done
@@ -210,7 +285,10 @@ nfs_cleanup()
 	local n=0
 	for i in $VERSION; do
 		local_dir="$(get_local_dir $i $n)"
-		grep -q "$local_dir" /proc/mounts && umount $local_dir
+		if grep -q "$local_dir" /proc/mounts; then
+			tst_res TINFO "Unmounting $local_dir"
+			umount $local_dir || tst_res TWARN "Unmount failed"
+		fi
 		n=$(( n + 1 ))
 	done
 	sleep 2

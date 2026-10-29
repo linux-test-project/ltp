@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is run for option 1 for sysfs(2).
  * Translate the filesystem identifier string fsname into a filesystem type index.
  */

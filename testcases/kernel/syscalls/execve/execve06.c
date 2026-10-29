@@ -4,10 +4,8 @@
  */
 
 /*\
- * [Description]
- *
  * Test that kernel adds dummy argv[0] if empty argument list was passed to
- * execve(). This fixes at least one CVE where userspace programs start to
+ * :manpage:`execve(2)`. This fixes at least one CVE where userspace programs start to
  * process argument list blindly from argv[1] such as polkit pkexec
  * CVE-2021-4034.
  *
@@ -44,7 +42,7 @@ static struct tst_test test = {
 	.child_needs_reinit = 1,
 	.test_all = verify_execve,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "dcd46d897adb"},
+		{"linux-git", "dcd46d897adb70d63e025f175a00a89797d31a43"},
 		{"CVE", "2021-4034"},
 		{}
 	}

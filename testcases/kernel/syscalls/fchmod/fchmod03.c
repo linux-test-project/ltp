@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fchmod(2) will succeed to change the mode of a file
  * and set the sticky bit on it if invoked by non-root (uid != 0)
  * process with the following constraints:

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
@@ -6,8 +6,7 @@
  */
 
 /*\
- * [Description]
- * Check that fanotify work for a file.
+ * Check that :manpage:`fanotify(7)` works for a file.
  */
 
 #define _GNU_SOURCE
@@ -76,6 +75,9 @@ static char fname[BUF_SIZE];
 static char buf[BUF_SIZE];
 static int fd_notify;
 static int fan_report_fid_unsupported;
+static int tmpfs_report_fid_unsupported;
+static int mount_mark_fid_unsupported;
+static int inode_mark_fid_xdev;
 static int filesystem_mark_unsupported;
 
 static unsigned long long event_set[EVENT_MAX];
@@ -88,16 +90,22 @@ static void test_fanotify(unsigned int n)
 	struct fanotify_mark_type *mark = &tc->mark;
 	int fd, ret, len, i = 0, test_num = 0;
 	int tst_count = 0;
+	int report_fid = (tc->init_flags & FAN_REPORT_FID);
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
-	if (fan_report_fid_unsupported && (tc->init_flags & FAN_REPORT_FID)) {
+	if (fan_report_fid_unsupported && report_fid) {
 		FANOTIFY_INIT_FLAGS_ERR_MSG(FAN_REPORT_FID, fan_report_fid_unsupported);
 		return;
 	}
 
 	if (filesystem_mark_unsupported && mark->flag == FAN_MARK_FILESYSTEM) {
-		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+		return;
+	}
+
+	if (mount_mark_fid_unsupported && report_fid && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, mount_mark_fid_unsupported);
 		return;
 	}
 
@@ -113,7 +121,7 @@ static void test_fanotify(unsigned int n)
 	event_set[tst_count] = FAN_OPEN;
 	tst_count++;
 
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[tst_count] = FAN_ACCESS;
 	tst_count++;
 
@@ -125,7 +133,7 @@ static void test_fanotify(unsigned int n)
 	 * Get list of events so far. We get events here to avoid
 	 * merging of following events with the previous ones.
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 	len = ret;
 
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
@@ -143,7 +151,7 @@ static void test_fanotify(unsigned int n)
 	/*
 	 * get another list of events
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -161,12 +169,12 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* This event should be ignored */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 
 	/*
 	 * get another list of events to verify the last one got ignored
 	 */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -180,7 +188,7 @@ static void test_fanotify(unsigned int n)
 	 * This event shouldn't be ignored because previous modification
 	 * should have removed the ignore mask
 	 */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 	event_set[tst_count] = FAN_ACCESS;
 	tst_count++;
 
@@ -189,7 +197,7 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* Read events to verify previous access was properly generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -215,7 +223,7 @@ static void test_fanotify(unsigned int n)
 	fd = SAFE_OPEN(fname, O_RDWR);
 
 	/* Read events to verify open & close were ignored */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -229,7 +237,7 @@ static void test_fanotify(unsigned int n)
 	tst_count++;
 
 	/* Read events to verify close was generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len,
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
 			EVENT_BUF_LEN - len);
 	len += ret;
 
@@ -321,6 +329,19 @@ pass:
 
 	}
 
+
+	/*
+	 * Try to setup a bogus mark on test tmp dir, to check if marks on
+	 * different filesystems are supported.
+	 * When tested fs has zero fsid (e.g. fuse) and events are reported
+	 * with fsid+fid, watching different filesystems is not supported.
+	 */
+	if (!tmpfs_report_fid_unsupported) {
+		ret = report_fid ? inode_mark_fid_xdev : 0;
+		TST_EXP_FD_OR_FAIL(fanotify_mark(fd_notify, FAN_MARK_ADD, FAN_CLOSE_WRITE,
+						 AT_FDCWD, "."), ret);
+	}
+
 	/* Remove mark to clear FAN_MARK_IGNORED_SURV_MODIFY */
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_REMOVE | mark->flag,
 			  FAN_ACCESS | FAN_MODIFY | FAN_CLOSE | FAN_OPEN,
@@ -341,7 +362,27 @@ static void setup(void)
 	SAFE_FILE_PRINTF(fname, "1");
 
 	fan_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, fname);
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM, fname);
+	mount_mark_fid_unsupported = fanotify_flags_supported_on_fs(FAN_REPORT_FID,
+								    FAN_MARK_MOUNT,
+								    FAN_OPEN, fname);
+	/*
+	 * When mount mark is not supported due to zero fsid (e.g. fuse) or if TMPDIR has
+	 * non-uniform fsid (e.g. btrfs subvol), multi fs inode marks are not supported.
+	 */
+	if (mount_mark_fid_unsupported && errno == ENODEV) {
+		tst_res(TINFO, "filesystem %s does not support reporting events with fid from multi fs",
+				tst_device->fs_type);
+		inode_mark_fid_xdev = EXDEV;
+	}
+
+	tmpfs_report_fid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_FID, ".");
+	if (!tmpfs_report_fid_unsupported &&
+	    fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_MOUNT, FAN_OPEN, ".") &&
+	    (errno == ENODEV || errno == EXDEV)) {
+		inode_mark_fid_xdev = EXDEV;
+		tst_res(TINFO | TERRNO, "TMPDIR does not support reporting events with fid from multi fs");
+	}
 }
 
 static void cleanup(void)
@@ -351,6 +392,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 10,
 	.test = test_fanotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
@@ -358,6 +400,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
+	.all_filesystems = 1,
 };
 
 #else

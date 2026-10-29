@@ -285,7 +285,7 @@ NUM_CPUS=`tst_ncpus`
 	echo TASKS FIRED
 	echo helloworld > myfifo;
 
-	#wait for the tasks to finish for cleanup and status report to pan
+	#wait for the tasks to finish for cleanup and status report
 	for i in $(seq 1 $TOTAL_TASKS)
 	do
 		wait ${PID[$i]};
@@ -304,4 +304,4 @@ NUM_CPUS=`tst_ncpus`
 	echo "Please review the results in $LTPROOT/output/cpuctl_results_$FILE.txt"
 	cleanup;
 	cd $PWD
-	exit 0;		#to let PAN reprt success of test
+	exit 0;

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if a process created via fork(2) or clone(2) without the
  * CLONE_NEWUSER flag is a member of the same user namespace as its parent.
  *
@@ -45,7 +43,10 @@ static unsigned int getusernsidbypid(int pid)
 static void run(void)
 {
 	const struct tst_clone_args args1 = { .exit_signal = SIGCHLD };
-	const struct tst_clone_args args2 = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args2 = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	int cpid1, cpid2, cpid3;
 	unsigned int parentuserns, cpid1userns, cpid2userns, newparentuserns;
 

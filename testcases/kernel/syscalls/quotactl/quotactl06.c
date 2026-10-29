@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the quotactl syscall with visible quota files
  * (cover two formats, vfsv0 and vfsv1):
  *
@@ -213,24 +211,29 @@ static void cleanup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_drivers = (const char *const []) {
-		"quota_v2",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_QFMT_V2",
 		NULL
 	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_quotactl,
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mnt_data = "usrquota",
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
-	.mnt_data = "usrquota",
-	.needs_cmds = (const char *const []) {
-		"quotacheck",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "quotacheck"},
+		{}
 	},
 	.needs_root = 1,
 	.test_variants = QUOTACTL_FMT_VARIANTS,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "7e08da50cf70"},
+		{"linux-git", "7e08da50cf706151f324349f9235ebd311226997"},
 		{}
 	}
 };

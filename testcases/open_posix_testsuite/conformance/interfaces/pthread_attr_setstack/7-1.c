@@ -32,7 +32,7 @@
 static void *stack_addr;
 static size_t stack_size;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_attr_t attr;
 	int rc;

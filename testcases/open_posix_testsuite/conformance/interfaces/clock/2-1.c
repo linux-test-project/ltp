@@ -21,7 +21,7 @@
 
 #define EXPECTEDVALUE INTMAX_C(1000000)
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	intmax_t clocks_per_sec = (intmax_t) CLOCKS_PER_SEC;
 

@@ -7,6 +7,7 @@
  */
 
 #include <aio.h>
+#include "posixtest.h"
 
 static int (*dummy0) (int, struct aiocb*) = aio_cancel;
 static int (*dummy1) (const struct aiocb*) = aio_error;
@@ -16,10 +17,10 @@ static ssize_t (*dummy4) (struct aiocb*) = aio_return;
 static int (*dummy5) (const struct aiocb* const[], int,
 	       const struct timespec *) = aio_suspend;
 static int (*dummy6) (struct aiocb *) = aio_write;
-static int (*dummy7) (int, struct aiocb *restrict const [restrict],
+static int (*dummy7) (int, struct aiocb *const [restrict],
 	       int, struct sigevent *restrict) = lio_listio;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	return 0;
 }

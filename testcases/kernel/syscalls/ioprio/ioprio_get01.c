@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic ioprio_get() test. Gets the current process I/O priority and
  * checks that the values are sane.
  */

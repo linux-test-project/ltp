@@ -70,7 +70,7 @@ static void setup(void)
 	SAFE_WRITE(SAFE_WRITE_ALL, fds[1], wrbuf, orig_value);
 	free(wrbuf);
 
-	SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d", &sys_value);
+	SAFE_FILE_SCANF(PATH_FS_PIPE_MAX_SIZE, "%d", &sys_value);
 	sys_value++;
 
 	half_value = orig_value / 2;

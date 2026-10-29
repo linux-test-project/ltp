@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It is a basic test for STATX_ATTR_MOUNT_ROOT flag.
  *
  * This flag indicates whether the path or fd refers to the root of a mount

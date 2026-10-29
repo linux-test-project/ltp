@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 	int ret;

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Before kernel version 5.10-rc7, there was a bug that resulted in a "Bad Page
  * State" error when freeing gigantic hugepages. This happened because the
  * struct page entry compound_nr, which overlapped with page->mapping in the
@@ -23,7 +21,6 @@
 
 #include "hugetlb.h"
 
-#define PATH_HUGEPAGE "/sys/kernel/mm/hugepages"
 #define GIGANTIC_MIN_ORDER 10
 
 static int org_g_hpages;
@@ -47,14 +44,14 @@ static void setup(void)
 	struct dirent *ent;
 	unsigned long hpage_size;
 
-	if (access(PATH_HUGEPAGE, F_OK))
+	if (access(PATH_MM_HUGEPAGES, F_OK))
 		tst_brk(TCONF, "hugetlbfs is not supported");
 
-	dir = SAFE_OPENDIR(PATH_HUGEPAGE);
+	dir = SAFE_OPENDIR(PATH_MM_HUGEPAGES);
 	while ((ent = SAFE_READDIR(dir))) {
 		if ((sscanf(ent->d_name, "hugepages-%lukB", &hpage_size) == 1) &&
 			is_hugetlb_gigantic(hpage_size * 1024)) {
-			sprintf(g_hpage_path, "%s/%s/%s", PATH_HUGEPAGE,
+			sprintf(g_hpage_path, "%s/%s/%s", PATH_MM_HUGEPAGES,
 					ent->d_name, "nr_hugepages");
 			break;
 		}
@@ -64,8 +61,8 @@ static void setup(void)
 
 	SAFE_CLOSEDIR(dir);
 
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
-	SAFE_FILE_PRINTF("/proc/sys/vm/compact_memory", "1");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
+	SAFE_FILE_PRINTF(PATH_VM_COMPACT_MEMORY, "1");
 
 	if (tst_available_mem() < (long long)hpage_size) {
 		g_hpage_path[0] = '\0';
@@ -83,8 +80,8 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-	    {"linux-git", "ba9c1201beaa"},
-	    {"linux-git", "a01f43901cfb"},
+	    {"linux-git", "ba9c1201beaa86a773e83be5654602a0667e4a4d"},
+	    {"linux-git", "a01f43901cfb93b7b63f2739774b80469b21128d"},
 	    {}
 	},
 	.needs_root = 1,

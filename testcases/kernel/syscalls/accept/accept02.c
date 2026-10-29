@@ -4,8 +4,6 @@
  * Author: Christian Amann <camann@suse.com>
  */
 /*\
- * [Description]
- *
  * Test for CVE-2017-8890
  *
  * In Kernels up to 4.10.15 missing commit 657831ff the multicast
@@ -24,6 +22,7 @@
 #include <errno.h>
 #include <sys/socket.h>
 #include "tst_test.h"
+#include "tst_netdevice.h"
 #include "tst_safe_net.h"
 #include "tst_safe_pthread.h"
 
@@ -114,7 +113,7 @@ static void setup(void)
 	client_addr = tst_alloc(sizeof(*client_addr));
 	mc_group = tst_alloc(sizeof(*mc_group));
 
-	mc_group->gr_interface = 0;
+	mc_group->gr_interface = NETDEV_INDEX_BY_NAME("lo");
 	mc_group_addr = (struct sockaddr_in *) &mc_group->gr_group;
 	mc_group_addr->sin_family = AF_INET;
 	inet_aton(MULTICASTIP, &mc_group_addr->sin_addr);
@@ -148,7 +147,7 @@ static struct tst_test test = {
 	.needs_checkpoints = 1,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-8890"},
-		{"linux-git", "657831ff"},
+		{"linux-git", "657831ffc38e30092a2d5f03d385d710eb88b09a"},
 		{},
 	}
 };

@@ -23,7 +23,7 @@
 #include <dirent.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 int tst_dir_is_empty_(void (cleanup_fn)(void), const char *name, int verbose)
 {

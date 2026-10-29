@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag, block SIGUSR1 signal before sending
  * it from parent and check if it's received once SIGUSR1 signal is unblocked.
  */
@@ -69,7 +67,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 	int pid;
 
 	pid = SAFE_CLONE(&args);

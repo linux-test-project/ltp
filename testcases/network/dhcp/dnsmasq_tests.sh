@@ -33,12 +33,12 @@ print_dhcp_version()
 	dnsmasq --version | head -2
 }
 
+dhcp_name="dnsmasq"
 . dhcp_lib.sh
 
 lease_dir="/var/lib/misc"
 tst_selinux_enforced && lease_dir="/var/lib/dnsmasq"
 
-dhcp_name="dnsmasq"
 log="/var/log/dnsmasq.tst.log"
 
 lease_file="$lease_dir/dnsmasq.tst.leases"

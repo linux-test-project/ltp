@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2012 Linux Test Project, Inc.
  */
@@ -35,10 +35,10 @@
 #include "lapi/syscalls.h"
 
 static char testfile[PATH_MAX] = "testfile";
-#define DROP_CACHES_FNAME "/proc/sys/vm/drop_caches"
-#define MEMINFO_FNAME "/proc/meminfo"
 #define PROC_IO_FNAME "/proc/self/io"
 #define DEFAULT_FILESIZE (64 * 1024 * 1024)
+#define SHORT_SLEEP_US 5000
+#define MIN_RETRY_LIMIT 20
 
 static size_t testfile_size = DEFAULT_FILESIZE;
 static char *opt_fsizestr;
@@ -47,7 +47,6 @@ static unsigned long cached_max;
 static int ovl_mounted;
 static int readahead_length  = 4096;
 static char sys_bdi_ra_path[PATH_MAX];
-static int orig_bdi_limit;
 
 static const char mntpoint[] = OVL_BASE_MNTPOINT;
 
@@ -96,7 +95,7 @@ static int has_file(const char *fname, int required)
 
 static void drop_caches(void)
 {
-	SAFE_FILE_PRINTF(DROP_CACHES_FNAME, "1");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "1");
 }
 
 static unsigned long get_bytes_read(void)
@@ -108,13 +107,45 @@ static unsigned long get_bytes_read(void)
 	return ret;
 }
 
-static unsigned long get_cached_size(void)
+static unsigned long get_file_cached_bytes(const char *path, size_t length)
 {
-	unsigned long ret;
+	size_t pagecnt, resident = 0;
+	size_t map_len;
+	unsigned char *vec;
+	void *addr;
+	int fd;
+	size_t i;
 
-	SAFE_FILE_LINES_SCANF(MEMINFO_FNAME, "Cached: %lu", &ret);
+	if (!length)
+		return 0;
 
-	return ret;
+	fd = SAFE_OPEN(path, O_RDONLY);
+
+	pagecnt = LTP_ALIGN(length, pagesize) / pagesize;
+	map_len = pagecnt * pagesize;
+
+	addr = SAFE_MMAP(NULL, map_len, PROT_NONE, MAP_SHARED, fd, 0);
+	vec = SAFE_MALLOC(pagecnt);
+
+	if (mincore(addr, map_len, vec) == -1)
+		tst_brk(TBROK | TERRNO, "mincore");
+
+	for (i = 0; i < pagecnt; i++) {
+		size_t chunk = pagesize;
+		size_t tail = length % pagesize;
+
+		if (i == pagecnt - 1 && tail)
+			chunk = tail;
+
+		if (vec[i] & 1)
+			resident += chunk;
+	}
+
+	free(vec);
+	SAFE_MUNMAP(addr, map_len);
+	SAFE_CLOSE(fd);
+
+	return resident;
 }
 
 static void create_testfile(int use_overlay)
@@ -148,7 +179,7 @@ static void create_testfile(int use_overlay)
  * @fsize: how many bytes to read/mmap
  * @read_bytes: returns difference of bytes read, parsed from /proc/<pid>/io
  * @usec: returns how many microsecond it took to go over fsize bytes
- * @cached: returns cached kB from /proc/meminfo
+ * @cached: returns cached bytes for @fname via mincore()
  */
 static int read_testfile(struct tcase *tc, int do_readahead,
 			 const char *fname, size_t fsize,
@@ -160,11 +191,20 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 	long read_bytes_start;
 	unsigned char *p, tmp;
 	off_t offset = 0;
+	size_t cached_prev;
+	ssize_t cache_diff;
 
 	fd = SAFE_OPEN(fname, O_RDONLY);
 
 	if (do_readahead) {
 		do {
+			cached_prev = get_file_cached_bytes(fname, fsize);
+			tst_res(TDEBUG, "Per-file cached: %zu kB",
+				cached_prev / 1024);
+
+			if (cached_prev >= fsize)
+				break;
+
 			TEST(tc->readahead(fd, offset, fsize - offset));
 			if (TST_RET != 0) {
 				SAFE_CLOSE(fd);
@@ -173,9 +213,35 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 
 			i++;
 			offset += readahead_length;
+			/*
+			 * We assume that the worst case I/O speed is around
+			 * 5MB/s which is roughly 5 bytes per 1 us and we
+			 * allow additional 25ms for seeks, which gives
+			 * us upper bound for retries that is
+			 * 5 + readahead_size/(5 * SHORT_SLEEP_US).
+			 *
+			 * We also monitor the cache size and exit the wait
+			 * loop early if it increases by at least 50%
+			 * of the read ahead size.
+			 */
+			int retries = readahead_length / (5 * SHORT_SLEEP_US);
+
+			retries = MAX(retries + 5, MIN_RETRY_LIMIT);
+
+			do {
+				usleep(SHORT_SLEEP_US);
+				cache_diff = get_file_cached_bytes(fname,
+					fsize) - (ssize_t)cached_prev;
+
+				if (cache_diff >= readahead_length / 2)
+					break;
+			} while (retries-- > 0);
+
 		} while ((size_t)offset < fsize);
+
 		tst_res(TINFO, "readahead calls made: %zu", i);
-		*cached = get_cached_size();
+
+		*cached = get_file_cached_bytes(fname, fsize);
 
 		/* offset of file shouldn't change after readahead */
 		offset = SAFE_LSEEK(fd, 0, SEEK_CUR);
@@ -199,7 +265,7 @@ static int read_testfile(struct tcase *tc, int do_readahead,
 		tst_brk(TBROK, "This line should not be reached");
 
 	if (!do_readahead)
-		*cached = get_cached_size();
+		*cached = get_file_cached_bytes(fname, fsize);
 
 	SAFE_MUNMAP(p, fsize);
 
@@ -216,7 +282,7 @@ static void test_readahead(unsigned int n)
 {
 	unsigned long read_bytes, read_bytes_ra;
 	long long usec, usec_ra;
-	unsigned long cached_high, cached_low, cached, cached_ra;
+	unsigned long cached, cached_ra;
 	int ret;
 	struct tcase *tc = &tcases[n];
 
@@ -229,26 +295,20 @@ static void test_readahead(unsigned int n)
 
 	create_testfile(tc->use_overlay);
 
-	/* find out how much can cache hold if we read whole file */
 	read_testfile(tc, 0, testfile, testfile_size, &read_bytes, &usec,
 		      &cached);
-	cached_high = get_cached_size();
+	cached_max = MAX(cached_max, cached);
+
+	/* ensure the measured baseline run starts from cold cache */
 	sync();
 	drop_caches();
-	cached_low = get_cached_size();
-	cached_max = MAX(cached_max, cached_high - cached_low);
-
 	tst_res(TINFO, "read_testfile(0)");
 	read_testfile(tc, 0, testfile, testfile_size, &read_bytes, &usec,
 		      &cached);
-	if (cached > cached_low)
-		cached = cached - cached_low;
-	else
-		cached = 0;
+	cached_max = MAX(cached_max, cached);
 
 	sync();
 	drop_caches();
-	cached_low = get_cached_size();
 	tst_res(TINFO, "read_testfile(1)");
 	ret = read_testfile(tc, 1, testfile, testfile_size, &read_bytes_ra,
 			    &usec_ra, &cached_ra);
@@ -278,11 +338,6 @@ static void test_readahead(unsigned int n)
 		return;
 	}
 
-	if (cached_ra > cached_low)
-		cached_ra = cached_ra - cached_low;
-	else
-		cached_ra = 0;
-
 	tst_res(TINFO, "read_testfile(0) took: %lli usec", usec);
 	tst_res(TINFO, "read_testfile(1) took: %lli usec", usec_ra);
 	if (has_file(PROC_IO_FNAME, 0)) {
@@ -299,16 +354,16 @@ static void test_readahead(unsigned int n)
 			" unable to determine read bytes during test");
 	}
 
-	tst_res(TINFO, "cache can hold at least: %ld kB", cached_max);
-	tst_res(TINFO, "read_testfile(0) used cache: %ld kB", cached);
-	tst_res(TINFO, "read_testfile(1) used cache: %ld kB", cached_ra);
+	tst_res(TINFO, "cache can hold at least: %ld kB", cached_max / 1024);
+	tst_res(TINFO, "read_testfile(0) used cache: %ld kB", cached / 1024);
+	tst_res(TINFO, "read_testfile(1) used cache: %ld kB", cached_ra / 1024);
 
-	if (cached_max * 1024 >= testfile_size) {
+	if (cached_max >= testfile_size) {
 		/*
 		 * if cache can hold ~testfile_size then cache increase
 		 * for readahead should be at least testfile_size/2
 		 */
-		if (cached_ra * 1024 > testfile_size / 2)
+		if (cached_ra > testfile_size / 2)
 			tst_res(TPASS, "using cache as expected");
 		else if (!cached_ra)
 			tst_res(TFAIL, "readahead failed to use any cache");
@@ -318,21 +373,7 @@ static void test_readahead(unsigned int n)
 		tst_res(TCONF, "Page cache on your system is too small "
 			"to hold whole testfile.");
 	}
-
-	/*
-	 * The time consuming of readahead quite depending on the platform IO
-	 * speed, sometime test timeout when the default max_runtime is used up.
-	 *
-	 *  readahead02.c:221: TINFO: Test #2: POSIX_FADV_WILLNEED on file
-	 *  readahead02.c:285: TINFO: read_testfile(0) took: 26317623 usec
-	 *  readahead02.c:286: TINFO: read_testfile(1) took: 26101484 usec
-	 *
-	 * Here raise the maximum runtime dynamically.
-	 */
-	if ((tc+1)->readahead)
-		tst_set_max_runtime(test.max_runtime + (usec + usec_ra) / 1000000);
 }
-
 
 /*
  * We try raising bdi readahead limit as much as we can. We write
@@ -346,6 +387,11 @@ static void setup_readahead_length(void)
 	struct stat sbuf;
 	char tmp[PATH_MAX], *backing_dev;
 	int ra_new_limit, ra_limit;
+	struct tst_path_val bdi_ra = {
+		.path = sys_bdi_ra_path,
+		.val = NULL,
+		.flags = TST_SR_TBROK
+	};
 
 	/* Find out backing device name */
 	SAFE_LSTAT(tst_device->dev, &sbuf);
@@ -357,10 +403,16 @@ static void setup_readahead_length(void)
 	backing_dev = basename(tmp);
 	sprintf(sys_bdi_ra_path, "/sys/class/block/%s/bdi/read_ahead_kb",
 		backing_dev);
-	if (access(sys_bdi_ra_path, F_OK))
-		return;
 
-	SAFE_FILE_SCANF(sys_bdi_ra_path, "%d", &orig_bdi_limit);
+	if (access(sys_bdi_ra_path, F_OK)) {
+		/* Partitions use the parent disk's BDI sysfs entry */
+		snprintf(sys_bdi_ra_path, sizeof(sys_bdi_ra_path),
+			"/sys/class/block/%s/../bdi/read_ahead_kb", backing_dev);
+		if (access(sys_bdi_ra_path, F_OK))
+			return;
+	}
+
+	tst_sys_conf_save(&bdi_ra);
 
 	/* raise bdi limit as much as kernel allows */
 	ra_new_limit = testfile_size / 1024;
@@ -381,14 +433,13 @@ static void setup(void)
 {
 	if (opt_fsizestr) {
 		testfile_size = SAFE_STRTOL(opt_fsizestr, 1, INT_MAX);
-		tst_set_max_runtime(1 + testfile_size / (DEFAULT_FILESIZE/32));
+		tst_set_runtime(1 + testfile_size / (DEFAULT_FILESIZE/32));
 	}
 
 	if (access(PROC_IO_FNAME, F_OK))
 		tst_brk(TCONF, "Requires " PROC_IO_FNAME);
 
-	has_file(DROP_CACHES_FNAME, 1);
-	has_file(MEMINFO_FNAME, 1);
+	has_file(PATH_VM_DROP_CACHES, 1);
 
 	/* check if readahead is supported */
 	tst_syscall(__NR_readahead, 0, 0, 0);
@@ -405,9 +456,6 @@ static void cleanup(void)
 {
 	if (ovl_mounted)
 		SAFE_UMOUNT(OVL_MNT);
-
-	if (orig_bdi_limit)
-		SAFE_FILE_PRINTF(sys_bdi_ra_path, "%d", orig_bdi_limit);
 }
 
 static struct tst_test test = {
@@ -422,10 +470,10 @@ static struct tst_test test = {
 	},
 	.test = test_readahead,
 	.tcnt = ARRAY_SIZE(tcases),
-	.max_runtime = 30,
+	.timeout = 60,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b833a3660394"},
-		{"linux-git", "5b910bd615ba"},
+		{"linux-git", "b833a3660394876541d2513ce2736debc7c6797a"},
+		{"linux-git", "5b910bd615ba947383e63cd1ed106ffa3060159e"},
 		{}
 	}
 };

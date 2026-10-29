@@ -16,7 +16,7 @@
 #include "tst_rand_data.h"
 #include "tst_safe_file_at.h"
 
-void fill_random(const char *path, int verbose)
+static void fill_random(const char *path, int verbose)
 {
 	int i = 0;
 	char file[PATH_MAX];
@@ -71,7 +71,7 @@ void fill_random(const char *path, int verbose)
 	}
 }
 
-void fill_flat_vec(const char *path, int verbose)
+static void fill_flat_vec(const char *path, int verbose)
 {
 	int dir, fd;
 	struct iovec iov[512];
@@ -91,9 +91,11 @@ void fill_flat_vec(const char *path, int verbose)
 	if (fd == -1) {
 		if (errno == ENOSPC) {
 			tst_res(TINFO | TERRNO, "openat()");
+			SAFE_CLOSE(dir);
 			return;
 		}
-		tst_brk(TBROK | TERRNO, "openat(%s, %d, 0600) failed", dir, O_PATH | O_DIRECTORY);
+		tst_brk(TBROK | TERRNO, "openat(%d, %d, 0600) failed for path %s",
+			dir, O_PATH | O_DIRECTORY, path);
 	}
 
 	SAFE_CLOSE(dir);

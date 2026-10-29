@@ -1,23 +1,10 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Out Of Memory (OOM) for Memory Resource Controller
- *
- * The program is designed to cope with unpredictable like amount and
- * system physical memory, swap size and other VMM technology like KSM,
- * memcg, memory hotplug and so on which may affect the OOM
- * behaviours. It simply increase the memory consumption 3G each time
- * until all the available memory is consumed and OOM is triggered.
- *
  * Copyright (C) 2010-2017  Red Hat, Inc.
- *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * Copyright (c) Linux Test Project, 2011-2023
+ */
+/*\
+ * Out Of Memory (OOM) test for Memory Resource Controller
  */
 
 #include "config.h"
@@ -27,20 +14,17 @@
 #include <fcntl.h>
 #include <stdio.h>
 #if HAVE_NUMA_H
-#include <numa.h>
+# include <numa.h>
 #endif
 
-#include "lapi/abisize.h"
+#include "tst_test.h"
 #include "numa_helper.h"
-#include "mem.h"
+#include "oom.h"
 
 #ifdef HAVE_NUMA_V2
 
 static void verify_oom(void)
 {
-#ifdef TST_ABI32
-	tst_brk(TCONF, "test is not designed for 32-bit system.");
-#endif
 	testoom(0, 0, ENOMEM, 1);
 
 	if (SAFE_CG_HAS(tst_cg, "memory.swap.max")) {
@@ -53,12 +37,12 @@ static void verify_oom(void)
 		 *
 		 * To get more opportunities to reach the swap limitation,
 		 * let's scale down the value of 'memory.swap.max' to only
-		 * 1MB for CGroup v2.
+		 * 1TST_MB for CGroup v2.
 		 */
 		if (!TST_CG_VER_IS_V1(tst_cg, "memory"))
-			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", MB);
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TST_MB);
 		else
-			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TESTMEM + MB);
+			SAFE_CG_PRINTF(tst_cg, "memory.swap.max", "%lu", TESTMEM + TST_MB);
 
 		testoom(0, 1, ENOMEM, 1);
 
@@ -86,12 +70,13 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.max_runtime = TST_UNLIMITED_RUNTIME,
+	.timeout = TST_UNLIMITED_TIMEOUT,
 	.setup = setup,
 	.test_all = verify_oom,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
+	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", "1", TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, "1", TST_SR_TBROK},
 		{}
 	},
 };

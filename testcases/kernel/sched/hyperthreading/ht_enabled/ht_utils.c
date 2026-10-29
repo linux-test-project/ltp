@@ -6,7 +6,7 @@
 #include <alloca.h>
 #include <string.h>
 #include <linux/unistd.h>
-#include "ltp_cpuid.h"
+#include "tso_cpuid.h"
 
 #define PROC_PATH	"/proc"
 #define BUFF_SIZE	8192

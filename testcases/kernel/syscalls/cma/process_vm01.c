@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test errno codes in process_vm_readv and process_vm_writev syscalls.
  */
 

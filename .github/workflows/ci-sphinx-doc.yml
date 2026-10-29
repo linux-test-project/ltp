@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) 2024 Petr Vorel <pvorel@suse.cz>
+
+name: "Test building sphinx doc"
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    paths: ['doc/**']
+  workflow_dispatch:
+    inputs:
+      SERIES_ID:
+        description: LTP patch series ID
+        required: false
+        default: ''
+      SERIES_MBOX:
+        description: LTP patch series URL
+        required: false
+        default: ''
+
+permissions: {}
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LTP
+        uses: actions/checkout@v1
+
+      - name: Install sphinx and autotools
+        run: |
+          sudo apt update
+          sudo apt install autoconf make python3-virtualenv
+
+      - name: Apply Patchwork series
+        if: inputs.SERIES_ID != ''
+        env:
+          PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+        run: |
+          git config --global user.name 'GitHub CI'
+          git config --global user.email 'github@example.com'
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
+          ./ci/tools/patchwork.sh apply "${{ inputs.SERIES_ID }}"
+
+          ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-ack"
+
+      - name: Run configure
+        run: |
+          make autotools && ./configure
+
+      - name: Send results to Patchwork
+        if: always() && inputs.SERIES_ID != ''
+        env:
+          PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+        run: |
+          ./ci/tools/patchwork.sh check \
+            "${{ inputs.SERIES_ID }}" \
+            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "doc" \
+            "${{ job.status }}"
+
+      - name: Install sphinx dependencies
+        run: |
+          cd "doc/"
+          python3 -m virtualenv .venv
+          . .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build doc
+        run: |
+          cd "doc/"
+          . .venv/bin/activate
+          make

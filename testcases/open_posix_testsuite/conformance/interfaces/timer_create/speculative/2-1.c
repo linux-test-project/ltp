@@ -30,7 +30,7 @@ static int compare(const void *key, const void *amemb)
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	timer_t tid;

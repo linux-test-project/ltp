@@ -3,10 +3,16 @@
  * Copyright (C) 2018 Petr Vorel <pvorel@suse.cz>
  * Copyright (C) 2018 Michael Moese <mmoese@suse.de>
  *
- * cve-2018-1000001 realpath buffer underflow
  * Based on the reproducer posted upstream so other copyrights may apply.
  * Author: Dmitry V. Levin <ldv@altlinux.org>
  * LTP conversion from glibc source: Petr Vorel <pvorel@suse.cz>
+ */
+
+/*\
+ * CVE-2018-1000001 realpath buffer underflow.
+ *
+ * Based on glibc test io/tst-getcwd-abspath.c:
+ * https://sourceware.org/git/?p=glibc.git;a=commit;h=52a713fdd0a30e1bd79818e2e3c4ab44ddca1a94.
  */
 
 #include "tst_test.h"
@@ -24,16 +30,7 @@ static void setup(void)
 
 static void run(void)
 {
-	TESTPTR(realpath(".", NULL));
-
-	if (TST_ERR != ENOENT) {
-		tst_res(TFAIL | TTERRNO, "returned unexpected errno");
-	} else	if (TST_RET_PTR != NULL) {
-		tst_res(TFAIL, "syscall didn't return NULL: '%s'",
-				(char *)TST_RET_PTR);
-	} else {
-		tst_res(TPASS, "bug not reproduced");
-	}
+	TST_EXP_FAIL_PTR_NULL(realpath(".", NULL), ENOENT);
 }
 
 static struct tst_test test = {

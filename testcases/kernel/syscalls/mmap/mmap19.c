@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * If the kernel fails to correctly flush the TLB entry, the second mmap
  * will not show the correct data.
  *
@@ -24,7 +22,7 @@
 #define LEN 64
 
 static int f1 = -1, f2 = -1;
-static char *mm1 = NULL, *mm2 = NULL;
+static char *mm1, *mm2;
 
 static const char tmp1[] = "testfile1";
 static const char tmp2[] = "testfile2";

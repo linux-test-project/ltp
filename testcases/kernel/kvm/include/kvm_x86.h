@@ -62,13 +62,25 @@
 
 
 /* CPUID constants */
+#define CPUID_GET_MODEL_INFO 0x1
 #define CPUID_GET_INPUT_RANGE 0x80000000
 #define CPUID_GET_EXT_FEATURES 0x80000001
 #define CPUID_GET_SVM_FEATURES 0x8000000a
 
 
 /* Model-specific CPU register constants */
+#define MSR_IA32_FEATURE_CONTROL 0x3a
+#define MSR_SYSENTER_CS 0x174
+#define MSR_SYSENTER_ESP 0x175
+#define MSR_SYSENTER_EIP 0x176
 #define MSR_EFER 0xc0000080
+#define MSR_STAR 0xc0000081
+#define MSR_LSTAR 0xc0000082
+#define MSR_CSTAR 0xc0000083
+#define MSR_SFMASK 0xc0000084
+#define MSR_FS_BASE 0xc0000100
+#define MSR_GS_BASE 0xc0000101
+#define MSR_KERNEL_GS_BASE 0xc0000102
 #define MSR_VM_CR 0xc0010114
 #define MSR_VM_HSAVE_PA 0xc0010117
 
@@ -85,6 +97,18 @@
 #define VM_CR_SVMDIS (1 << 4)
 
 /* Control register constants */
+#define CR0_PE (1 << 0)
+#define CR0_MP (1 << 1)
+#define CR0_EM (1 << 2)
+#define CR0_TS (1 << 3)
+#define CR0_ET (1 << 4)
+#define CR0_NE (1 << 5)
+#define CR0_WP (1 << 16)
+#define CR0_AM (1 << 18)
+#define CR0_NW (1 << 29)
+#define CR0_CD (1 << 30)
+#define CR0_PG (1 << 31)
+
 #define CR4_VME (1 << 0)
 #define CR4_PVI (1 << 1)
 #define CR4_TSD (1 << 2)
@@ -168,7 +192,7 @@ struct kvm_cregs {
 };
 
 struct kvm_sregs {
-	uint16_t cs, ds, es, fs, gs, ss;
+	uint16_t cs, ds, es, fs, gs, ss, tr;
 };
 
 struct kvm_regs64 {
@@ -197,6 +221,9 @@ unsigned int kvm_create_stack_descriptor(struct segment_descriptor *table,
 void kvm_get_cpuid(unsigned int eax, unsigned int ecx, struct kvm_cpuid *buf);
 void kvm_read_cregs(struct kvm_cregs *buf);
 void kvm_read_sregs(struct kvm_sregs *buf);
+void kvm_set_cr0(unsigned long val);
+void kvm_set_cr3(unsigned long val);
+void kvm_set_cr4(unsigned long val);
 uint64_t kvm_rdmsr(unsigned int msr);
 void kvm_wrmsr(unsigned int msr, uint64_t value);
 

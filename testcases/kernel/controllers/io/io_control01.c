@@ -1,10 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2022 SUSE LLC <rpalethorpe@suse.com>
  */
 /*\
- *
- * [Description]
  *
  * Perform some I/O on a file and check if at least some of it is
  * recorded by the I/O controller.
@@ -64,18 +62,17 @@ static void run(void)
 		if (convs < 2)
 			continue;
 
-		tst_res(TINFO, "Found %u:%u in io.stat", dev_major, dev_minor);
-
-		if (start.mjr == dev_major || start.mnr == dev_minor)
+		if (start.mjr == dev_major && start.mnr == dev_minor) {
+			tst_res(TINFO, "Found %u:%u in io.stat", dev_major, dev_minor);
 			break;
-
+		}
 		line = strtok_r(NULL, "\n", &buf_ptr);
 	}
 
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	fd = SAFE_OPEN("/dev/urandom", O_RDONLY, 0600);
-	SAFE_READ(1, fd, buf, pgsz);
+	SAFE_READ(SAFE_READ_ALL, fd, buf, pgsz);
 	SAFE_CLOSE(fd);
 
 	fd = SAFE_OPEN("mnt/dat", O_WRONLY | O_CREAT, 0600);
@@ -90,7 +87,7 @@ static void run(void)
 	fd = SAFE_OPEN("mnt/dat", O_RDONLY, 0600);
 
 	for (i = 0; i < 4; i++)
-		SAFE_READ(1, fd, buf, pgsz);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, pgsz);
 
 	tst_res(TPASS, "Did some IO in the IO controller");
 

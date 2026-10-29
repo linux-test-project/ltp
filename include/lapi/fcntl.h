@@ -94,6 +94,14 @@
 # define AT_REMOVEDIR		0x200
 #endif
 
+#ifndef AT_HANDLE_FID
+# define AT_HANDLE_FID		AT_REMOVEDIR
+#endif
+
+#ifndef AT_HANDLE_CONNECTABLE
+# define AT_HANDLE_CONNECTABLE	0x002
+#endif
+
 #ifndef AT_SYMLINK_FOLLOW
 # define AT_SYMLINK_FOLLOW	0x400
 #endif
@@ -129,9 +137,24 @@
 #ifndef O_PATH
 # ifdef __sparc__
 #  define O_PATH 0x1000000
+# elif defined(__alpha__)
+#  define O_PATH 040000000
 # else
 #  define O_PATH 010000000
 # endif
+#endif
+
+/* Roots of kernel internal pseudo filesystems, usable as fd sentinels */
+#ifndef FD_PIDFS_ROOT
+# define FD_PIDFS_ROOT		-10002
+#endif
+
+#ifndef FD_NSFS_ROOT
+# define FD_NSFS_ROOT		-10003
+#endif
+
+#ifndef FD_FAILFS_ROOT
+# define FD_FAILFS_ROOT		-10004
 #endif
 
 #ifndef FALLOC_FL_KEEP_SIZE
@@ -148,6 +171,14 @@
 
 #ifndef RENAME_WHITEOUT
 # define RENAME_WHITEOUT		(1 << 2)
+#endif
+
+#ifndef F_LINUX_SPECIFIC_BASE
+#define F_LINUX_SPECIFIC_BASE 1024
+#endif
+
+#ifndef F_CREATED_QUERY
+#define F_CREATED_QUERY (F_LINUX_SPECIFIC_BASE + 4)
 #endif
 
 /* splice, vmsplice, tee */

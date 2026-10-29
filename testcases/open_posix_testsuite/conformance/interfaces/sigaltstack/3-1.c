@@ -17,9 +17,9 @@
  - Inside the handler, use sigaltstack to examine/obtain the current alternate signal
    stack and verify:
    1. The ss_sp member of the obtained alternate signal stack is equal to the ss_sp
-      that we defined in the main() function.
+      that we defined in the test_main() function.
    2. The ss_size member of the obtained alternate signal stack is equal to the ss_size
-      that we defined in the main() function.
+      that we defined in the test_main() function.
 */
 
 
@@ -57,7 +57,7 @@ static void handler()
 
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	struct sigaction act;

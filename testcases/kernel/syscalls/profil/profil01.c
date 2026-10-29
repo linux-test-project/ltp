@@ -26,7 +26,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/abisize.h"
 #include "config.h"
 
@@ -52,7 +52,7 @@ static void alrm_handler(int sig)
 	profil_done = 1;
 }
 
-static void __attribute__ ((noinline)) *get_pc(void)
+static void LTP_ATTRIBUTE_NOINLINE *get_pc(void)
 {
 #if defined(__s390__) && defined(TST_ABI32)
 	/* taken from glibc,

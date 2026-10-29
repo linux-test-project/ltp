@@ -51,29 +51,3 @@ fi
 "$make_file" "$medium_file" $medium_size
 "$make_file" "$large_file" $large_size
 "$make_file" "$jumbo_file" $jumbo_size
-
-if [ ! -e "bin.sm" ] ; then
-	cnt=0
-	while [ $cnt -lt 5 ] ; do
-		gzip -1 -c -n ascii.sm >> "bin.sm"
-		cnt=$(($cnt + 1))
-	done
-fi
-
-genfile() {
-	local input="$1" output="$2"
-	local cnt=19
-
-	[ -e "$output" ] && return $?
-
-	while [ $cnt -ge 0 ] ; do
-		cat "$input" >> "$output"
-		cnt=$(($cnt-1))
-	done
-}
-
-genfile bin.sm bin.med
-genfile bin.med bin.lg
-genfile bin.lg bin.jmb
-
-chmod 666 bin.*

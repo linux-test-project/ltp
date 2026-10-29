@@ -147,7 +147,7 @@ static void *changer(void *arg)
 }
 
 /* The main test function. */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	pthread_t tcontrol, tchange;

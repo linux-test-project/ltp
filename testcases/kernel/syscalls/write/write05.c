@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  *	Check the return value, and errnos of write(2)
  *
  *	- when the file descriptor is invalid - EBADF

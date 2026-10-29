@@ -163,4 +163,10 @@ struct kvm_svm_vcpu *kvm_create_svm_vcpu(int (*guest_main)(void),
 
 void kvm_svm_vmrun(struct kvm_svm_vcpu *cpu);
 
+/* Load FS, GS, TR and LDTR state from vmsave_buf */
+void kvm_svm_vmload(struct kvm_vmcb *buf);
+
+/* Save current FS, GS, TR and LDTR state to vmsave_buf */
+void kvm_svm_vmsave(struct kvm_vmcb *buf);
+
 #endif /* KVM_X86_SVM_H_ */

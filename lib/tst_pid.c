@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include "test.h"
 #include "tst_pid.h"
-#include "old_safe_file_ops.h"
+#include "tso_safe_file_ops.h"
 #include "tst_safe_macros.h"
 #include "lapi/syscalls.h"
 
@@ -165,4 +165,9 @@ int tst_get_free_pids_(void (*cleanup_fn) (void))
 pid_t tst_getpid(void)
 {
 	return syscall(SYS_getpid);
+}
+
+pid_t tst_gettid(void)
+{
+	return syscall(SYS_gettid);
 }

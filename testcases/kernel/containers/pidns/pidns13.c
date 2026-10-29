@@ -9,12 +9,11 @@
  */
 
 /*\
- * [Description]
- *
  * The pidns13.c testcase checks container init, for async I/O
  * triggered by peer namespace process.
  *
  * [Algorithm]
+ *
  * * create a pipe in parent namespace
  * * create two PID namespace containers(cinit1 and cinit2)
  * * in cinit1, set pipe read end to send SIGUSR1 for asynchronous I/O
@@ -104,7 +103,10 @@ static void child_fn(unsigned int cinit_no)
 
 static void run(void)
 {
-	const struct tst_clone_args cargs = { CLONE_NEWPID, SIGCHLD };
+	const struct tst_clone_args cargs = {
+		.flags = CLONE_NEWPID,
+		.exit_signal = SIGCHLD,
+	};
 
 	SAFE_PIPE(pipe_fd);
 
@@ -123,4 +125,8 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_checkpoints = 1,
 	.forks_child = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

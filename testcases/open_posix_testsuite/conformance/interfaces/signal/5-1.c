@@ -32,7 +32,7 @@ static void SIGUSR2_handler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("do nothing useful\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (signal(SIGUSR1, SIGUSR1_handler) == SIG_ERR) {
 		perror("Unexpected error while using signal()");

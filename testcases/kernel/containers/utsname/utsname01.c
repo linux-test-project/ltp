@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone two plain processes and check if both read the same hostname.
  */
 

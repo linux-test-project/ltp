@@ -53,7 +53,7 @@
 #include <netinet/in.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "recv01";
 int testno;
@@ -87,13 +87,10 @@ struct test_case_t {		/* test case structure */
 	0, 0, 0, buf, sizeof(buf), 0,
 		    -1, ENOTSOCK, setup0, cleanup0, "invalid socket"}
 	,
-#ifndef UCLINUX
-	    /* Skip since uClinux does not implement memory protection */
 	{
 	PF_INET, SOCK_STREAM, 0, (void *)-1, sizeof(buf), 0,
 		    -1, EFAULT, setup1, cleanup1, "invalid recv buffer"}
 	,
-#endif
 	{
 	PF_INET, SOCK_STREAM, 0, buf, sizeof(buf), MSG_OOB,
 		    -1, EINVAL, setup1, cleanup1, "invalid MSG_OOB flag set"}
@@ -105,33 +102,17 @@ struct test_case_t {		/* test case structure */
 
 int TST_TOTAL = sizeof(tdat) / sizeof(tdat[0]);
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
-
 int main(int argc, char *argv[])
 {
 	int lc;
 
 	tst_parse_opts(argc, argv, NULL, NULL);
-#ifdef UCLINUX
-	argv0 = argv[0];
-	maybe_run_child(&do_child, "d", &sfd);
-#endif
 
 	setup();
 
 	for (lc = 0; TEST_LOOPING(lc); ++lc) {
 		tst_count = 0;
 		for (testno = 0; testno < TST_TOTAL; ++testno) {
-			if ((tst_kvercmp(3, 17, 0) < 0)
-			    && (tdat[testno].flags & MSG_ERRQUEUE)
-			    && (tdat[testno].type & SOCK_STREAM)) {
-				tst_resm(TCONF, "skip MSG_ERRQUEUE test, "
-						"it's supported from 3.17");
-				continue;
-			}
-
 			tdat[testno].setup();
 			TEST(recv(s, tdat[testno].buf, tdat[testno].buflen,
 				  tdat[testno].flags));
@@ -240,15 +221,9 @@ pid_t start_server(struct sockaddr_in *sin0)
 	}
 	SAFE_GETSOCKNAME(cleanup, sfd, (struct sockaddr *)sin0, &slen);
 
-	switch ((pid = FORK_OR_VFORK())) {
+	switch ((pid = tst_fork())) {
 	case 0:		/* child */
-#ifdef UCLINUX
-		if (self_exec(argv0, "d", sfd) < 0)
-			tst_brkm(TBROK | TERRNO, cleanup,
-				 "server self_exec failed");
-#else
 		do_child();
-#endif
 		break;
 	case -1:
 		tst_brkm(TBROK | TERRNO, cleanup, "server fork failed");

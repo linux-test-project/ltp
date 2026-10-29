@@ -48,9 +48,8 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/fcntl.h"
-#include "lapi/renameat.h"
 
 #define MNTPOINT "mntpoint"
 #define TESTDIR "testdir"
@@ -135,7 +134,7 @@ static void setup(void)
 
 	tst_require_root();
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_tmpdir();
 

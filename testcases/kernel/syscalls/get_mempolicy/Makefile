@@ -4,7 +4,7 @@
 
 top_srcdir		?= ../../../..
 
-LTPLIBS = ltpnuma
+LTPLIBS = numa
 
 include $(top_srcdir)/include/mk/testcases.mk
 

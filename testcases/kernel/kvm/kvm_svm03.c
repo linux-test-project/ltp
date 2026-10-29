@@ -154,6 +154,10 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
+		NULL
+	},
 	.min_cpus = 2,
 	.supported_archs = (const char *const []) {
 		"x86_64",
@@ -161,7 +165,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (struct tst_tag[]){
-		{"linux-git", "91b7130cb660"},
+		{"linux-git", "91b7130cb6606d8c6b3b77e54426b3f3a83f48b1"},
 		{}
 	}
 };

@@ -8,14 +8,19 @@
  *  04/2008 Roy Lee <roylee@andestech.com>
  */
 
-/*
- * Attempt to execve(2) a file which is being opened by another process for
- * writing fails with ETXTBSY.
+/*\
+ * Attempt to :manpage:`execve(2)` a file which is being opened by another
+ * process for writing fails with ETXTBSY.
+ *
+ * NOTE: write to executed file was allowed in 6.11-rc1:
+ * 2a010c412853 ("fs: don't block i_writecount during exec")
+ * but then reverted in v6.13-rc1:
+ * 3b832035387f ("Revert "fs: don't block i_writecount during exec""),
+ * backported into v6.11.11 and v6.12.2.
  */
 
-#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
@@ -68,6 +73,10 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.child_needs_reinit = 1,
 	.needs_checkpoints = 1,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "3b832035387ff508fdcf0fba66701afc78f79e3d"},
+		{}
+	},
 	.resource_files = (const char *const []) {
 		TEST_APP,
 		NULL

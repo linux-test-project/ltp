@@ -15,8 +15,8 @@
 #include "tst_test.h"
 #include "lapi/fcntl.h"
 #include "lapi/mount.h"
-#include "lapi/mkdirat.h"
 #include "tst_safe_file_at.h"
+#include "tst_kconfig.h"
 
 struct cgroup_root;
 
@@ -45,7 +45,7 @@ struct cgroup_dir {
 	 */
 	int dir_fd;
 
-	int we_created_it:1;
+	unsigned int we_created_it:1;
 };
 
 /* The root of a CGroup hierarchy/tree */
@@ -72,9 +72,12 @@ struct cgroup_root {
 	/* CGroup for current test. Which may have children. */
 	struct cgroup_dir test_dir;
 
-	int we_mounted_it:1;
+	unsigned int nsdelegate:1;
+
+	unsigned int we_mounted_it:1;
 	/* cpuset is in compatability mode */
-	int no_cpuset_prefix:1;
+	unsigned int no_cpuset_prefix:1;
+	unsigned int memory_recursiveprot:1;
 };
 
 /* Controller sub-systems */
@@ -82,6 +85,7 @@ enum cgroup_ctrl_indx {
 	CTRL_MEMORY = 1,
 	CTRL_CPU,
 	CTRL_CPUSET,
+	CTRL_DMEM,
 	CTRL_IO,
 	CTRL_PIDS,
 	CTRL_HUGETLB,
@@ -137,7 +141,7 @@ struct cgroup_ctrl {
 	/* Runtime; hierarchy the controller is attached to */
 	struct cgroup_root *ctrl_root;
 	/* Runtime; whether we required the controller */
-	int we_require_it:1;
+	unsigned int we_require_it:1;
 };
 
 struct tst_cg_group {
@@ -176,6 +180,7 @@ static const struct cgroup_file memory_ctrl_files[] = {
 	{ "memory.events", NULL, CTRL_MEMORY },
 	{ "memory.low", NULL, CTRL_MEMORY },
 	{ "memory.min", NULL, CTRL_MEMORY },
+	{ "memory.high", "memory.soft_limit_in_bytes", CTRL_MEMORY },
 	{ "memory.max", "memory.limit_in_bytes", CTRL_MEMORY },
 	{ "memory.stat", "memory.stat", CTRL_MEMORY },
 	{ "memory.swappiness", "memory.swappiness", CTRL_MEMORY },
@@ -202,6 +207,15 @@ static const struct cgroup_file cpuset_ctrl_files[] = {
 	{ "cpuset.cpus", "cpuset.cpus", CTRL_CPUSET },
 	{ "cpuset.mems", "cpuset.mems", CTRL_CPUSET },
 	{ "cpuset.memory_migrate", "cpuset.memory_migrate", CTRL_CPUSET },
+	{ }
+};
+
+static const struct cgroup_file dmem_ctrl_files[] = {
+	{ "dmem.capacity", NULL, CTRL_DMEM },
+	{ "dmem.current", NULL, CTRL_DMEM },
+	{ "dmem.min", NULL, CTRL_DMEM },
+	{ "dmem.low", NULL, CTRL_DMEM },
+	{ "dmem.max", NULL, CTRL_DMEM },
 	{ }
 };
 
@@ -274,6 +288,7 @@ static struct cgroup_ctrl controllers[] = {
 	CGROUP_CTRL_MEMBER(memory, CTRL_MEMORY),
 	CGROUP_CTRL_MEMBER(cpu, CTRL_CPU),
 	CGROUP_CTRL_MEMBER(cpuset, CTRL_CPUSET),
+	CGROUP_CTRL_MEMBER(dmem, CTRL_DMEM),
 	CGROUP_CTRL_MEMBER(io, CTRL_IO),
 	CGROUP_CTRL_MEMBER(pids, CTRL_PIDS),
 	CGROUP_CTRL_MEMBER(hugetlb, CTRL_HUGETLB),
@@ -345,6 +360,11 @@ static int cgroup_v1_mounted(void)
 	return !!roots[1].ver;
 }
 
+static int cgroup_v2_nsdelegate(void)
+{
+	return !!roots[0].nsdelegate;
+}
+
 static int cgroup_mounted(void)
 {
 	return cgroup_v2_mounted() || cgroup_v1_mounted();
@@ -362,6 +382,7 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 			  struct cgroup_dir *const new)
 {
 	const char *dpath;
+	mode_t old_umask = umask(0);
 
 	new->dir_root = parent->dir_root;
 	new->dir_name = dir_name;
@@ -383,6 +404,9 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 		tst_brk(TCONF | TERRNO,
 			"Lack permission to make '%s/%s'; premake it or run as root",
 			dpath, dir_name);
+	} else if (errno == EROFS) {
+		tst_brk(TCONF | TERRNO, "'%s/%s' must not be read-only",
+			dpath, dir_name);
 	} else {
 		tst_brk(TBROK | TERRNO,
 			"mkdirat(%d<%s>, '%s', 0777)",
@@ -392,6 +416,7 @@ static void cgroup_dir_mk(const struct cgroup_dir *const parent,
 opendir:
 	new->dir_fd = SAFE_OPENAT(parent->dir_fd, dir_name,
 				  O_PATH | O_DIRECTORY);
+	umask(old_umask);
 }
 
 #define PATH_MAX_STRLEN 4095
@@ -427,12 +452,28 @@ void tst_cg_print_config(void)
 }
 
 __attribute__ ((nonnull, warn_unused_result))
-static struct cgroup_ctrl *cgroup_find_ctrl(const char *const ctrl_name)
+static struct cgroup_ctrl *cgroup_find_ctrl(const char *const ctrl_name,
+					    unsigned int strict)
 {
 	struct cgroup_ctrl *ctrl;
+	int l = 0;
+	char c = ctrl_name[l];
+
+	while (c == '_' || (c >= 'a' && c <= 'z'))
+		c = ctrl_name[++l];
+
+	if (l > 32 && strict)
+		tst_res(TWARN, "Subsys name len greater than max known value of MAX_CGROUP_TYPE_NAMELEN: %d > 32", l);
+
+	if (!(c == '\n' || c == '\0')) {
+		if (!strict)
+			return NULL;
+
+		tst_brk(TBROK, "Unexpected char in %s: %c", ctrl_name, c);
+	}
 
 	for_each_ctrl(ctrl) {
-		if (!strcmp(ctrl_name, ctrl->ctrl_name))
+		if (!strncmp(ctrl_name, ctrl->ctrl_name, l))
 			return ctrl;
 	}
 
@@ -465,7 +506,7 @@ static void cgroup_parse_config_line(const char *const config_entry)
 	if (vars_read != 7)
 		tst_brk(TBROK, "Incorrect number of vars read from config. Config possibly malformed?");
 
-	ctrl = cgroup_find_ctrl(ctrl_name);
+	ctrl = cgroup_find_ctrl(ctrl_name, 1);
 	if (!ctrl)
 		tst_brk(TBROK, "Could not find ctrl from config. Ctrls changing between calls?");
 
@@ -548,6 +589,8 @@ static void cgroup_root_scan(const char *const mnt_type,
 	struct cgroup_ctrl *ctrl;
 	uint32_t ctrl_field = 0;
 	int no_prefix = 0;
+	unsigned int nsdelegate = 0;
+	unsigned int memory_recursiveprot = 0;
 	char buf[BUFSIZ];
 	char *tok;
 	const int mnt_dfd = SAFE_OPEN(mnt_dir, O_PATH | O_DIRECTORY);
@@ -558,9 +601,13 @@ static void cgroup_root_scan(const char *const mnt_type,
 	SAFE_FILE_READAT(mnt_dfd, "cgroup.controllers", buf, sizeof(buf));
 
 	for (tok = strtok(buf, " "); tok; tok = strtok(NULL, " ")) {
-		const_ctrl = cgroup_find_ctrl(tok);
+		const_ctrl = cgroup_find_ctrl(tok, 1);
 		if (const_ctrl)
 			add_ctrl(&ctrl_field, const_ctrl);
+	}
+	for (tok = strtok(mnt_opts, ","); tok; tok = strtok(NULL, ",")) {
+		nsdelegate |= !strcmp("nsdelegate", tok);
+		memory_recursiveprot |= !strcmp("memory_recursiveprot", tok);
 	}
 
 	if (root->ver && ctrl_field == root->ctrl_field)
@@ -575,7 +622,7 @@ static void cgroup_root_scan(const char *const mnt_type,
 
 v1:
 	for (tok = strtok(mnt_opts, ","); tok; tok = strtok(NULL, ",")) {
-		const_ctrl = cgroup_find_ctrl(tok);
+		const_ctrl = cgroup_find_ctrl(tok, 0);
 		if (const_ctrl)
 			add_ctrl(&ctrl_field, const_ctrl);
 
@@ -612,6 +659,8 @@ backref:
 	root->mnt_dir.dir_fd = mnt_dfd;
 	root->ctrl_field = ctrl_field;
 	root->no_cpuset_prefix = no_prefix;
+	root->nsdelegate = nsdelegate;
+	root->memory_recursiveprot = memory_recursiveprot;
 
 	for_each_ctrl(ctrl) {
 		if (has_ctrl(root->ctrl_field, ctrl))
@@ -802,7 +851,7 @@ void tst_cg_require(const char *const ctrl_name,
 			const struct tst_cg_opts *options)
 {
 	const char *const cgsc = "cgroup.subtree_control";
-	struct cgroup_ctrl *const ctrl = cgroup_find_ctrl(ctrl_name);
+	struct cgroup_ctrl *const ctrl = cgroup_find_ctrl(ctrl_name, 1);
 	struct cgroup_root *root;
 	int base = !strcmp(ctrl->ctrl_name, "base");
 
@@ -849,6 +898,10 @@ void tst_cg_require(const char *const ctrl_name,
 
 mkdirs:
 	root = ctrl->ctrl_root;
+
+	if (options->needs_nsdelegate && cgroup_v2_mounted() && !cgroup_v2_nsdelegate())
+		tst_brk(TCONF, "Requires cgroup2 to be mounted with nsdelegate");
+
 	add_ctrl(&root->mnt_dir.ctrl_field, ctrl);
 
 	if (cgroup_ctrl_on_v2(ctrl) && options->needs_ver == TST_CG_V1) {
@@ -922,8 +975,14 @@ static void cgroup_drain(const enum tst_cg_ver ver,
 	for (tok = strtok(pid_list, "\n"); tok; tok = strtok(NULL, "\n")) {
 		ret = dprintf(fd, "%s", tok);
 
-		if (ret < (ssize_t)strlen(tok))
+		if (ret < (ssize_t)strlen(tok)) {
+			if (ret < 0 && errno == ESRCH) {
+				tst_res(TINFO, "Pid %s died during drain", tok);
+				continue;
+			}
+
 			tst_brk(TBROK | TERRNO, "Failed to drain %s", tok);
+		}
 	}
 	SAFE_CLOSE(fd);
 }
@@ -1112,6 +1171,14 @@ const char *tst_cg_group_name(const struct tst_cg_group *const cg)
 	return cg->group_name;
 }
 
+int tst_cg_group_unified_dir_fd(const struct tst_cg_group *const cg)
+{
+	if(cg->dirs_by_ctrl[0])
+		return cg->dirs_by_ctrl[0]->dir_fd;
+
+	return -1;
+}
+
 struct tst_cg_group *tst_cg_group_rm(struct tst_cg_group *const cg)
 {
 	struct cgroup_dir **dir;
@@ -1150,7 +1217,7 @@ static const struct cgroup_file *cgroup_file_find(const char *const file,
 	memcpy(ctrl_name, file_name, len);
 	ctrl_name[len] = '\0';
 
-	ctrl = cgroup_find_ctrl(ctrl_name);
+	ctrl = cgroup_find_ctrl(ctrl_name, 1);
 
 	if (!ctrl) {
 		tst_brk_(file, lineno, TBROK,
@@ -1177,7 +1244,7 @@ enum tst_cg_ver tst_cg_ver(const char *const file, const int lineno,
 				    const struct tst_cg_group *const cg,
 				    const char *const ctrl_name)
 {
-	const struct cgroup_ctrl *const ctrl = cgroup_find_ctrl(ctrl_name);
+	const struct cgroup_ctrl *const ctrl = cgroup_find_ctrl(ctrl_name, 1);
 	const struct cgroup_dir *dir;
 
 	if (!strcmp(ctrl_name, "cgroup")) {
@@ -1464,4 +1531,22 @@ int safe_cg_occursin(const char *const file, const int lineno,
 	safe_cg_read(file, lineno, cg, file_name, buf, sizeof(buf));
 
 	return !!strstr(buf, needle);
+}
+
+int tst_cg_memory_recursiveprot(struct tst_cg_group *cg)
+{
+	if (cg && cg->dirs_by_ctrl[0]->dir_root)
+		return cg->dirs_by_ctrl[0]->dir_root->memory_recursiveprot;
+	return 0;
+}
+
+void tst_check_rt_group_sched_support(void)
+{
+	static const char * const kconf[] = {"CONFIG_RT_GROUP_SCHED=y", NULL};
+
+	tst_cg_scan();
+
+	if (cgroup_v2_mounted() && !tst_kconfig_check(kconf)) {
+		tst_brk(TCONF, "CONFIG_RT_GROUP_SCHED not support on cgroupv2");
+	}
 }

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * check stat() with various error conditions that should produce
  * EACCES, EFAULT, ENAMETOOLONG,  ENOENT, ENOTDIR, ELOOP
  */

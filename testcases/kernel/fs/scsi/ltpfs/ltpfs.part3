@@ -1,3 +1,0 @@
-#DESCRIPTION:filesystem tests
-# Check the MSDOS filesystems
-bfs101 ltpfstest /test/growfiles/msdos

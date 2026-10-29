@@ -35,6 +35,20 @@
  * The first algorithm, that fullfils the criteria is used for the test.
  */
 static const char * const ALGORITHM_CANDIDATES[] = {
+	"hmac(sha1)",
+	"hmac(sha224)",
+	"hmac(sha256)",
+	"hmac(sha384)",
+	"hmac(md5)",
+	"hmac(sm3)",
+	"hmac(sha512)",
+	"hmac(rmd160)",
+	"hmac(sha3-224)",
+	"hmac(sha3-256)",
+	"hmac(sha3-384)",
+	"hmac(sha3-512)",
+	"hmac(streebog256)",
+	"hmac(streebog512)",
 	"hmac(sha1-generic)",
 	"hmac(sha224-generic)",
 	"hmac(sha256-generic)",
@@ -52,7 +66,7 @@ static const char * const ALGORITHM_CANDIDATES[] = {
 };
 
 static const char* algorithm = NULL;
-static struct tst_crypto_session ses = TST_CRYPTO_SESSION_INIT;
+static struct tst_netlink_context *ctx;
 
 
 static void setup(void)
@@ -60,7 +74,8 @@ static void setup(void)
 	int rc;
 	unsigned i;
 	struct crypto_user_alg alg;
-	tst_crypto_open(&ses);
+
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_CRYPTO);
 
 	/* find an algorithm, that is not in use */
 	for (i = 0; i < ARRAY_SIZE(ALGORITHM_CANDIDATES); ++i) {
@@ -68,12 +83,12 @@ static void setup(void)
 		strcpy(alg.cru_driver_name, ALGORITHM_CANDIDATES[i]);
 
 		/* try to add it, to see if it is valid */
-		rc = tst_crypto_add_alg(&ses, &alg);
+		rc = tst_crypto_add_alg(ctx, &alg);
 		if (rc != 0)
 			continue;
 
 		/* it also has to be deletable */
-		rc = tst_crypto_del_alg(&ses, &alg);
+		rc = tst_crypto_del_alg(ctx, &alg, 1000);
 		if (rc == 0) {
 			algorithm = ALGORITHM_CANDIDATES[i];
 			break;
@@ -103,9 +118,9 @@ static void run(void)
 
 		if (pid == 0) {
 			/* Child process: execute CRYPTO_MSG_NEWALG. */
-			tst_crypto_open(&ses);
+			ctx = NETLINK_CREATE_CONTEXT(NETLINK_CRYPTO);
 			for (;;) {
-				TEST(tst_crypto_add_alg(&ses, &alg));
+				TEST(tst_crypto_add_alg(ctx, &alg));
 				if (TST_RET && TST_RET != -EEXIST)
 					tst_brk(TBROK | TRERRNO,
 						"unexpected error from tst_crypto_add_alg()");
@@ -123,7 +138,7 @@ static void run(void)
 		SAFE_WAIT(&status);
 		if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGKILL)
 			tst_brk(TBROK, "child %s", tst_strstatus(status));
-		TEST(tst_crypto_del_alg(&ses, &alg));
+		TEST(tst_crypto_del_alg(ctx, &alg, 1000));
 		if (TST_RET && TST_RET != -ENOENT)
 			tst_brk(TBROK | TRERRNO,
 				"unexpected error from tst_crypto_del_alg()");
@@ -134,7 +149,7 @@ static void run(void)
 
 static void cleanup(void)
 {
-	tst_crypto_close(&ses);
+	NETLINK_DESTROY_CONTEXT(ctx);
 }
 
 static struct tst_test test = {
@@ -144,7 +159,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "21d4120ec6f5"},
+		{"linux-git", "21d4120ec6f5b5992b01b96ac484701163917b63"},
 		{}
 	}
 };

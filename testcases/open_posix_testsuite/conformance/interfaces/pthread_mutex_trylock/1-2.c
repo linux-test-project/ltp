@@ -146,7 +146,7 @@ static void *tf(void *arg)
 }
 
 /* Main entry point. */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	unsigned int sc;

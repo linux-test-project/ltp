@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Enters the namespace(s) of a process specified by a PID and then executes
  * the indicated program inside that namespace(s).
  */
@@ -19,12 +17,6 @@
 #include <sys/wait.h>
 #include "tst_test.h"
 #include "tst_ns_common.h"
-
-extern struct tst_test *tst_test;
-
-static struct tst_test test = {
-	.forks_child = 1, /* Needed by SAFE_CLONE */
-};
 
 static int ns_fd[NS_TOTAL];
 static int ns_fds;
@@ -67,11 +59,9 @@ static void close_ns_fd(void)
 
 int main(int argc, char *argv[])
 {
-	struct tst_clone_args args = { 0, SIGCHLD };
+	struct tst_clone_args args = { .exit_signal = SIGCHLD };
 	int i, status, pid;
 	char *token;
-
-	tst_test = &test;
 
 	if (argc < 4) {
 		print_help();
@@ -100,7 +90,12 @@ int main(int argc, char *argv[])
 	for (i = 0; i < ns_fds; i++)
 		SAFE_SETNS(ns_fd[i], 0);
 
-	pid = SAFE_CLONE(&args);
+	pid = tst_clone(&args);
+	if (pid < 0) {
+		printf("clone() failed");
+		return 1;
+	}
+
 	if (!pid)
 		SAFE_EXECVP(argv[3], argv+3);
 

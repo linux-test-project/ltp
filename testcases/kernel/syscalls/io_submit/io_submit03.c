@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_submit invoked via syscall(2):
  *
  * 1. io_submit fails and returns EINVAL if ctx is invalid.

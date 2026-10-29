@@ -4,14 +4,17 @@
 
 #ifndef TST_ANSI_COLOR_H__
 #define TST_ANSI_COLOR_H__
+
 /*
  * NOTE: these colors should match colors defined in tst_flag2color() in
  * testcases/lib/tst_ansi_color.sh
  */
+
 #define ANSI_COLOR_BLUE		"\033[1;34m"
 #define ANSI_COLOR_GREEN	"\033[1;32m"
 #define ANSI_COLOR_MAGENTA	"\033[1;35m"
 #define ANSI_COLOR_RED		"\033[1;31m"
+#define ANSI_COLOR_WHITE	"\033[1;37m"
 #define ANSI_COLOR_YELLOW	"\033[1;33m"
 
 #define ANSI_COLOR_RESET	"\033[0m"

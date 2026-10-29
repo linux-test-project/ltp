@@ -3,19 +3,20 @@
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Jinhui Huang <huangjh.jy@cn.fujitsu.com>
  */
-/*
- * Description:
+
+/*\
  * Check various errnos for pwritev2(2).
- * 1) pwritev2() fails and sets errno to EINVAL if iov_len is invalid.
- * 2) pwritev2() fails and sets errno to EINVAL if the vector count iovcnt is
- *    less than zero.
- * 3) pwritev2() fails and sets errno to EOPNOTSUPP if flag is invalid.
- * 4) pwritev2() fails and sets errno to EFAULT when writing data from invalid
- *    address.
- * 5) pwritev2() fails and sets errno to EBADF if file descriptor is invalid.
- * 6) pwritev2() fails and sets errno to EBADF if file descriptor is open for
- *    reading.
- * 7) pwritev2() fails and sets errno to ESPIPE if fd is associated with a pipe.
+ *
+ * - pwritev2() fails and sets errno to EINVAL if iov_len is invalid.
+ * - pwritev2() fails and sets errno to EINVAL if the vector count iovcnt is
+ *   less than zero.
+ * - pwritev2() fails and sets errno to EOPNOTSUPP if flag is invalid.
+ * - pwritev2() fails and sets errno to EFAULT when writing data from invalid
+ *   address.
+ * - pwritev2() fails and sets errno to EBADF if file descriptor is invalid.
+ * - pwritev2() fails and sets errno to EBADF if file descriptor is open for
+ *   reading.
+ * - pwritev2() fails and sets errno to ESPIPE if fd is associated with a pipe.
  */
 
 #define _GNU_SOURCE
@@ -23,7 +24,7 @@
 #include <unistd.h>
 
 #include "tst_test.h"
-#include "lapi/pwritev2.h"
+#include "lapi/uio.h"
 
 #define CHUNK	64
 

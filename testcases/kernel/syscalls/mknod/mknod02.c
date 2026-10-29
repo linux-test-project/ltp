@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that if mknod(2) creates a filesystem node in a directory which
  * does not have the set-group-ID bit set, new node will not inherit the
  * group ownership from its parent directory and its group ID will be the
@@ -22,7 +20,7 @@
 #define MODE_SGID	02000
 
 #define TEMP_DIR "testdir"
-#define TEMP_NODE "testnode"
+#define TEMP_NODE TEMP_DIR "/testnode"
 
 static struct stat buf;
 static struct passwd *user_nobody;
@@ -39,14 +37,12 @@ static void setup(void)
 
 static void run(void)
 {
-	SAFE_CHDIR(TEMP_DIR);
 	TST_EXP_PASS(mknod(TEMP_NODE, MODE1, 0), "mknod(%s, %o, 0)", TEMP_NODE, MODE1);
 
 	SAFE_STAT(TEMP_NODE, &buf);
 	TST_EXP_EQ_LI(buf.st_gid, 0);
 
 	SAFE_UNLINK(TEMP_NODE);
-	SAFE_CHDIR("..");
 }
 
 static struct tst_test test = {

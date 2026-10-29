@@ -1,13 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2012-2020 Linux Test Project
+ * Copyright (c) 2012-2025 Linux Test Project
  * Copyright (c) 2012-2017 Red Hat, Inc.
+ */
+
+/*\
+ * Test for ``overcommit_memory`` and ``overcommit_ratio`` tunables.
  *
  * There are two tunables overcommit_memory and overcommit_ratio under
  * /proc/sys/vm/, which can control memory overcommitment.
  *
  * The overcommit_memory contains a flag that enables memory
  * overcommitment, it has three values:
+ *
  * - When this flag is 0, the kernel attempts to estimate the amount
  *   of free memory left when userspace requests more memory.
  * - When this flag is 1, the kernel pretends there is always enough
@@ -21,49 +26,57 @@
  * percentage added to the amount of actual RAM in a system when
  * considering whether to grant a particular memory request.
  * The general formula for this tunable is:
- * CommitLimit = SwapTotal + MemTotal * overcommit_ratio
- * CommitLimit, SwapTotal and MemTotal can read from /proc/meminfo.
+ *
+ * * CommitLimit = SwapTotal + MemTotal * overcommit_ratio
+ * * CommitLimit, SwapTotal and MemTotal can read from /proc/meminfo.
  *
  * The program is designed to test the two tunables:
  *
  * When overcommit_memory = 0, allocatable memory can't overextend
  * the amount of total memory:
- * a. less than free_total:    free_total / 2, alloc should pass.
- * b. greater than sum_total:   sum_total * 2, alloc should fail.
+ *
+ * 1. less than free_total:    free_total / 2, alloc should pass.
+ * 2. greater than sum_total:   sum_total * 2, alloc should fail.
  *
  * When overcommit_memory = 1, it can alloc enough much memory, I
  * choose the three cases:
- * a. less than sum_total:    sum_total / 2, alloc should pass
- * b. equal to sum_total:     sum_total,     alloc should pass
- * c. greater than sum_total: sum_total * 2, alloc should pass
- * *note: sum_total = SwapTotal + MemTotal
+ *
+ * 1. less than sum_total:    sum_total / 2, alloc should pass
+ * 2. equal to sum_total:     sum_total,     alloc should pass
+ * 3. greater than sum_total: sum_total * 2, alloc should pass
+ *
+ * NOTE: sum_total = SwapTotal + MemTotal
  *
  * When overcommit_memory = 2, the total virtual address space on
  * the system is limited to CommitLimit(Swap+RAM*overcommit_ratio)
  * commit_left(allocatable memory) = CommitLimit - Committed_AS
- * a. less than commit_left:    commit_left / 2, alloc should pass
- * b. overcommit limit:         CommitLimit + TotalBatchSize, should fail
- * c. greater than commit_left: commit_left * 2, alloc should fail
- * *note: CommitLimit is the current overcommit limit.
- *        Committed_AS is the amount of memory that system has used.
- * it couldn't choose 'equal to commit_left' as a case, because
- * commit_left rely on Committed_AS, but the Committed_AS is not stable.
- * *note2: TotalBatchSize is the total number of bytes, that can be
- *         accounted for in the per cpu counters for the vm_committed_as
- *         counter. Since the check used by malloc only looks at the
- *         global counter of vm_committed_as, it can overallocate a bit.
  *
- * References:
- * - Documentation/sysctl/vm.txt
- * - Documentation/vm/overcommit-accounting
+ * 1. less than commit_left:    commit_left / 2, alloc should pass
+ * 2. overcommit limit:         CommitLimit + TotalBatchSize, should fail
+ * 3. greater than commit_left: commit_left * 2, alloc should fail
+ *
+ * NOTE: CommitLimit is the current overcommit limit.
+ * Committed_AS is the amount of memory that system has used.
+ *
+ * It couldn't choose 'equal to commit_left' as a case, because commit_left rely
+ * on Committed_AS, but the Committed_AS is not stable.
+ *
+ * NOTE: TotalBatchSize is the total number of bytes, that can be accounted for
+ * in the per cpu counters for the vm_committed_as counter. Since the check used
+ * by malloc only looks at the global counter of vm_committed_as, it can
+ * overallocate a bit.
+ *
+ * [References]
+ *
+ * - :kernel_doc:`admin-guide/sysctl/vm`
  */
 
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "lapi/abisize.h"
-#include "mem.h"
+#include "tst_common.h"
+#include "tst_test.h"
 
 #define DEFAULT_OVER_RATIO	50L
 #define EXPECT_PASS		0
@@ -94,7 +107,7 @@ static void setup(void)
 	else
 		overcommit_ratio = DEFAULT_OVER_RATIO;
 
-	old_overcommit_ratio = get_sys_tune("overcommit_ratio");
+	old_overcommit_ratio = TST_SYS_CONF_LONG_GET(PATH_VM_OVERCOMMIT_RATIO);
 
 	mem_total = SAFE_READ_MEMINFO("MemTotal:");
 	tst_res(TINFO, "MemTotal is %ld kB", mem_total);
@@ -116,7 +129,7 @@ static void setup(void)
 		SAFE_SETRLIMIT(RLIMIT_AS, &lim);
 	}
 
-	set_sys_tune("overcommit_ratio", overcommit_ratio, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_RATIO, overcommit_ratio, 1);
 
 	calculate_total_batch_size();
 	tst_res(TINFO, "TotalBatchSize is %ld kB", total_batch_size);
@@ -124,32 +137,45 @@ static void setup(void)
 
 static void overcommit_memory_test(void)
 {
-
-#ifdef TST_ABI32
-	tst_brk(TCONF, "test is not designed for 32-bit system.");
-#endif
 	/* start to test overcommit_memory=2 */
-	set_sys_tune("overcommit_memory", 2, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 2, 1);
 
 	update_mem_commit();
-	alloc_and_check(commit_left * 2, EXPECT_FAIL);
-	alloc_and_check(commit_limit + total_batch_size, EXPECT_FAIL);
-	update_mem_commit();
-	alloc_and_check(commit_left / 2, EXPECT_PASS);
+	/* Skip tests that would overflow or exceed 32-bit address space */
+	if (tst_kernel_bits() == 64 || (unsigned long)commit_left <= TST_GB / TST_KB) {
+		alloc_and_check(commit_left * 2, EXPECT_FAIL);
+		alloc_and_check(commit_limit + total_batch_size, EXPECT_FAIL);
+		update_mem_commit();
+		alloc_and_check(commit_left / 2, EXPECT_PASS);
+	} else {
+		tst_res(TCONF, "Skipping large allocation tests due to address space limits");
+	}
 
 	/* start to test overcommit_memory=0 */
-	set_sys_tune("overcommit_memory", 0, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 0, 1);
 
 	update_mem();
 	alloc_and_check(free_total / 2, EXPECT_PASS);
-	alloc_and_check(sum_total * 2, EXPECT_FAIL);
+	/* Skip if sum_total * 2 would exceed address space.
+	 * On 32-bit, skip when sum_total > ULONG_MAX/4 (~1GB).
+	 * Most 32-bit systems with <=1GB RAM can map 2x that in 3GB vaddr space.
+	 * Systems with 2GB+ RAM likely cannot fit allocations in vaddr space. */
+	if (tst_kernel_bits() == 64 || (unsigned long)sum_total <= TST_GB / TST_KB) {
+		alloc_and_check(sum_total * 2, EXPECT_FAIL);
+	} else {
+		tst_res(TCONF, "Skipping large allocation test due to address space limits");
+	}
 
 	/* start to test overcommit_memory=1 */
-	set_sys_tune("overcommit_memory", 1, 1);
+	TST_SYS_CONF_LONG_SET(PATH_VM_OVERCOMMIT_MEMORY, 1, 1);
 
 	alloc_and_check(sum_total / 2, EXPECT_PASS);
-	alloc_and_check(sum_total, EXPECT_PASS);
-	alloc_and_check(sum_total * 2, EXPECT_PASS);
+	if (tst_kernel_bits() == 64 || (unsigned long)sum_total <= TST_GB / TST_KB) {
+		alloc_and_check(sum_total, EXPECT_PASS);
+		alloc_and_check(sum_total * 2, EXPECT_PASS);
+	} else {
+		tst_res(TCONF, "Skipping large allocation tests due to address space limits");
+	}
 
 }
 
@@ -157,7 +183,7 @@ static int heavy_malloc(long size)
 {
 	char *p;
 
-	p = malloc(size * KB);
+	LTP_VAR_USED(p) = malloc(size * TST_KB);
 	if (p != NULL) {
 		tst_res(TINFO, "malloc %ld kB successfully", size);
 		free(p);
@@ -245,7 +271,7 @@ static void calculate_total_batch_size(void)
 	/* there are ncpu separate counters, that can all grow up to
 	 * batch_size. So the maximum error for __vm_enough_memory is
 	 * batch_size * ncpus. */
-	total_batch_size = (batch_size * ncpus * pagesize) / KB;
+	total_batch_size = (batch_size * ncpus * pagesize) / TST_KB;
 }
 
 static struct tst_test test = {
@@ -256,9 +282,10 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.test_all = overcommit_memory_test,
+	.skip_in_compat = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/vm/overcommit_memory", NULL, TST_SR_TBROK},
-		{"/proc/sys/vm/overcommit_ratio", NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_MEMORY, NULL, TST_SR_TBROK},
+		{PATH_VM_OVERCOMMIT_RATIO, NULL, TST_SR_TBROK},
 		{}
 	},
 };

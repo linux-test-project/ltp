@@ -33,7 +33,7 @@
 
 #define TNAME "aio_read/1-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 #define WBUF_SIZE 1024

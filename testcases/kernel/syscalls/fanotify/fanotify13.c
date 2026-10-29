@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
  *
@@ -6,15 +6,24 @@
  */
 
 /*\
- * [Description]
- * Validate that the values returned within an event when FAN_REPORT_FID is
- * specified matches those that are obtained via explicit invocation to system
- * calls statfs(2) and name_to_handle_at(2).
+ * Validate that the values returned within an event when
+ * :manpage:`fanotify_init(2)` FAN_REPORT_FID is specified matches those that
+ * are obtained via explicit invocation to system calls :manpage:`statfs(2)` and
+ * :manpage:`name_to_handle_at(2)`.
  */
 
 /*
  * This is also regression test for:
  *     c285a2f01d69 ("fanotify: update connector fsid cache on add mark")
+ *
+ * The test variants 1-2 are regression tests for:
+ *     bc2473c90fca ("ovl: enable fsnotify events on underlying real files")
+ *
+ * The test variants 3-4 are tests for overlay fid events supprted since v6.6:
+ *     16aac5ad1fa9 ("ovl: support encoding non-decodable file handles")
+ *
+ * The last test case for FAN_DELETE_SELF is a regression test for:
+ *     c45beebfde34a ("ovl: support encoding fid from inode with no alias")
  */
 
 #define _GNU_SOURCE
@@ -25,6 +34,7 @@
 #include <sys/statfs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 #include <errno.h>
 #include <unistd.h>
 #include "tst_test.h"
@@ -33,15 +43,18 @@
 #include "fanotify.h"
 
 #define PATH_LEN 128
-#define BUF_SIZE 256
+#define BUF_SIZE 1024
 #define DIR_ONE "dir_one"
 #define FILE_ONE "file_one"
 #define FILE_TWO "file_two"
-#define MOUNT_PATH "mntpoint"
-#define EVENT_MAX ARRAY_SIZE(objects)
+#define MOUNT_PATH "tstmnt"
+#define EVENT_MAX (ARRAY_SIZE(objects)+1)
 #define DIR_PATH_ONE MOUNT_PATH"/"DIR_ONE
 #define FILE_PATH_ONE MOUNT_PATH"/"FILE_ONE
 #define FILE_PATH_TWO MOUNT_PATH"/"FILE_TWO
+
+#define TST_VARIANT_OVL_LOWER (tst_variant & 1)
+#define TST_VARIANT_OVL_WATCH (tst_variant > 2)
 
 #if defined(HAVE_NAME_TO_HANDLE_AT)
 struct event_t {
@@ -85,11 +98,20 @@ static struct test_case_t {
 	{
 		INIT_FANOTIFY_MARK_TYPE(FILESYSTEM),
 		FAN_OPEN | FAN_CLOSE_NOWRITE | FAN_ONDIR
-	}
+	},
+	/* Keep this test case last because it deletes the test files */
+	{
+		INIT_FANOTIFY_MARK_TYPE(INODE),
+		FAN_DELETE_SELF | FAN_ONDIR
+	},
 };
 
+static int ovl_mounted;
+static int bind_mounted;
+static int ovl_bind_mounted;
 static int nofid_fd;
 static int fanotify_fd;
+static int at_handle_fid;
 static int filesystem_mark_unsupported;
 static char events_buf[BUF_SIZE];
 static struct event_t event_set[EVENT_MAX];
@@ -106,12 +128,53 @@ static void create_objects(void)
 	}
 }
 
+static void delete_objects(void)
+{
+	unsigned int i;
+
+	for (i = 0; i < ARRAY_SIZE(objects); i++) {
+		if (objects[i].is_dir)
+			SAFE_RMDIR(objects[i].path);
+		else
+			SAFE_UNLINK(objects[i].path);
+	}
+}
+
+static void clean_upper_dir(void)
+{
+	unsigned int i;
+
+	SAFE_UMOUNT(MOUNT_PATH);
+	SAFE_UMOUNT(OVL_MNT);
+
+	SAFE_MOUNT(OVL_UPPER, MOUNT_PATH, "none", MS_BIND, NULL);
+	for (i = 0; i < ARRAY_SIZE(objects); i++)
+		SAFE_UNLINK(objects[i].path);
+	SAFE_UMOUNT(MOUNT_PATH);
+
+	SAFE_MOUNT_OVERLAY();
+	SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
+}
+
 static void get_object_stats(void)
 {
 	unsigned int i;
 
-	for (i = 0; i < ARRAY_SIZE(objects); i++)
-		fanotify_save_fid(objects[i].path, &objects[i].fid);
+	for (i = 0; i < ARRAY_SIZE(objects); i++) {
+		at_handle_fid |=
+			fanotify_save_fid(objects[i].path, &objects[i].fid);
+	}
+}
+
+static void restore_objects(void)
+{
+	if (TST_VARIANT_OVL_LOWER)
+		clean_upper_dir();
+	else
+		create_objects();
+
+	/* Get the re-created object ids */
+	get_object_stats();
 }
 
 static int setup_marks(unsigned int fd, struct test_case_t *tc)
@@ -123,10 +186,15 @@ static int setup_marks(unsigned int fd, struct test_case_t *tc)
 		SAFE_FANOTIFY_MARK(fd, FAN_MARK_ADD | mark->flag, tc->mask,
 				   AT_FDCWD, objects[i].path);
 
-		/* Setup the expected mask for each generated event */
+		/*
+		 * Setup the expected mask for each generated event.
+		 * No events are expected on directory without FAN_ONDIR.
+		 */
 		event_set[i].expected_mask = tc->mask;
 		if (!objects[i].is_dir)
 			event_set[i].expected_mask &= ~FAN_ONDIR;
+		else if (!(event_set[i].expected_mask & FAN_ONDIR))
+			event_set[i].expected_mask = 0;
 	}
 	return 0;
 }
@@ -143,15 +211,23 @@ static void do_test(unsigned int number)
 	struct fanotify_mark_type *mark = &tc->mark;
 
 	tst_res(TINFO,
-		"Test #%d: FAN_REPORT_FID with mark flag: %s",
-		number, mark->name);
+		"Test #%d.%d: FAN_REPORT_FID of %s events with mark type %s",
+		number, tst_variant,
+		(tc->mask & FAN_DELETE_SELF) ? "delete" : "open/close",
+		mark->name);
 
-	if (filesystem_mark_unsupported && mark->flag & FAN_MARK_FILESYSTEM) {
-		tst_res(TCONF, "FAN_MARK_FILESYSTEM not supported in kernel?");
+	if (tst_variant && !ovl_mounted) {
+		tst_res(TCONF, "overlayfs not supported on %s", tst_device->fs_type);
 		return;
 	}
 
-	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_REPORT_FID, O_RDONLY);
+	if (filesystem_mark_unsupported && mark->flag != FAN_MARK_INODE) {
+		FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+		return;
+	}
+
+	fanotify_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF | FAN_REPORT_FID |
+					 FAN_NONBLOCK, O_RDONLY);
 
 	/*
 	 * Place marks on a set of objects and setup the expected masks
@@ -160,22 +236,51 @@ static void do_test(unsigned int number)
 	if (setup_marks(fanotify_fd, tc) != 0)
 		goto out;
 
-	/* Generate sequence of FAN_OPEN events on objects */
-	for (i = 0; i < ARRAY_SIZE(objects); i++)
-		fds[i] = SAFE_OPEN(objects[i].path, O_RDONLY);
-
-	/*
-	 * Generate sequence of FAN_CLOSE_NOWRITE events on objects. Each
-	 * FAN_CLOSE_NOWRITE event is expected to be merged with its
-	 * respective FAN_OPEN event that was performed on the same object.
-	 */
-	for (i = 0; i < ARRAY_SIZE(objects); i++) {
-		if (fds[i] > 0)
-			SAFE_CLOSE(fds[i]);
+	/* Watching base fs - open files on overlayfs */
+	if (tst_variant && !ovl_bind_mounted) {
+		if (mark->flag & FAN_MARK_MOUNT) {
+			tst_res(TCONF, "overlayfs base fs cannot be watched with mount mark");
+			goto out;
+		}
+		if (tc->mask & FAN_DELETE_SELF) {
+			/* The eviction of base fs inodes is defered due to overlay held reference */
+			tst_res(TCONF, "overlayfs base fs cannot be watched for delete self events");
+			goto out;
+		}
+		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
 	}
 
+	/* Generate sequence of FAN_OPEN events on objects */
+	if (tc->mask & FAN_OPEN) {
+		for (i = 0; i < ARRAY_SIZE(objects); i++)
+			fds[i] = SAFE_OPEN(objects[i].path, O_RDONLY);
+	}
+
+	/*
+	 * Generate sequence of FAN_CLOSE_NOWRITE events on objects.
+	 * Each FAN_CLOSE_NOWRITE event is expected to be merged with the
+	 * respective FAN_OPEN event that was reported on the same object.
+	 */
+	if (tc->mask & FAN_CLOSE) {
+		for (i = 0; i < ARRAY_SIZE(objects); i++) {
+			if (fds[i] > 0)
+				SAFE_CLOSE(fds[i]);
+		}
+	}
+
+	/*
+	 * Generate sequence of FAN_DELETE_SELF events on objects.
+	 * Each FAN_DELETE_SELF event is expected to be merged with the
+	 * respective OPEN/CLOSE events that were reported on the same object.
+	 */
+	if (tc->mask & FAN_DELETE_SELF)
+		delete_objects();
+
+	if (tst_variant && !ovl_bind_mounted)
+		SAFE_UMOUNT(MOUNT_PATH);
+
 	/* Read events from event queue */
-	len = SAFE_READ(0, fanotify_fd, events_buf, BUF_SIZE);
+	len = SAFE_READ(SAFE_READ_ANY, fanotify_fd, events_buf, BUF_SIZE);
 
 	/* Iterate over event queue */
 	for (i = 0, metadata = (struct fanotify_event_metadata *) events_buf;
@@ -255,20 +360,78 @@ static void do_test(unsigned int number)
 			FSID_VAL_MEMBER(event_fid->fsid, 1),
 			*(unsigned long *) event_file_handle->f_handle);
 	}
+
+	/*
+	 * Verify that we did not get an extra event, for example, that we did
+	 * not get an event on directory without FAN_ONDIR.
+	 */
+	if (event_set[i].expected_mask) {
+		tst_res(TFAIL,
+			"Did not get an expected event (expected: %llx)",
+			event_set[i].expected_mask);
+	}
+
+	/* Restore to state before delete_objects() */
+	if (tc->mask & FAN_DELETE_SELF)
+		restore_objects();
 out:
 	SAFE_CLOSE(fanotify_fd);
 }
 
 static void do_setup(void)
 {
-	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, MOUNT_PATH);
+	const char *mnt;
 
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
+	/*
+	 * Bind mount to either base fs or to overlayfs over base fs:
+	 * Variant #0: watch base fs - open files on base fs
+	 * Variant #1: watch lower fs - open lower files on overlayfs
+	 * Variant #2: watch upper fs - open upper files on overlayfs
+	 * Variant #3: watch overlayfs - open lower files on overlayfs
+	 * Variant #4: watch overlayfs - open upper files on overlayfs
+	 *
+	 * Variants 1,2 test a bug whose fix bc2473c90fca ("ovl: enable fsnotify
+	 * events on underlying real files") in kernel 6.5 is not likely to be
+	 * backported to older kernels.
+	 * To avoid waiting for events that won't arrive when testing old kernels,
+	 * require that kernel supports encoding fid with new flag AT_HANDLE_FID,
+	 * also merged to 6.5 and not likely to be backported to older kernels.
+	 * Variants 3,4 test overlayfs watch with FAN_REPORT_FID, which also
+	 * requires kernel with support for AT_HANDLE_FID.
+	 */
+	if (tst_variant) {
+		REQUIRE_HANDLE_TYPE_SUPPORTED_BY_KERNEL(AT_HANDLE_FID);
+		tst_create_overlay_dirs();
+
+		mnt = TST_VARIANT_OVL_LOWER ? OVL_LOWER : OVL_UPPER;
+	} else {
+		mnt = OVL_BASE_MNTPOINT;
+	}
+	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_FID, mnt);
+	SAFE_MKDIR(MOUNT_PATH, 0755);
+	SAFE_MOUNT(mnt, MOUNT_PATH, "none", MS_BIND, NULL);
+	bind_mounted = 1;
 
 	nofid_fd = SAFE_FANOTIFY_INIT(FAN_CLASS_NOTIF, O_RDONLY);
 
-	/* Create file and directory objects for testing */
+	/* Create file and directory objects for testing on base fs */
 	create_objects();
+
+	if (tst_variant) {
+		ovl_mounted = TST_MOUNT_OVERLAY();
+		if (!ovl_mounted)
+			return;
+	}
+
+	if (TST_VARIANT_OVL_WATCH) {
+		/* Setup watches on overlayfs */
+		SAFE_MOUNT(OVL_MNT, MOUNT_PATH, "none", MS_BIND, NULL);
+		ovl_bind_mounted = 1;
+	}
+
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+					       ovl_bind_mounted ? OVL_MNT : MOUNT_PATH);
 
 	/*
 	 * Create a mark on first inode without FAN_REPORT_FID, to test
@@ -284,22 +447,34 @@ static void do_setup(void)
 
 static void do_cleanup(void)
 {
-	SAFE_CLOSE(nofid_fd);
+	if (nofid_fd > 0)
+		SAFE_CLOSE(nofid_fd);
 	if (fanotify_fd > 0)
 		SAFE_CLOSE(fanotify_fd);
+	if (ovl_bind_mounted)
+		SAFE_UMOUNT(MOUNT_PATH);
+	if (bind_mounted) {
+		SAFE_UMOUNT(MOUNT_PATH);
+		SAFE_RMDIR(MOUNT_PATH);
+	}
+	if (ovl_mounted)
+		SAFE_UMOUNT(OVL_MNT);
 }
 
 static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(test_cases),
+	.test_variants = 5,
 	.setup = do_setup,
 	.cleanup = do_cleanup,
 	.needs_root = 1,
 	.mount_device = 1,
-	.mntpoint = MOUNT_PATH,
+	.mntpoint = OVL_BASE_MNTPOINT,
 	.all_filesystems = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "c285a2f01d69"},
+		{"linux-git", "c285a2f01d692ef48d7243cf1072897bbd237407"},
+		{"linux-git", "bc2473c90fca55bf95b2ab6af1dacee26a4f92f6"},
+		{"linux-git", "c45beebfde34aa71afbc48b2c54cdda623515037"},
 		{}
 	}
 };

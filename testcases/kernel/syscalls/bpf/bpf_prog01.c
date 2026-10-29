@@ -1,21 +1,25 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
- *
+ */
+
+/*\
  * Trivial Extended Berkeley Packet Filter (eBPF) test.
  *
  * Sanity check loading and running bytecode.
  *
- * Test flow:
- * 1. Create array map
- * 2. Load eBPF program
- * 3. Attach program to socket
- * 4. Send packet on socket
- * 5. This should trigger eBPF program which writes to array map
- * 6. Verify array map was written to
+ * [Algorithm]
+ *
+ * - Create array map
+ * - Load eBPF program
+ * - Attach program to socket
+ * - Send packet on socket
+ * - This should trigger eBPF program which writes to array map
+ * - Verify array map was written to
  */
+
 /*
- * If test is executed in a loop and limit for locked memory (ulimit -l) is
+ * If the test is executed in a loop and limit for locked memory (ulimit -l) is
  * too low bpf() call can fail with EPERM due to deffered freeing.
  */
 
@@ -101,7 +105,6 @@ void run(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.min_kver = "3.19",
 	.bufs = (struct tst_buffers []) {
 		{&log, .size = BUFSIZ},
 		{&attr, .size = sizeof(*attr)},

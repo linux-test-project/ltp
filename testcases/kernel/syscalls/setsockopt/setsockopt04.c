@@ -3,7 +3,8 @@
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
  */
-/* Test for CVE-2016-9793
+/*\
+ * CVE-2016-9793
  *
  * With kernels between version 3.11 and 4.8 missing commit b98b0bc8 it
  * is possible to pass a very high unsigned integer as send buffer size
@@ -62,7 +63,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b98b0bc8c431"},
+		{"linux-git", "b98b0bc8c431e3ceb4b26b0dfc8db509518fb290"},
 		{"CVE", "2016-9793"},
 		{}
 	}

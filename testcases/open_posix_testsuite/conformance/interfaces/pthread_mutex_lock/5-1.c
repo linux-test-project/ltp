@@ -132,7 +132,7 @@ static void *threaded(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /********* main ********/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret, i, j;
 	pthread_t th;

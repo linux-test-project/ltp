@@ -33,8 +33,8 @@ test_subgroup()
 	fi
 
 	echo $MEMCG_PROCESS_PID > tasks
-	signal_memcg_process $MEM_TO_ALLOC
-	check_mem_stat "rss" $MEM_TO_ALLOC
+	signal_memcg_process $MIN_CHARGED
+	check_mem_stat "rss" $MIN_CHARGED $MEM_TO_ALLOC
 
 	cd subgroup
 	echo $MEMCG_PROCESS_PID > tasks
@@ -66,5 +66,6 @@ test3()
 
 # Allocate memory bigger than per-cpu kernel memory
 MEM_TO_ALLOC=$((PAGESIZES * 2))
+MIN_CHARGED=$((2 * (PAGESIZES - 1)))
 
 tst_run

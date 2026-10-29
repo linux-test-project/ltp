@@ -12,7 +12,7 @@
  *
  * Steps:
  * 1.  Create a new thread.  Have it sleep for 3 seconds.
- * 2.  The main() thread should wait for the new thread to finish
+ * 2.  The test_main() thread should wait for the new thread to finish
  *     execution before exiting out.
  *
  */
@@ -41,7 +41,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 
@@ -62,7 +62,7 @@ int main(void)
 
 	if (end_exec == 0) {
 		printf("Test FAILED: When using pthread_join(), "
-		       "main() did not wait for thread to finish "
+		       "test_main() did not wait for thread to finish "
 		       "execution before continuing.\n");
 		return PTS_FAIL;
 	}

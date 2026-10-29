@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
-#include "random_range.h"
+#include "tso_random_range.h"
 
 /*
  * Internal format of the range array set up by parse_range()
@@ -80,7 +80,7 @@ struct range {
  *			into an integer, or >= 0 if it was successfully
  *			parsed.  The resulting integer will be stored in
  *			*val.  If parse_func is NULL, parse_ranges will parse
- *			the tokens in a manner consistent with the the sscanf
+ *			the tokens in a manner consistent with the sscanf
  *			%i format.
  *	range_ptr	A user-supplied char **, which will be set to point
  *			at malloc'd space which holds the parsed range

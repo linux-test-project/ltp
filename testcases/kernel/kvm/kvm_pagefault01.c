@@ -136,73 +136,22 @@ TST_TEST_TCONF("Test supported only on x86_64");
 
 #else /* COMPILE_PAYLOAD */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <unistd.h>
 #include "tst_module.h"
 
 #define TDP_MMU_SYSFILE "/sys/module/kvm/parameters/tdp_mmu"
 #define TDP_AMD_SYSFILE "/sys/module/kvm_amd/parameters/npt"
 #define TDP_INTEL_SYSFILE "/sys/module/kvm_intel/parameters/ept"
 
-#define BUF_SIZE 64
-
-static int read_bool_sys_param(const char *filename)
-{
-	char buf[BUF_SIZE];
-	int i, fd, ret;
-
-	fd = open(filename, O_RDONLY);
-
-	if (fd < 0)
-		return -1;
-
-	ret = read(fd, buf, BUF_SIZE - 1);
-	SAFE_CLOSE(fd);
-
-	if (ret < 1)
-		return -1;
-
-	buf[ret] = '\0';
-
-	for (i = 0; buf[i] && !isspace(buf[i]); i++)
-		;
-
-	buf[i] = '\0';
-
-	if (isdigit(buf[0])) {
-		tst_parse_int(buf, &ret, INT_MIN, INT_MAX);
-		return ret;
-	}
-
-	if (!strcasecmp(buf, "N"))
-		return 0;
-
-	/* Assume that any other value than 0 or N means the param is enabled */
-	return 1;
-}
-
-static void reload_module(const char *module, char *arg)
-{
-	const char *const argv[] = {"modprobe", module, arg, NULL};
-
-	tst_res(TINFO, "Reloading module %s with parameter %s", module, arg);
-	tst_module_unload(module);
-	tst_cmd(argv, NULL, NULL, 0);
-}
-
 static void disable_tdp(void)
 {
-	if (!access(TDP_MMU_SYSFILE, F_OK)) {
-		/* FIXME: Is setting tdp_mmu=0 sufficient to disable TDP? */
-		return;
-	}
+	if (tst_read_bool_sys_param(TDP_AMD_SYSFILE) > 0)
+		tst_module_reload("kvm_amd", (char *const[]){"npt=0", NULL});
 
-	if (read_bool_sys_param(TDP_AMD_SYSFILE) > 0)
-		reload_module("kvm_amd", "npt=0");
+	if (tst_read_bool_sys_param(TDP_INTEL_SYSFILE) > 0)
+		tst_module_reload("kvm_intel", (char *const[]){"ept=0", NULL});
 
-	if (read_bool_sys_param(TDP_INTEL_SYSFILE) > 0)
-		reload_module("kvm_intel", "ept=0");
+	if (tst_read_bool_sys_param(TDP_MMU_SYSFILE) > 0)
+		tst_res(TINFO, "WARNING: tdp_mmu is enabled, beware of false negatives");
 }
 
 static void setup(void)
@@ -216,17 +165,16 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = tst_kvm_cleanup,
 	.needs_root = 1,
-	.save_restore = (const struct tst_path_val[]) {
-		{"/sys/module/kvm/parameters/tdp_mmu", "0",
-			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{}
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
+		NULL
 	},
 	.supported_archs = (const char *const []) {
 		"x86_64",
 		NULL
 	},
 	.tags = (struct tst_tag[]){
-		{"linux-git", "b1bd5cba3306"},
+		{"linux-git", "b1bd5cba3306691c771d558e94baa73e8b0b96b7"},
 		{"CVE", "2021-38198"},
 		{}
 	}

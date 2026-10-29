@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
+ * Copyright (c) Linux Test Project, 2019-2025
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
+/*\
  * Set CPU time limit for a process and check its behavior
- * after reaching CPU time limit.
- * 1) Process got SIGXCPU after reaching soft limit of CPU time.
- * 2) Process got SIGKILL after reaching hard limit of CPU time.
+ * after reaching CPU time limit
  *
- * Note:
- * This is also a regression test for the following kernel bug:
- * 'c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")'
+ * - Process got SIGXCPU after reaching soft limit of CPU time
+ * - Process got SIGKILL after reaching hard limit of CPU time
+ *
+ * Test is also a regression test for kernel bug from v4.17:
+ * c3bca5d450b62 ("posix-cpu-timers: Ensure set_process_cpu_timer is always evaluated")
  */
 
-#define _GNU_SOURCE
+#define _LARGEFILE64_SOURCE
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -27,6 +27,12 @@
 #include <sys/mman.h>
 
 #include "tst_test.h"
+#include "lapi/resource.h"
+
+#define TEST_VARIANTS 2
+
+static struct rlimit *rlim;
+static struct rlimit64 *rlim_64;
 
 static int *end;
 
@@ -37,6 +43,11 @@ static void sighandler(int sig)
 
 static void setup(void)
 {
+	rlim->rlim_cur = 1;
+	rlim->rlim_max = 2;
+	rlim_64->rlim_cur = 1;
+	rlim_64->rlim_max = 2;
+
 	SAFE_SIGNAL(SIGXCPU, sighandler);
 
 	end = SAFE_MMAP(NULL, sizeof(int), PROT_READ | PROT_WRITE,
@@ -58,12 +69,14 @@ static void verify_setrlimit(void)
 
 	pid = SAFE_FORK();
 	if (!pid) {
-		struct rlimit rlim = {
-			.rlim_cur = 1,
-			.rlim_max = 2,
-		};
-
-		TEST(setrlimit(RLIMIT_CPU, &rlim));
+		switch (tst_variant) {
+		case 0:
+			TEST(setrlimit(RLIMIT_CPU, rlim));
+		break;
+		case 1:
+			TEST(setrlimit_u64(RLIMIT_CPU, rlim_64));
+		break;
+		}
 		if (TST_RET == -1) {
 			tst_res(TFAIL | TTERRNO,
 				"setrlimit(RLIMIT_CPU) failed");
@@ -72,7 +85,8 @@ static void verify_setrlimit(void)
 
 		alarm(20);
 
-		while (1);
+		while (1)
+			;
 	}
 
 	SAFE_WAITPID(pid, &status, 0);
@@ -112,10 +126,16 @@ static void verify_setrlimit(void)
 static struct tst_test test = {
 	.test_all = verify_setrlimit,
 	.setup = setup,
+	.test_variants = TEST_VARIANTS,
+	.bufs = (struct tst_buffers []) {
+		{&rlim, .size = sizeof(*rlim)},
+		{&rlim_64, .size = sizeof(*rlim_64)},
+		{}
+	},
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "c3bca5d450b62"},
+		{"linux-git", "c3bca5d450b620dd3d36e14b5e1f43639fd47d6b"},
 		{}
 	}
 };

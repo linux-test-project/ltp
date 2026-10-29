@@ -2,19 +2,15 @@
 /*
  * Copyright (c) 2018 Michael Moese <mmoese@suse.com>
  */
-/* The commit 0fb44559ffd6  af_unix: move unix_mknod() out of bindlock
- * changed the behavior of bind() for STREAM UNIX domain sockets if
+
+/*\
+ * Test :manpage:`bind(2)` behavior on kernel change in v4.10-rc6:
+ * 0fb44559ffd6 ("af_unix: move unix_mknod() out of bindlock")
+ *
+ * :manpage:`bind(2)` fails for the new behavior and passes for the old one.
  */
 
-#include <errno.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "tst_kvercmp.h"
 #include "tst_test.h"
-#include "tst_safe_net.h"
 
 #define SNAME_A "socket.1"
 #define SNAME_B "socket.2"
@@ -29,17 +25,17 @@ static void run(void)
 	 * rebound.
 	 */
 	TST_EXP_FAIL(bind(sock1, (struct sockaddr *)&sun2, sizeof(sun2)),
-	             EINVAL, "re-bind() socket");
+		     EINVAL, "re-bind() socket");
 
 	/*
 	 * Since a socket is already bound to the pathname, it can't be bound
 	 * to a second socket. Expected error is EADDRINUSE.
 	 */
 	TST_EXP_FAIL(bind(sock2, (struct sockaddr *)&sun1, sizeof(sun1)),
-	             EADDRINUSE, "bind() with bound pathname");
+		     EADDRINUSE, "bind() with bound pathname");
 
 	/*
-	 * Kernel is buggy since it creates the node in fileystem first, then
+	 * Kernel is buggy since it creates the node in filesystem first, then
 	 * locks the socket and does all the checks and the node is not removed
 	 * in the error path. For now we will unlink the node here so that the
 	 * test works fine when the run() function is executed in a loop.
@@ -59,12 +55,12 @@ static void setup(void)
 	sun1.sun_family = AF_UNIX;
 	sun2.sun_family = AF_UNIX;
 
-	if (sprintf(sun1.sun_path, "%s", SNAME_A) < (int) strlen(SNAME_A)) {
+	if (sprintf(sun1.sun_path, "%s", SNAME_A) < (int)strlen(SNAME_A)) {
 		tst_res(TFAIL, "sprintf failed");
 		return;
 	}
 
-	if (sprintf(sun2.sun_path, "%s", SNAME_B) < (int) strlen(SNAME_B)) {
+	if (sprintf(sun2.sun_path, "%s", SNAME_B) < (int)strlen(SNAME_B)) {
 		tst_res(TFAIL, "sprintf failed");
 		return;
 	}
@@ -74,8 +70,11 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	SAFE_CLOSE(sock1);
-	SAFE_CLOSE(sock2);
+	if (sock1 > 0)
+		SAFE_CLOSE(sock1);
+
+	if (sock2 > 0)
+		SAFE_CLOSE(sock2);
 }
 
 static struct tst_test test = {

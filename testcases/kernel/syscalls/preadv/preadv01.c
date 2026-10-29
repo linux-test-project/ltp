@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
-* Copyright (c) 2015 Fujitsu Ltd.
-* Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
-*/
+ * Copyright (c) 2015 Fujitsu Ltd.
+ * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2016-2023
+ */
 
-/*
-* Test Name: preadv01
-*
-* Test Description:
-* Testcase to check the basic functionality of the preadv(2).
-* Preadv(2) should succeed to read the expected content of data
-* and after reading the file, the file offset is not changed.
-*/
+/*\
+ * Testcase to check the basic functionality of the preadv(2).
+ *
+ * Preadv(2) should succeed to read the expected content of data
+ * and after reading the file, the file offset is not changed.
+ */
 
 #define _GNU_SOURCE
 
@@ -19,7 +18,7 @@
 #include <sys/uio.h>
 
 #include "tst_test.h"
-#include "preadv.h"
+#include "lapi/uio.h"
 
 #define CHUNK           64
 
@@ -38,7 +37,7 @@ static struct tcase {
 	{1, CHUNK*3/2, CHUNK/2, 'b'}
 };
 
-void verify_preadv(unsigned int n)
+static void verify_preadv(unsigned int n)
 {
 	int i;
 	char *vec;
@@ -81,7 +80,7 @@ void verify_preadv(unsigned int n)
 		 "with content '%c' expectedly", tc->size, tc->content);
 }
 
-void setup(void)
+static void setup(void)
 {
 	char buf[CHUNK];
 
@@ -94,7 +93,7 @@ void setup(void)
 	SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, sizeof(buf));
 }
 
-void cleanup(void)
+static void cleanup(void)
 {
 	if (fd > 0)
 		SAFE_CLOSE(fd);

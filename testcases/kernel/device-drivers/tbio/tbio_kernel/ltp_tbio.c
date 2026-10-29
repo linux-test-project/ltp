@@ -43,7 +43,9 @@
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/vmalloc.h>
-#include <linux/genhd.h>
+#ifdef HAVE_LINUX_GENHD_H
+# include <linux/genhd.h>
+#endif
 #include <linux/blkdev.h>
 #include <linux/buffer_head.h>
 

@@ -24,7 +24,7 @@
 #define _GNU_SOURCE
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/fcntl.h"
 #include "renameat2.h"
 
@@ -78,11 +78,6 @@ int main(int ac, char **av)
 
 static void setup(void)
 {
-	if ((tst_kvercmp(3, 15, 0)) < 0) {
-		tst_brkm(TCONF, NULL,
-			"This test can only run on kernels that are 3.15. and higher");
-	}
-
 	tst_tmpdir();
 
 	fs_type = tst_fs_type(cleanup, ".");
@@ -146,7 +141,7 @@ static void renameat2_verify(void)
 
 	SAFE_STAT(cleanup, emptyfile, &st);
 
-	readn = SAFE_READ(cleanup, 0, fd, str, BUFSIZ);
+	readn = SAFE_READ(cleanup, SAFE_READ_ANY, fd, str, BUFSIZ);
 
 	if (close(fd) < 0)
 		tst_brkm(TERRNO | TFAIL, cleanup, "close fd failed");

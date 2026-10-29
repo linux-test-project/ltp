@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for potential issues in writev() if the first iovec entry is NULL
  * and the next one is not present in RAM. This can result in a brief window
  * where writev() first writes uninitialized data into the file (possibly
@@ -35,7 +33,7 @@
 
 static unsigned char buf[BUF_SIZE], *map_ptr;
 static int mapfd = -1, writefd = -1, readfd = -1;
-static int written;
+static tst_atomic_t written;
 static struct tst_fzsync_pair fzsync_pair;
 struct iovec iov[5];
 
@@ -97,8 +95,9 @@ static void run(void)
 		tst_fzsync_start_race_a(&fzsync_pair);
 
 		for (total_read = 0; total_read < tst_atomic_load(&written);) {
-			total_read += SAFE_READ(0, readfd, readbuf+total_read,
-				BUF_SIZE + 1 - total_read);
+			total_read += SAFE_READ(SAFE_READ_ANY, readfd,
+						readbuf + total_read,
+						BUF_SIZE + 1 - total_read);
 		}
 
 		tst_fzsync_end_race_a(&fzsync_pair);
@@ -145,9 +144,10 @@ static struct tst_test test = {
 	.min_cpus = 2,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 75,
+	.runtime = 75,
+	.min_runtime = 16,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "d4690f1e1cda"},
+		{"linux-git", "d4690f1e1cdabb4d61207b6787b1605a0dc0aeab"},
 		{}
 	}
 };

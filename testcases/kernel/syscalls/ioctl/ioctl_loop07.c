@@ -6,9 +6,8 @@
  */
 
 /*\
- * [Description]
- *
- * Tests ioctl() on loopdevice with LOOP_SET_STATUS64 and LOOP_GET_STATUS64 flags.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_SET_STATUS64 and
+ * LOOP_GET_STATUS64 flags.
  *
  * Tests lo_sizelimit field. If lo_sizelimit is 0, it means max
  * available. If sizelimit is less than loop_size, loopsize will
@@ -72,7 +71,8 @@ static void verify_ioctl_loop(unsigned int n)
 				loopinfoget.lo_sizelimit, tc->set_sizelimit);
 	/*Reset*/
 	if (tc->ioctl_flag == LOOP_CONFIGURE) {
-		tst_detach_device_by_fd(dev_path, dev_fd);
+		tst_detach_device_by_fd(dev_path, &dev_fd);
+		dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	} else {
 		loopinfo.lo_sizelimit = 0;
 		TST_RETRY_FUNC(ioctl(dev_fd, LOOP_SET_STATUS, &loopinfo), TST_RETVAL_EQ0);
@@ -100,7 +100,8 @@ static void run(unsigned int n)
 		return;
 	}
 	if (attach_flag) {
-		tst_detach_device_by_fd(dev_path, dev_fd);
+		tst_detach_device_by_fd(dev_path, &dev_fd);
+		dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 		attach_flag = 0;
 	}
 	loopconfig.info.lo_sizelimit = tc->set_sizelimit;
@@ -158,11 +159,11 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_tmpdir = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "79e5dc59e297"},
+		{"linux-git", "79e5dc59e2974a48764269fa9ff544ae8ffe3338"},
 		{}
 	},
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

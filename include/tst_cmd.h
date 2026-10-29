@@ -1,45 +1,43 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later
  * Copyright (c) 2015-2016 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2016-2025
  */
 
 #ifndef TST_CMD_H__
 #define TST_CMD_H__
 
+/**
+ * enum tst_cmd_flags - flags for tst_cmd() and tst_cmd_fds().
+ *
+ * @TST_CMD_PASS_RETVAL: return the program exit code, otherwise it will call
+ * cleanup_fn() if the program exit code is not zero.
+ * @TST_CMD_TCONF_ON_MISSING: exit with :c:enum:`TCONF <tst_res_flags>` if
+ * program is not in ``PATH``.
+ */
 enum tst_cmd_flags {
-	/*
-	 * return the program exit code, otherwise it will call cleanup_fn() if the
-	 * program exit code is not zero.
-	 */
 	TST_CMD_PASS_RETVAL = 1,
-
-	/* exit with TCONF if program is not in path */
 	TST_CMD_TCONF_ON_MISSING = 2,
 };
 
 /*
- * vfork() + execvp() specified program.
- * @argv: a list of two (at least program name + NULL) or more pointers that
- * represent the argument list to the new program. The array of pointers
- * must be terminated by a NULL pointer.
- * @stdout_fd: file descriptor where to redirect stdout. Set -1 if
- * redirection is not needed.
- * @stderr_fd: file descriptor where to redirect stderr. Set -1 if
- * redirection is not needed.
- * @flags: enum tst_cmd_flags
+ * struct tst_cmd - Provides details about a command struct needed by LTP test.
+ * @cmd: The name of the command.
+ * @optional: A flag indicating if the command is optional.
+ * @present: A flag indicating if the command was found at runtime. This is an output
+ * parameter, set by the LTP library during the test setup.
  */
+struct tst_cmd {
+	const char *cmd;
+	unsigned int optional:1;
+	unsigned int present:1;
+};
+
 int tst_cmd_fds_(void (cleanup_fn)(void),
 			const char *const argv[],
 			int stdout_fd,
 			int stderr_fd,
 			enum tst_cmd_flags flags);
 
-/* Executes tst_cmd_fds() and redirects its output to a file
- * @stdout_path: path where to redirect stdout. Set NULL if redirection is
- * not needed.
- * @stderr_path: path where to redirect stderr. Set NULL if redirection is
- * not needed.
- * @flags: enum tst_cmd_flags
- */
 int tst_cmd_(void (cleanup_fn)(void),
 		const char *const argv[],
 		const char *stdout_path,
@@ -47,6 +45,20 @@ int tst_cmd_(void (cleanup_fn)(void),
 		enum tst_cmd_flags flags);
 
 #ifdef TST_TEST_H__
+/**
+ * tst_cmd_fds() - :manpage:`vfork(2)` + :manpage:`execvp(3)` specified program.
+ *
+ * @argv: A list of two (at least program name + NULL) or more pointers that
+ * represent the argument list to the new program. The array of pointers
+ * must be terminated by a NULL pointer.
+ * @stdout_fd: File descriptor where to redirect stdout. Set -1 if
+ * redirection is not needed.
+ * @stderr_fd: File descriptor where to redirect stderr. Set -1 if
+ * redirection is not needed.
+ * @flags: enum tst_cmd_flags.
+ *
+ * Return: The exit status of the program.
+ */
 static inline int tst_cmd_fds(const char *const argv[],
 				  int stdout_fd,
 				  int stderr_fd,
@@ -56,6 +68,20 @@ static inline int tst_cmd_fds(const char *const argv[],
 	                        stdout_fd, stderr_fd, flags);
 }
 
+/**
+ * tst_cmd() - Executes tst_cmd_fds() and redirects its output to a file.
+ *
+ * @argv: A list of two (at least program name + NULL) or more pointers that
+ * represent the argument list to the new program. The array of pointers
+ * must be terminated by a NULL pointer.
+ * @stdout_path: Path where to redirect stdout. Set NULL if redirection is
+ * not needed.
+ * @stderr_path: Path where to redirect stderr. Set NULL if redirection is
+ * not needed.
+ * @flags: enum tst_cmd_flags.
+ *
+ * Return: The exit status of the program.
+ */
 static inline int tst_cmd(const char *const argv[],
 			      const char *stdout_path,
 			      const char *stderr_path,
@@ -86,8 +112,13 @@ static inline int tst_cmd(void (cleanup_fn)(void),
 }
 #endif
 
-/* Wrapper function for system(3), ignorcing SIGCHLD signal.
- * @command: the command to be run.
+/**
+ * tst_system() - Wrapper function for :manpage:`system(3)`, ignoring ``SIGCHLD``
+ * signal.
+ *
+ * @command: The command to be run.
+ *
+ * Return: The system() return code.
  */
 int tst_system(const char *command);
 

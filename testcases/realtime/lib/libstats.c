@@ -43,14 +43,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <math.h>
-#include <libstats.h>
-#include <librttest.h>
-
-#include "../include/realtime_config.h"
-
-#ifndef HAVE_EXP10
-# define exp10(x) (exp((x) * log(10)))
-#endif
+#include "libstats.h"
+#include "librttest.h"
 
 int save_stats = 0;
 

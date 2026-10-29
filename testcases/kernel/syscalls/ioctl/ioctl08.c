@@ -2,18 +2,20 @@
 /*
  * Copyright (c) 2019 SUSE LLC
  * Author: Christian Amann <camann@suse.com>
- *
- * Tests the ioctl functionality to deduplicate fileranges using
+ */
+
+/*\
+ * Tests :manpage:`ioctl(2)` functionality to deduplicate fileranges using
  * btrfs filesystem.
  *
- * 1)	Sets the same contents for two files and deduplicates it.
- *	Deduplicates 3 bytes and set the status to
- *	FILE_DEDUPE_RANGE_SAME.
- * 2)	Sets different content for two files and tries to
- *	deduplicate it. 0 bytes get deduplicated and status is
- *	set to FILE_DEDUPE_RANGE_DIFFERS.
- * 3)	Sets same content for two files but sets the length to
- *	deduplicate to -1. ioctl(FIDEDUPERANGE) fails with EINVAL.
+ * 1. Sets the same contents for two files and deduplicates it.
+ *    Deduplicates 3 bytes and set the status to
+ *    FILE_DEDUPE_RANGE_SAME.
+ * 2. Sets different content for two files and tries to
+ *    deduplicate it. 0 bytes get deduplicated and status is
+ *    set to FILE_DEDUPE_RANGE_DIFFERS.
+ * 3. Sets same content for two files but sets the length to
+ *    deduplicate to -1. ioctl(FIDEDUPERANGE) fails with EINVAL.
  */
 
 #include "config.h"
@@ -114,6 +116,7 @@ static void setup(void)
 
 
 static struct tst_test test = {
+	.timeout = 1,
 	.test = verify_ioctl,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,
@@ -122,10 +125,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "btrfs",
-	.needs_drivers = (const char *const[]) {
-		"btrfs",
-		NULL,
+	.filesystems = (struct tst_fs []) {
+		{.type = "btrfs"},
+		{}
 	},
 };
 #else

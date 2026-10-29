@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, when a parent process opens a pipe, a child process can
  * read from it.
  */
@@ -27,7 +25,7 @@ static void run(void)
 	wr_cnt = SAFE_WRITE(SAFE_WRITE_ALL, fds[1], wrbuf, sizeof(wrbuf));
 
 	if (!SAFE_FORK()) {
-		rd_cnt = SAFE_READ(1, fds[0], rdbuf, wr_cnt);
+		rd_cnt = SAFE_READ(SAFE_READ_ALL, fds[0], rdbuf, wr_cnt);
 		TST_EXP_EQ_LU(wr_cnt, rd_cnt);
 	}
 

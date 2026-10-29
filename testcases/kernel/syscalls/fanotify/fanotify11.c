@@ -6,8 +6,7 @@
  */
 
 /*\
- * [Description]
- * After fanotify_init adds flags FAN_REPORT_TID,
+ * After :manpage:`fanotify_init(2)` adds flags FAN_REPORT_TID,
  * check whether the program can accurately identify which thread id
  * in the multithreaded program triggered the event.
  */
@@ -77,7 +76,8 @@ static void test01(unsigned int i)
 
 	SAFE_PTHREAD_CREATE(&p_id, NULL, thread_create_file, NULL);
 
-	SAFE_READ(0, fd_notify, &event, sizeof(struct fanotify_event_metadata));
+	SAFE_READ(SAFE_READ_ANY, fd_notify, &event,
+		  sizeof(struct fanotify_event_metadata));
 
 	if ((tcases[i] & FAN_REPORT_TID) && event.pid == tid)
 		tst_res(TPASS, "event.pid == tid");
@@ -94,7 +94,7 @@ static void test01(unsigned int i)
 
 static void setup(void)
 {
-	fan_report_tid_unsupported = fanotify_init_flags_supported_by_kernel(FAN_REPORT_TID);
+	fan_report_tid_unsupported = fanotify_init_flags_supported_on_fs(FAN_REPORT_TID, ".");
 }
 
 static struct tst_test test = {

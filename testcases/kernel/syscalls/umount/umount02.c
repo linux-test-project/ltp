@@ -2,20 +2,22 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2014 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2002-2023
  * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- * Check for basic errors returned by umount(2) system call.
- *
- * Verify that umount(2) returns -1 and sets errno to
- * 1) EBUSY if it cannot be umounted, because dir is still busy.
- * 2) EFAULT if specialfile or device file points to invalid address space.
- * 3) ENOENT if pathname was empty or has a nonexistent component.
- * 4) EINVAL if specialfile or device is invalid or not a mount point.
- * 5) ENAMETOOLONG if pathname was longer than MAXPATHLEN.
  */
 
-#include <errno.h>
-#include <string.h>
+/*\
+ * Check for basic errors returned by :manpage:`umount(2)` system call.
+ *
+ * Verify that :manpage:`umount(2)` returns -1 and sets errno to
+ *
+ * 1. EBUSY if it cannot be umounted, because dir is still busy.
+ * 2. EFAULT if specialfile or device file points to invalid address space.
+ * 3. ENOENT if pathname was empty or has a nonexistent component.
+ * 4. EINVAL if specialfile or device is invalid or not a mount point.
+ * 5. ENAMETOOLONG if pathname was longer than MAXPATHLEN.
+ */
+
 #include <sys/mount.h>
 #include "tst_test.h"
 
@@ -41,21 +43,7 @@ static void verify_umount(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
 
-	TEST(umount(tc->mntpoint));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "umount() succeeds unexpectedly");
-		return;
-	}
-
-	if (tc->exp_errno != TST_ERR) {
-		tst_res(TFAIL | TTERRNO, "umount() should fail with %s",
-			tst_strerrno(tc->exp_errno));
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "umount() fails as expected: %s",
-		tc->err_desc);
+	TST_EXP_FAIL(umount(tc->mntpoint), tc->exp_errno);
 }
 
 static void setup(void)

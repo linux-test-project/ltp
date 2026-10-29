@@ -33,7 +33,7 @@
 #define MSGSTR "0123456789"
 #define BUFFER 40
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE], msgrcd[BUFFER], msgrcd2[BUFFER];
 	const char *msgptr = MSGSTR;

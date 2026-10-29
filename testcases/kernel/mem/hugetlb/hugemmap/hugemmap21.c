@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests copy-on-write semantics of large pages where a number of threads
  * map the same file with the MAP_PRIVATE flag. The threads then write
  * into their copy of the mapping and recheck the contents to ensure they
@@ -36,9 +34,7 @@ static void do_work(int thread, size_t size, int fd)
 	for (i = 0; i < size; i++)
 		memcpy((char *)addr+i, &pattern, 1);
 
-	if (msync(addr, size, MS_SYNC))
-		tst_brk(TBROK | TERRNO, "Thread %d (pid %d): msync() failed",
-				thread, getpid());
+	SAFE_MSYNC(addr, size, MS_SYNC);
 
 	for (i = 0; i < size; i++) {
 		if (addr[i] != pattern) {
@@ -96,7 +92,7 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = tst_get_hugepage_size();
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

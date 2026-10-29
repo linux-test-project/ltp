@@ -4,9 +4,7 @@
  */
 
 /*\
- * [Description]
- *
- * Basic open_by_handle_at() tests.
+ * Basic :manpage:`open_by_handle_at(2)` test.
  *
  * [Algorithm]
  *

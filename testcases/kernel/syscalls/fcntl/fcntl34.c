@@ -96,7 +96,7 @@ static void test01(void)
 	tst_res(TINFO, "verifying file's data");
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 	for (i = 0; i < writes_num * thread_cnt; ++i) {
-		SAFE_READ(1, fd, buf, write_size);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, write_size);
 
 		if (buf[0] >= thread_cnt) {
 			tst_res(TFAIL, "unexpected data read");
@@ -125,7 +125,6 @@ static void test01(void)
 }
 
 static struct tst_test test = {
-	.min_kver = "3.15.0",
 	.needs_tmpdir = 1,
 	.test_all = test01,
 	.setup = setup

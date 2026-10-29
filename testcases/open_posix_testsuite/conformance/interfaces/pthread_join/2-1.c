@@ -13,7 +13,7 @@
  *
  * Steps:
  * 1.  Create a new thread.  Have it return a return code on pthread_exit();
- * 2.  Call pthread_join() in main(), and pass to it 'value_ptr'.
+ * 2.  Call pthread_join() in test_main(), and pass to it 'value_ptr'.
  * 3.  Check to see of the value_ptr and the value returned by pthread_exit()
  *     are the same;
  *
@@ -42,7 +42,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	void *value_ptr;

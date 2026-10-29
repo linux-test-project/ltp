@@ -18,31 +18,13 @@ SSH server needs to be configured to allow root login and use Public Key
 Authentication (`PermitRootLogin yes` and `PubkeyAuthentication yes` in
 `/etc/ssh/sshd_config`).
 
-Some of the network stress tests which hasn't been ported to network API were
-designed to be tested with `rsh` via `LTP_RSH` environment variable. Now it's
-by default used `ssh`, for details see `testcases/network/stress/README`.
-
 ## Server Services Configuration
 Tests have various external dependencies, exit with `TCONF` when not installed.
 Some tests require additional setup.
 
-### FTP and telnet setup
-FTP stress tests and telnet server tests require environment variables `RHOST`
-(remote machine), `RUSER` (remote user) and `PASSWD` (remote password). NOTE:
-`RHOST` will imply two host configuration for other tests.
-
-If `RUSER` is set to `root`, either of these steps is required:
-
-* In `/etc/ftpusers` (or `/etc/vsftpd.ftpusers`), comment the line containing
-"root" string. This file lists all those users who are not given access to do ftp
-on the current system.
-
-* If you don’t want to do the previous step, put following entry into `/root/.netrc`:
-```
-machine <remote_server_name>
-login root
-password <remote_root_password>
-```
+### FTP
+FTP stress tests require vsftpd. It will be started with with enabled anonymous
+logins, stopped after testing.
 
 ### HTTP setup
 HTTP stress tests require configured and running web server (Apache2, Nginx, etc.).
@@ -72,17 +54,30 @@ export LTPROOT="/opt/ltp"; export PATH="$LTPROOT/testcases/bin:$PATH"
 ```
 
 ## Running the tests
-The network tests are executed by running the network.sh script:
+
+To run the network testcases, use the official LTP executor kirk:
+https://github.com/linux-test-project/kirk.
+
+To pass environment variables use `--env` with list of key=value separated by `:`
 
 ```sh
-TEST_VARS ./network.sh OPTIONS
+kirk --run-suite net.features \
+     --env 'VIRT_PERF_THRESHOLD=180:LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1'
 ```
-Where
-* `TEST_VARS` - non-default network parameters
-* `OPTIONS` - test group(s), use `-h` to see available ones.
 
 Default values for all LTP network parameters are set in `testcases/lib/tst_net.sh`.
 Network stress parameters are documented in `testcases/network/stress/README`.
+
+Tests which use `tst_netload_compare()` test also performance. They can fail on
+overloaded SUT.  To ignore performance failure and test only the network functionality,
+set `LTP_NET_FEATURES_IGNORE_PERFORMANCE_FAILURE=1` environment variable.
+
+## Dependencies
+
+Some network tests which use `tst_ping()` function require `ping` with `-I` support,
+which is not supported by `ping` from [inetutils](https://www.gnu.org/software/inetutils/).
+Use `ping` from [iputils](https://github.com/iputils/iputils/) or from [BusyBox](https://busybox.net/)
+(configured with `CONFIG_FEATURE_IPV6=y` `CONFIG_FEATURE_FANCY_PING=y`).
 
 ## Debugging
 Both single and two host configurations support debugging via

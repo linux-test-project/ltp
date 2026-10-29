@@ -2,16 +2,14 @@
 /*
  * Copyright (c) 2021 Richard Palethorpe <rpalethorpe@suse.com>
  */
-/*\
- * [Description]
- *
+/*
  * This verifies Fuzzy Sync's ability to reproduce a particular
  * outcome to a data race when multiple races are present.
  *
  * We make the simplifying assumptions that:
  * - There is one data race we want to hit and one to avoid.
  * - Each thread contains two contiguous critical sections. One for each race.
- * - The threads only interact through two variables, one for each race.
+ * - The threads only interact through two variables(H: Hit, D: Avoid), one for each race.
  * - If we hit the race we want to avoid then it causes thread A to exit early.
  *
  * We don't consider more complicated dynamic interactions between the
@@ -22,7 +20,7 @@
  * threshold of complexity, increasing the complexity of the race is
  * no different from adding random noise.
  *
- * Emperically this appears to be true. So far we have seen in
+ * Empirically this appears to be true. So far we have seen in
  * reproducers that there are no more than two significant data
  * races. One we wish to reproduce and one we wish to avoid. It is
  * possible that the code contains multiple data races, but that they
@@ -35,7 +33,7 @@
  * Here we only test a bias to delay B. A delay of A would be
  * identical except that the necessary delay bias would be negative.
  *
-\*/
+ */
 
 #include "tst_test.h"
 #include "tst_fuzzy_sync.h"
@@ -63,14 +61,35 @@ struct race {
 	const struct window b;
 };
 
-static int c, d;
+static tst_atomic_t H, D;
 static struct tst_fzsync_pair pair;
 
+/**
+ * Race 1:
+ *  Thread A:   |---(1)--|[1]|---(1)---|
+ *  Thread B:   |---(1)--|[1]|---(1)---|
+ *  ad (A):     |---(0)|[1]|(0)---|
+ *  bd (B):     |---(0)|[1]|(0)---|
+ *
+ * Race 2:
+ *  Thread A:   |------------------(30)------------------|[1]|---(1)---|
+ *  Thread B:   |---(1)--|[1]|---(1)---|
+ *  ad (A):     |---(0)|[1]|--(0)---|
+ *  bd (B):     |---(0)|[20]|--(0)---|
+ *
+ * Race 3:
+ *  Thread A:   |--------------------(40)--------------------|[1]|---(0)---|
+ *  Thread B:   |---(1)--|[1]|------------------(20)------------------|
+ *  ad (A):     |---(1)--|[10]|--(0)---|
+ *  bd (B):     |---(1)--|[10]|--(0)---|
+ */
 static const struct race races[] = {
 	{ .a =  { 1, 1, 1 }, .b =  { 1, 1, 1 },
 	  .ad = { 0, 1, 0 }, .bd = { 0, 1, 0 } },
+
 	{ .a =  { 30, 1, 1 }, .b =  { 1, 1,  1 },
 	  .ad = { 0,  1, 0 }, .bd = { 0, 20, 0 } },
+
 	{ .a =  { 40, 1,  0 }, .b =  { 1, 1,  20 },
 	  .ad = { 1,  10, 0 }, .bd = { 1, 10, 0 } },
 };
@@ -87,6 +106,20 @@ static void setup(void)
 	tst_fzsync_pair_init(&pair);
 }
 
+/**
+ * to_abs() - Convert relative time intervals to absolute time points
+ * @w: The input window structure containing relative time intervals
+ *
+ * This function converts relative time intervals (represented in the
+ * struct window) into absolute time points, where:
+ *
+ * - The start of the critical section is `critical_s`.
+ * - The end of the critical section is calculated as `critical_s + critical_t`.
+ * - The end of execution is calculated as `critical_s + critical_t + return_t`.
+ *
+ * Return:
+ * A new window structure (`wc`) with absolute time points.
+ */
 static struct window to_abs(const struct window w)
 {
 	const struct window wc = {
@@ -109,9 +142,9 @@ static void *worker(void *v)
 		tst_fzsync_start_race_b(&pair);
 		for (now = 0; now <= fin; now++) {
 			if (now == b.critical_s || now == b.critical_t)
-				tst_atomic_add_return(1, &c);
+				tst_atomic_add_return(1, &H);
 			if (now == bd.critical_s || now == bd.critical_t)
-				tst_atomic_add_return(1, &d);
+				tst_atomic_add_return(1, &D);
 
 			sched_yield();
 		}
@@ -132,19 +165,19 @@ static void run(unsigned int i)
 	SAFE_PTHREAD_CREATE(&pair.thread_b, 0, worker, &i);
 
 	while (tst_fzsync_run_a(&pair)) {
-		c = 0;
-		d = 0;
+		H = 0;
+		D = 0;
 		fin = a.return_t;
 
 		tst_fzsync_start_race_a(&pair);
 		for (now = 0; now <= fin; now++) {
 			if (now >= ad.critical_s &&
-			    now <= ad.critical_t && tst_atomic_load(&d) > 0)
+			    now <= ad.critical_t && tst_atomic_load(&D) > 0)
 				fin = ad.return_t;
 
 			if (now >= a.critical_s &&
-			    now <= a.critical_t && tst_atomic_load(&c) == 1) {
-				tst_atomic_add_return(1, &c);
+			    now <= a.critical_t && tst_atomic_load(&H) == 1) {
+				tst_atomic_add_return(1, &H);
 				critical++;
 			}
 
@@ -157,8 +190,29 @@ static void run(unsigned int i)
 
 		if (critical > 100) {
 			tst_fzsync_pair_cleanup(&pair);
+			tst_atomic_store(0, &pair.exit);
 			break;
 		}
+	}
+
+	/*
+	 * If `pair->exit` is true, the test may fail to meet expected
+	 * results due to resource constraints in shared CI environments
+	 * (e.g., GitHub Actions). Limited control over CPU allocation
+	 * can cause delays or interruptions in CPU time slices due to
+	 * contention with other jobs.
+	 *
+	 * Binding the test to a single CPU core (e.g., via `taskset -c 0`)
+	 * can worsen this by increasing contention, leading to performance
+	 * degradation and premature loop termination.
+	 *
+	 * To ensure valid and reliable results in scenarios (e.g., HW, VM, CI),
+	 * it is best to ignore test result when loop termination occurs,
+	 * avoiding unnecessary false positive.
+	 */
+	if (pair.exit) {
+		tst_res(TCONF, "Test may not be able to generate a valid result");
+		return;
 	}
 
 	tst_res(critical > 50 ? TPASS : TFAIL, "%d| =:%-4d", i, critical);
@@ -169,5 +223,5 @@ static struct tst_test test = {
 	.test = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 150,
+	.runtime = 150,
 };

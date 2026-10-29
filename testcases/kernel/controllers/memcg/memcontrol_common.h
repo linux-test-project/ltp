@@ -1,4 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2021-2022 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
+#ifndef MEMCONTROL_COMMON_H__
+#define MEMCONTROL_COMMON_H__
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,3 +51,5 @@ static inline void alloc_anon(const size_t size)
 
 	free(buf);
 }
+
+#endif /* MEMCONTROL_COMMON_H__ */

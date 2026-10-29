@@ -540,7 +540,7 @@ static void globalsig(int sig)
 /******
  * Last but not least, the main function
  */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	/* Main is responsible for :
 	 * the mutex attributes initializing

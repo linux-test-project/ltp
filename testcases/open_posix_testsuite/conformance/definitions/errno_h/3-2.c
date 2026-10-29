@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include "posixtest.h"
 
 #define PTP_PASS        0
 #define PTP_FAIL        1
@@ -110,7 +111,7 @@ EXDEV, "EXDEV", EXDEV}, {
 0, 0, 0}
 };
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct unique *tst;
 	int i, ret = PTP_PASS;

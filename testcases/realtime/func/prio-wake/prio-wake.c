@@ -53,8 +53,8 @@
 #include <sched.h>
 #include <errno.h>
 #include <sys/syscall.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 volatile int running_threads = 0;
 static int rt_threads = 0;

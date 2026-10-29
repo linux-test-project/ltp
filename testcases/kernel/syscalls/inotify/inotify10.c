@@ -1,17 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 CTERA Networks. All Rights Reserved.
  *
  * Started by Amir Goldstein <amir73il@gmail.com>
- *
- * DESCRIPTION
- *     Check that event is reported to watching parent and watching child
- *     based on their interest
+ */
+
+/*\
+ * Check that event is reported to watching parent and watching child
+ * based on their interest.
  *
  * Test case #3 is a regression test for commit fecc4559780d that fixes
  * a bug introduced in kernel v5.9:
  *
- *     fsnotify: fix events reported to watching parent and child
+ * fecc4559780d ("fsnotify: fix events reported to watching parent and child").
  */
 
 #include "config.h"
@@ -142,9 +143,7 @@ static void verify_inotify(unsigned int n)
 		test_cnt++;
 	}
 
-	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
-	if (len == -1)
-		tst_brk(TBROK | TERRNO, "read failed");
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	while (i < len) {
 		struct event_t *expected = &event_set[test_num];
@@ -209,7 +208,7 @@ static struct tst_test test = {
 	.test = verify_inotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "fecc4559780d"},
+		{"linux-git", "fecc4559780d52d174ea05e3bf543669165389c3"},
 		{}
 	}
 };

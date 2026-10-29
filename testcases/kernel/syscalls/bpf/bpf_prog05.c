@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Compare the effects of 32-bit div/mod by zero with the "expected"
  * behaviour.
  *
@@ -190,9 +188,9 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.timeout = 20,
 	.setup = setup,
 	.test_all = run,
-	.min_kver = "3.18",
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.caps = (struct tst_cap []) {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
@@ -208,11 +206,11 @@ static struct tst_test test = {
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "f6b1b3bf0d5f"},
-		{"linux-git", "468f6eafa6c4"},
-		{"linux-git", "e88b2c6e5a4d"},
-		{"linux-git", "9b00f1b78809"},
-		{"CVE", "CVE-2021-3444"},
+		{"linux-git", "f6b1b3bf0d5f681631a293cfe1ca934b81716f1e"},
+		{"linux-git", "468f6eafa6c44cb2c5d8aad35e12f06c240a812a"},
+		{"linux-git", "e88b2c6e5a4d9ce30d75391e4d950da74bb2bd90"},
+		{"linux-git", "9b00f1b78809309163dda2d044d9e94a3c0248a3"},
+		{"CVE", "2021-3444"},
 		{}
 	}
 };

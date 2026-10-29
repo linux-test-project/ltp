@@ -23,7 +23,7 @@
 
 #if defined(_POSIX_SPORADIC_SERVER)&&(_POSIX_SPORADIC_SERVER != -1)
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int policy, invalid_priority, result;
 	struct sched_param param;
@@ -75,7 +75,7 @@ int main(void)
 }
 
 #elif _POSIX_SPORADIC_SERVER == -1
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	printf("_POSIX_SPORADIC_SERVER support not available\n");
 	return PTS_UNSUPPORTED;

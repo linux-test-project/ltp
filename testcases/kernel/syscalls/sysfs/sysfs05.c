@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case checks whether sysfs(2) system call returns appropriate
  * error number for invalid option and for invalid filesystem name and fs index out of bounds.
  */

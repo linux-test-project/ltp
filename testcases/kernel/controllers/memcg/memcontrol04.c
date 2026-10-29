@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*\
  *
- * [Description]
- *
- * Conversion of the forth kself test in cgroup/test_memcontrol.c.
+ * Conversion of the forth kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
  * Original description:
  * "First, this test creates the following hierarchy:
- * A       memory.low = 50M,  memory.max = 200M
+ * A       memory.low = 0,    memory.max = 200M
  * A/B     memory.low = 50M,  memory.current = 50M
  * A/B/C   memory.low = 75M,  memory.current = 50M
  * A/B/D   memory.low = 25M,  memory.current = 50M
@@ -16,12 +14,13 @@
  *
  * Usages are pagecache
  * Then it creates A/G and creates a significant
- * memory pressure in it.
+ * memory pressure in A.
  *
  * A/B    memory.current ~= 50M
- * A/B/C  memory.current ~= 33M
- * A/B/D  memory.current ~= 17M
+ * A/B/C  memory.current ~= 29M
+ * A/B/D  memory.current ~= 21M
  * A/B/E  memory.current ~= 0
+ * (for origin of the numbers, see model in memcg_protection.m.)
  *
  * After that it tries to allocate more than there is unprotected
  * memory in A available, and checks that memory.low protects
@@ -30,7 +29,7 @@
  * The closest thing to memory.low on V1 is soft_limit_in_bytes which
  * uses a different mechanism and has different semantics. So we only
  * test on V2 like the selftest. We do test on more file systems, but
- * not tempfs becaue it can't evict the page cache without swap. Also
+ * not tmpfs because it can't evict the page cache without swap. Also
  * we avoid filesystems which allocate extra memory for buffer heads.
  *
  * The tolerances have been increased from the self tests.
@@ -38,18 +37,16 @@
 
 #define _GNU_SOURCE
 
-#include <inttypes.h>
-
 #include "memcontrol_common.h"
-
-#define TMPDIR "mntdir"
 
 static struct tst_cg_group *trunk_cg[3];
 static struct tst_cg_group *leaf_cg[4];
 static int fd = -1;
+static unsigned int num_children_spawned;
 
 enum checkpoints {
-	CHILD_IDLE
+	CHILD_IDLE,
+	TEST_DONE,
 };
 
 enum trunk_cg {
@@ -68,6 +65,12 @@ enum leaf_cg {
 static void cleanup_sub_groups(void)
 {
 	size_t i;
+
+	if (num_children_spawned > 0) {
+		TST_CHECKPOINT_WAKE2(TEST_DONE, num_children_spawned);
+		tst_reap_children();
+		num_children_spawned = 0;
+	}
 
 	for (i = ARRAY_SIZE(leaf_cg); i > 0; i--) {
 		if (!leaf_cg[i - 1])
@@ -90,13 +93,13 @@ static void alloc_anon_in_child(const struct tst_cg_group *const cg,
 	const pid_t pid = SAFE_FORK();
 
 	if (pid) {
-		tst_reap_children();
+		SAFE_WAITPID(pid, NULL, 0);
 		return;
 	}
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
 
-	tst_res(TINFO, "Child %d in %s: Allocating anon: %"PRIdPTR,
+	tst_res(TINFO, "Child %d in %s: Allocating anon: %zu",
 		getpid(), tst_cg_group_name(cg), size);
 	alloc_anon(size);
 
@@ -109,15 +112,21 @@ static void alloc_pagecache_in_child(const struct tst_cg_group *const cg,
 	const pid_t pid = SAFE_FORK();
 
 	if (pid) {
-		tst_reap_children();
+		num_children_spawned++;
+		TST_CHECKPOINT_WAIT(CHILD_IDLE);
 		return;
 	}
 
 	SAFE_CG_PRINTF(cg, "cgroup.procs", "%d", getpid());
 
-	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %"PRIdPTR,
+	tst_res(TINFO, "Child %d in %s: Allocating pagecache: %zu",
 		getpid(), tst_cg_group_name(cg), size);
 	alloc_pagecache(fd, size);
+
+	SAFE_FSYNC(fd);
+
+	TST_CHECKPOINT_WAKE(CHILD_IDLE);
+	TST_CHECKPOINT_WAIT(TEST_DONE);
 
 	exit(0);
 }
@@ -127,6 +136,7 @@ static void test_memcg_low(void)
 	long c[4];
 	unsigned int i;
 
+	num_children_spawned = 0;
 	fd = SAFE_OPEN(TMPDIR"/tmpfile", O_RDWR | O_CREAT, 0600);
 	trunk_cg[A] = tst_cg_group_mk(tst_cg, "trunk_A");
 
@@ -157,7 +167,6 @@ static void test_memcg_low(void)
 		alloc_pagecache_in_child(leaf_cg[i], MB(50));
 	}
 
-	SAFE_CG_PRINT(trunk_cg[A], "memory.low", "50M");
 	SAFE_CG_PRINT(trunk_cg[B], "memory.low", "50M");
 	SAFE_CG_PRINT(leaf_cg[C], "memory.low", "75M");
 	SAFE_CG_PRINT(leaf_cg[D], "memory.low", "25M");
@@ -173,10 +182,10 @@ static void test_memcg_low(void)
 	for (i = 0; i < ARRAY_SIZE(leaf_cg); i++)
 		SAFE_CG_SCANF(leaf_cg[i], "memory.current", "%ld", c + i);
 
-	TST_EXP_EXPR(values_close(c[0], MB(33), 20),
-		     "(A/B/C memory.current=%ld) ~= %d", c[C], MB(33));
-	TST_EXP_EXPR(values_close(c[1], MB(17), 20),
-		     "(A/B/D memory.current=%ld) ~= %d", c[D], MB(17));
+	TST_EXP_EXPR(values_close(c[0], MB(29), 20),
+		     "(A/B/C memory.current=%ld) ~= %d", c[C], MB(29));
+	TST_EXP_EXPR(values_close(c[1], MB(21), 20),
+		     "(A/B/D memory.current=%ld) ~= %d", c[D], MB(21));
 	TST_EXP_EXPR(values_close(c[2], 0, 1),
 		     "(A/B/E memory.current=%ld) ~= 0", c[E]);
 	tst_res(TINFO, "A/B/F memory.current=%ld", c[F]);
@@ -209,10 +218,14 @@ static void test_memcg_low(void)
 
 		if (i < E) {
 			TST_EXP_EXPR(low > 0,
-				     "(%c low events=%ld) > 0", id, low);
-		} else {
+				"(%c low events=%ld) > 0", id, low);
+		} else if (i == E) {
 			TST_EXP_EXPR(low == 0,
-				     "(%c low events=%ld) == 0", id, low);
+				"(%c low events=%ld) == 0", id, low);
+		} else if (!tst_cg_memory_recursiveprot(leaf_cg[F])) {
+			/* do not check F when recursive_protection enabled */
+			TST_EXP_EXPR(low == 0,
+				"(%c low events=%ld) == 0", id, low);
 		}
 	}
 
@@ -232,7 +245,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.test_all = test_memcg_low,
 	.mount_device = 1,
-	.dev_min_size = 256,
 	.mntpoint = TMPDIR,
 	.all_filesystems = 1,
 	.skip_filesystems = (const char *const[]){

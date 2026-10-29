@@ -59,7 +59,7 @@
 #include <errno.h>
 #include <pwd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "move_pages_support.h"
 
 #define TEST_PAGES 2

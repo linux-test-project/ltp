@@ -15,7 +15,7 @@ void wait_ksmd_full_scan(void)
 	unsigned long full_scans, at_least_one_full_scan;
 	int count = 0;
 
-	SAFE_FILE_SCANF(PATH_KSM "full_scans", "%lu", &full_scans);
+	SAFE_FILE_SCANF(PATH_MM_KSM_FULL_SCANS, "%lu", &full_scans);
 	/*
 	 * The current scan is already in progress so we can't guarantee that
 	 * the get_user_pages() is called on every existing rmap_item if we
@@ -30,7 +30,7 @@ void wait_ksmd_full_scan(void)
 	while (full_scans < at_least_one_full_scan) {
 		sleep(1);
 		count++;
-		SAFE_FILE_SCANF(PATH_KSM "full_scans", "%lu", &full_scans);
+		SAFE_FILE_SCANF(PATH_MM_KSM_FULL_SCANS, "%lu", &full_scans);
 	}
 
 	tst_res(TINFO, "ksm daemon takes %ds to run two full scans", count);

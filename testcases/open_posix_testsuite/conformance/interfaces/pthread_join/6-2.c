@@ -42,7 +42,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	int ret;
@@ -64,6 +64,10 @@ int main(void)
 	 * It should give the error code of ESRCH.
 	 */
 	ret = pthread_join(new_th, NULL);
+	if (ret == 0) {
+		printf("Test UNTESTED: Implementation does not return ESRCH\n");
+		return PTS_UNTESTED;
+	}
 	if (ret != ESRCH) {
 		printf("Test FAILED: Return code should be ESRCH, but is: "
 		       "%d instead.\n", ret);

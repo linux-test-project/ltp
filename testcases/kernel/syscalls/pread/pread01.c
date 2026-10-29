@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the functionality of pread() by writing known data using pwrite()
  * to the file at various specified offsets and later read from the file from
  * various specified offsets, comparing the data read against the data written.
@@ -65,7 +63,7 @@ static void verify_pread(void)
 	SAFE_PREAD(1, fildes, read_buf[3], K1, K3);
 	l_seek(fildes, 0, SEEK_CUR, 0);
 
-	SAFE_READ(1, fildes, read_buf[0], K1);
+	SAFE_READ(SAFE_READ_ALL, fildes, read_buf[0], K1);
 	l_seek(fildes, 0, SEEK_CUR, K1);
 
 	SAFE_PREAD(1, fildes, read_buf[1], K1, K1);

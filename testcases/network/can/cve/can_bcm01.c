@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2020 SUSE LLC <mdoucha@suse.cz>
- *
+ */
+
+/*\
  * CVE-2021-3609
  *
  * Test for race condition vulnerability in CAN BCM. Fixed in:
- *
- *  commit d5f9023fa61ee8b94f37a93f08e94b136cf1e463
- *  Author: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
- *  Date:   Sat Jun 19 13:18:13 2021 -0300
- *
- *  can: bcm: delay release of struct bcm_op after synchronize_rcu()
+ * d5f9023fa61e ("can: bcm: delay release of struct bcm_op after synchronize_rcu()").
  *
  * The test is skipped when running in 32-bit compat mode. The kernel
  * compatibility layer for CAN structures is not implemented at the
@@ -142,14 +139,14 @@ static struct tst_test test = {
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_root = 1,
 	.skip_in_compat = 1,
-	.max_runtime = 30,
-	.needs_drivers = (const char *const[]) {
-		"vcan",
-		"can-bcm",
+	.min_runtime = 30,
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_CAN_VCAN",
+		"CONFIG_CAN_BCM",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "d5f9023fa61e"},
+		{"linux-git", "d5f9023fa61ee8b94f37a93f08e94b136cf1e463"},
 		{"CVE", "2021-3609"},
 		{}
 	}

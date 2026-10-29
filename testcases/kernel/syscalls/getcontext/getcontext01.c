@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for getcontext().
  *
  * Calls a getcontext() then jumps back with a setcontext().

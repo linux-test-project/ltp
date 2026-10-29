@@ -7,45 +7,30 @@
  * Mimi Zohar <zohar@us.ibm.com>
  */
 
+#define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 
-#define SLEEP_AFTER_CLOSE 3
 #define MMAPSIZE 1024
 
-static char *filename;
-static void *file;
-static int fd;
-
-static void cleanup(void)
+int main(int argc, char *argv[])
 {
-	if (file)
-		SAFE_MUNMAP(file, MMAPSIZE);
+	int fd;
+	void *file;
 
-	if (fd > 0)
-		SAFE_CLOSE(fd);
-}
+	tst_reinit();
 
-static void run(void)
-{
-	if (!filename)
-		tst_brk(TBROK, "missing filename (-f filename)");
+	if (argc != 2)
+		tst_brk(TBROK, "usage: ima_mmap <filename>");
 
-	fd = SAFE_OPEN(filename, O_CREAT | O_RDWR, S_IRWXU);
-
+	fd = SAFE_OPEN(argv[1], O_CREAT | O_RDWR, S_IRWXU);
 	file = SAFE_MMAP(NULL, MMAPSIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	SAFE_CLOSE(fd);
 
-	tst_res(TINFO, "sleep %ds", SLEEP_AFTER_CLOSE);
-	sleep(SLEEP_AFTER_CLOSE);
+	/* Waiting until ima_violations.sh open and close file */
+	TST_CHECKPOINT_WAKE_AND_WAIT(0);
 
+	SAFE_MUNMAP(file, MMAPSIZE);
 	tst_res(TPASS, "test completed");
-}
 
-static struct tst_test test = {
-	.options = (struct tst_option[]) {
-		{"f:", &filename, "File to mmap"},
-		{}
-	},
-	.test_all = run,
-	.cleanup = cleanup,
-};
+	return 0;
+}

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that ftruncate(2) system call returns appropriate error number:
  *
  * 1. EINVAL -- the file is a socket

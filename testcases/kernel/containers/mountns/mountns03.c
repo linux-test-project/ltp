@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Red Hat, Inc.
  * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
 /*\
- * [Description]
- *
  * Tests a slave mount: slave mount is like a shared mount except that
  * mount and umount events only propagate towards it.
  *
@@ -21,15 +19,19 @@
  *   mount
  * - There are two testcases (where X is parent namespace and Y child
  *   namespace):
- *  1. First test case
- *   .. X: bind mounts DIRB to DIRA
- *   .. Y: must see the file DIRA/"B"
- *   .. X: umounts DIRA
- *  2. Second test case
- *   .. Y: bind mounts DIRB to DIRA
- *   .. X: must see only the DIRA/"A" and must not see DIRA/"B" (as slave mount does
- *         not forward propagation)
- *   .. Y: umounts DIRA
+ *
+ *   1. First test case
+ *
+ *     - X: bind mounts DIRB to DIRA
+ *     - Y: must see the file DIRA/"B"
+ *     - X: umounts DIRA
+ *
+ *   2. Second test case
+ *
+ *     - Y: bind mounts DIRB to DIRA
+ *     - X: must see only the DIRA/"A" and must not see DIRA/"B" (as slave mount does
+ *          not forward propagation)
+ *     - Y: umounts DIRA
  */
 
 #include <sys/wait.h>
@@ -64,7 +66,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWNS, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWNS,
+		.exit_signal = SIGCHLD,
+	};
 
 	SAFE_UNSHARE(CLONE_NEWNS);
 

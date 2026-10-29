@@ -217,7 +217,7 @@ static void *worker(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /* Main function */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	pthread_t th_waiter, th_worker, th_sig1, th_sig2;

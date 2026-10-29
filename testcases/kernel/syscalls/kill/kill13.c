@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Reproducer of CVE-2018-10124; INT_MIN negation.
  *
  * On most two's complement CPUs negation of INT_MIN will result in
@@ -38,8 +36,8 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "4ea77014af0d"},
-		{"CVE", "CVE-2018-10124"},
+		{"linux-git", "4ea77014af0d6205b05503d1c7aac6eace11d473"},
+		{"CVE", "2018-10124"},
 		{}
 	}
 };

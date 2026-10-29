@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  *  Verify that pselect() fails with:
  *
  *  - EBADF if a file descriptor that was already closed

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the pwrite() system call with O_APPEND.
  *
  * Writing 2k data to the file, close it and reopen it with O_APPEND.

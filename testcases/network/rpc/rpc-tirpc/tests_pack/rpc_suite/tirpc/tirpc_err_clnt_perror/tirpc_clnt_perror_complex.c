@@ -64,6 +64,13 @@ int main(int argn, char *argc[])
 	total_timeout.tv_usec = 1;
 	/**/ clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
+	if (clnt == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	//Multiple test case
 	rslt = rpc_call(argc[1], progNum, VERSNUM, PROCNUM,
 			(xdrproc_t) xdr_int, (char *)&sndVar,

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
  * Parent process tries to get parent of initial namespace, which should

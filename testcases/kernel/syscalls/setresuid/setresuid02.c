@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that a non-root user can change the real, effective and saved uid
  * values through the setresuid system call.
  */

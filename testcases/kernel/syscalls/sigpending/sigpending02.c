@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2002
  * Copyright (c) Linux Test Project, 2009-2019
@@ -15,7 +15,7 @@
 
 #include "config.h"
 #include "tst_test.h"
-#include "ltp_signal.h"
+#include "tso_signal.h"
 #include "lapi/syscalls.h"
 
 static void sigpending_info(void)

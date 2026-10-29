@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the write() system call with O_APPEND.
  *
  * The full description of O_APPEND is in open(2) man-pages:

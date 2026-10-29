@@ -34,7 +34,7 @@ static void *f1(void *parm);
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static int value;			/* value protected by mutex */
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int i;
 	pthread_attr_t pta;

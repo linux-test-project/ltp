@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This case tests whether the attributes field of statx received expected value
  * by using flags in the stx_attributes_mask field of statx.
  * File set with following flags by using SAFE_IOCTL:

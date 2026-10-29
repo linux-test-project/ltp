@@ -51,7 +51,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <stdint.h>
-#include <librttest.h>
+#include "librttest.h"
 
 #include "tst_tsc.h"
 

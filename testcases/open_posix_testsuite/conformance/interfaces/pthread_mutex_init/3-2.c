@@ -170,7 +170,7 @@ static void *unlock_issue(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /***** main program *****/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_mutex_t mtx_null, mtx_macro = PTHREAD_MUTEX_INITIALIZER;
 	pthread_t thr;

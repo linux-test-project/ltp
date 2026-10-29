@@ -2,11 +2,10 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Copyright (c) 2012 Wanlong Gao <gaowanlong@cn.fujitsu.com>
+ * Copyright (c) Linux Test Project, 2003-2023
  */
 
 /*\
- * [Description]
- *
  * Verify that clone(2) fails with
  *
  * - EINVAL if child stack is set to NULL
@@ -44,4 +43,8 @@ static void verify_clone(unsigned int nr)
 static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_clone,
+	.tags = (const struct tst_tag[]) {
+		{"musl-git", "fa4a8abd06a401822cc8ba4e352a219544c0118d"},
+		{}
+	},
 };

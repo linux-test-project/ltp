@@ -5,23 +5,35 @@
 #ifndef TST_CLONE_H__
 #define TST_CLONE_H__
 
+#include <sched.h>
+
 #ifdef TST_TEST_H__
 
-/* The parts of clone3's clone_args we support */
+/**
+ * struct tst_clone_args - Arguments for tst_clone().
+ * @flags: :manpage:`clone(2)` flags (e.g. CLONE_NEWNS, CLONE_NEWPID).
+ * @pidfd: Pointer (cast to u64) where the kernel stores the pidfd when
+ *         CLONE_PIDFD is set.
+ * @exit_signal: Signal sent to the parent when the child exits.
+ * @cgroup: Target cgroup fd (requires CLONE_INTO_CGROUP).
+ */
 struct tst_clone_args {
 	uint64_t flags;
+	uint64_t pidfd;
 	uint64_t exit_signal;
+	uint64_t cgroup;
 };
 
-/* clone3 with fallbacks to clone when possible. Be aware that it
- * returns -1 if clone3 fails (except ENOSYS), but -2 if clone fails.
+/**
+ * tst_clone() - Create a child process via clone3 with clone fallback.
+ * @args: Clone arguments.
  *
- * Without CLONE_VM this acts like fork so you may want to set
- * tst_test.forks_child (safe_clone requires this).
+ * Without CLONE_VM this acts like :manpage:`fork(2)`: set tst_test.forks_child
+ * accordingly (safe_clone requires it). Set exit_signal to SIGCHLD
+ * for tst_reap_children().
  *
- * You should set exit_signal to SIGCHLD for
- * tst_reap_children. Otherwise you must call wait with the
- * appropriate parameters.
+ * Return: Child PID in the parent, 0 in the child, -1 on clone3 failure (except
+ * ENOSYS), -2 on clone failure.
  */
 pid_t tst_clone(const struct tst_clone_args *args);
 
@@ -38,10 +50,6 @@ int ltp_clone(unsigned long flags, int (*fn)(void *arg), void *arg,
 		size_t stack_size, void *stack);
 int ltp_clone7(unsigned long flags, int (*fn)(void *arg), void *arg,
 		size_t stack_size, void *stack, ...);
-int ltp_clone_alloc(unsigned long clone_flags, int (*fn)(void *arg),
-		void *arg, size_t stacksize);
-int ltp_clone_quick(unsigned long clone_flags, int (*fn)(void *arg),
-		void *arg);
 void *ltp_alloc_stack(size_t size);
 
 #define clone(...) (use_the_ltp_clone_functions__do_not_use_clone)

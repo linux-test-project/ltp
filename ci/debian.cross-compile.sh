@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/sh -eux
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2018-2020 Petr Vorel <pvorel@suse.cz>
-set -ex
 
 if [ -z "$ARCH" ]; then
 	echo "missing \$ARCH!" >&2

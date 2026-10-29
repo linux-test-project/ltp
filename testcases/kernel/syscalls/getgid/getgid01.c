@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * AUTHOR		: William Roske
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Call getgid() and expects that the gid returned correctly.
  */
 

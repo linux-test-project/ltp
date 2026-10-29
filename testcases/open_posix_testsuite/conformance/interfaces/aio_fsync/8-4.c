@@ -22,7 +22,7 @@
 
 #define TNAME "aio_fsync/8-4.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 #define BUF_SIZE 111

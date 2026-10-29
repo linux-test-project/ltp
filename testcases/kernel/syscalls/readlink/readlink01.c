@@ -4,10 +4,10 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Test Description :
- *   Testcase to check the basic functionality of the readlink(2),
- *   readlink() will succeed to read the contents of the symbolic link.
+/*\
+ * Tests basic functionality of readlink(2).
+ *
+ * - readlink() will succeed to read the contents of the symbolic link
  */
 
 #include <pwd.h>

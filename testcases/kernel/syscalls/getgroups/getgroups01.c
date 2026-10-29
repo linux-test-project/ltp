@@ -54,6 +54,11 @@
 #include <sys/types.h>
 
 #include "test.h"
+
+/*
+ * Don't forget to remove USE_LEGACY_COMPAT_16_H from Makefile after
+ * rewriting all tests to the new API.
+ */
 #include "compat_16.h"
 
 static void setup(void);
@@ -95,7 +100,7 @@ int main(int ac, char **av)
 
 		/*
 		 * Check that if ngrps is zero that the number of groups is
-		 * return and the the gidset array is not modified.
+		 * return and the gidset array is not modified.
 		 * This is a POSIX special case.
 		 */
 		memset(gidset, 052, NGROUPS * sizeof(GID_T));

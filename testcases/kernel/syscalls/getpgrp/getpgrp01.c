@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * AUTHOR: William Roske, CO-PILOT: Dave Fenner
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpgrp(2) syscall executes successfully.
  */
 

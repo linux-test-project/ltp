@@ -23,14 +23,27 @@ echo '  "scm_url_base": "https://github.com/linux-test-project/ltp/tree/master/"
 echo "  \"version\": \"$version\""
 echo ' },'
 echo ' "defaults": {'
-echo '  "timeout": 300'
+echo '  "timeout": 30'
 echo ' },'
 echo ' "tests": {'
 
 first=1
 
 for test in `find testcases/ -name '*.c'|sort`; do
-	a=$($top_builddir/metadata/metaparse -Iinclude -Itestcases/kernel/syscalls/utils/ "$test")
+	a=$($top_builddir/metadata/metaparse -Iinclude -Itestcases/kernel/syscalls/utils/ -Itestcases/kernel/include "$test")
+	if [ -n "$a" ]; then
+		if [ -z "$first" ]; then
+			echo ','
+		fi
+		first=
+		cat <<EOF
+$a
+EOF
+	fi
+done
+
+for test in `find testcases/ -not -path "testcases/lib/*" -name '*.sh'|sort`; do
+	a=$($top_builddir/metadata/metaparse-sh "$test")
 	if [ -n "$a" ]; then
 		if [ -z "$first" ]; then
 			echo ','

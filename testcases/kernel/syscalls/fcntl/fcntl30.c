@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Xiaoguang Wang <wangxg.fnst@cn.fujitsu.com>
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, fetching and changing the capacity of a pipe works as
  * expected with fcntl(2) syscall using F_GETPIPE_SZ, F_SETPIPE_SZ arguments.
  */
@@ -36,7 +34,7 @@ static void run(void)
 
 static void setup(void)
 {
-	SAFE_FILE_SCANF("/proc/sys/fs/pipe-max-size", "%d", &max_size_unpriv);
+	SAFE_FILE_SCANF(PATH_FS_PIPE_MAX_SIZE, "%d", &max_size_unpriv);
 }
 
 static void cleanup(void)

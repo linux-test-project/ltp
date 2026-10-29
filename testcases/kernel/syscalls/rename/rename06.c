@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename(2) fails with EINVAL when
  * an attempt is made to make a directory a subdirectory of itself.
  */

@@ -24,11 +24,6 @@
 
 #include "memfd_create_common.h"
 
-int sys_memfd_create(const char *name, unsigned int flags)
-{
-	return tst_syscall(__NR_memfd_create, name, flags);
-}
-
 int check_fallocate(const char *filename, const int lineno, int fd,
 			int mode, off_t offset, off_t len)
 {
@@ -302,7 +297,7 @@ void check_mfd_readable(const char *filename, const int lineno, int fd)
 	char buf[16];
 	void *p;
 
-	safe_read(filename, lineno, NULL, 1, fd, buf, sizeof(buf));
+	safe_read(filename, lineno, NULL, SAFE_READ_ALL, fd, buf, sizeof(buf));
 	tst_res_(filename, lineno, TPASS, "read(%d, %s, %zu) succeeded", fd,
 		buf, sizeof(buf));
 

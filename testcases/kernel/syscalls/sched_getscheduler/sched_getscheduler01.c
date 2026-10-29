@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check sched_getscheduler() returns correct return value.
  *
  * [Algorithm]
@@ -40,6 +38,8 @@ static void run(unsigned int n)
 	struct sched_variant *tv = &sched_variants[tst_variant];
 	struct test_cases_t *tc = &tcases[n];
 	struct sched_param p = { .sched_priority = tc->priority };
+
+	tst_check_rt_group_sched_support();
 
 	TST_EXP_PASS_SILENT(tv->sched_setscheduler(0, tc->policy, &p));
 

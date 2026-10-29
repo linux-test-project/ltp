@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Fill the watch queue and wait for a notification loss.
  */
 

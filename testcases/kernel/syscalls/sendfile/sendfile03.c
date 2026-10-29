@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test that sendfile(2) system call returns EBADF when passing
  * wrong out_fd or in_fd.
  *

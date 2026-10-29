@@ -25,7 +25,7 @@
 #define NAMESIZE 50
 #define MSGSTR "0123456789"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	const char *msgptr = MSGSTR;

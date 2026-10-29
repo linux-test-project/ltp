@@ -6,9 +6,7 @@
  */
 
 /*\
- * [Description]
- *
- * Tests ioctl() on loopdevice with LOOP_SET_CAPACITY flag.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_SET_CAPACITY flag.
  *
  * Tests whether LOOP_SET_CAPACITY can update a live
  * loop device size after change the size of the underlying
@@ -62,7 +60,8 @@ static void verify_ioctl_loop(void)
 	TST_ASSERT_INT(sys_loop_sizepath, NEW_SIZE/512);
 
 	SAFE_CLOSE(file_fd);
-	tst_detach_device_by_fd(dev_path, dev_fd);
+	tst_detach_device_by_fd(dev_path, &dev_fd);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	unlink("test.img");
 	attach_flag = 0;
 }
@@ -97,8 +96,8 @@ static struct tst_test test = {
 	.test_all = verify_ioctl_loop,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

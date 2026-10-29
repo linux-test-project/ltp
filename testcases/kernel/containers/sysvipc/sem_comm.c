@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test SysV IPC semaphore usage between cloned processes.
  *
  * [Algorithm]

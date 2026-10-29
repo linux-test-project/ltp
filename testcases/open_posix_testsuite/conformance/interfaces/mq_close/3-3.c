@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	/* Use some arbitrary but high number for the descriptor.  */
 	if (mq_close((mqd_t) 274) != -1) {

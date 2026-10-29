@@ -37,7 +37,7 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "rename11";
 
@@ -90,7 +90,7 @@ static void setup(void)
 {
 	int i;
 
-	tst_sig(NOFORK, DEF_HANDLER, cleanup);
+	tst_sig(FORK, DEF_HANDLER, cleanup);
 
 	tst_require_root();
 

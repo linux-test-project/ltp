@@ -1,127 +1,48 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2002
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * Copyright (c) International Business Machines Corp., 2002
+ * Copyright (c) 2026 Jan Stancek <jstancek@redhat.com>
  */
 
-/* 01/02/2003	Port to LTP	avenkat@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-
-/*
- * NAME
- *      scalb
+/*\
+ * Verify that :manpage:`nextafter(3)` returns the next representable double
+ * in the direction of its second argument:
  *
- * CALLS
- *      nextafter(3C)
- *
- * ALGORITHM
- *	Check results from the above functions against expected values.
- *
- * RESTRICTIONS
- * 	Checks for basic functionality, nothing fancy
+ * - nextafter(1.0, 1.1) is 1.0 + 2^-52 (DBL_EPSILON)
+ * - nextafter(1.0, 0.9) is 1.0 - 2^-53
+ * - nextafter(1.0, 1.0) is 1.0
  */
 
-#include <errno.h>
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "test.h"
+#include "tst_test.h"
 
-#define	FAILED 0
-#define	PASSED 1
+/* DBL_EPSILON spelled out, as sparse does not know __DBL_EPSILON__ */
+#define EPSILON (1.0 / (1ULL << 52))
 
-char *TCID = "nextafter01";
+static struct tcase {
+	double x;
+	double y;
+	double exp;
+} tcases[] = {
+	{1.0, 1.1, 1.0 + EPSILON},
+	{1.0, 0.9, 1.0 - EPSILON / 2},
+	{1.0, 1.0, 1.0},
+};
 
-int local_flag = PASSED;
-int block_number;
-FILE *temp;
-int TST_TOTAL = 1;
-
-void setup();
-void blenter();
-void blexit();
-
-/*--------------------------------------------------------------*/
-int main()
+static void run(unsigned int n)
 {
-	double answer;
-	double check;		/* tmp variable */
+	struct tcase *tc = &tcases[n];
+	double ret = nextafter(tc->x, tc->y);
 
-	setup();		/* temp file is now open */
-/*--------------------------------------------------------------*/
-	blenter();
-
-	answer = nextafter(1.0, 1.1);
-	check = (answer + 1.0) / 2;
-	if ((check != answer) && ((float)check != 1.0)) {
-		fprintf(temp, "nextafter returned %e, expected answer or 1.0\n",
-			answer);
-		local_flag = FAILED;
+	if (ret == tc->exp) {
+		tst_res(TPASS, "nextafter(%g, %g) == %.17g", tc->x, tc->y, ret);
+	} else {
+		tst_res(TFAIL, "nextafter(%g, %g) == %.17g, expected %.17g",
+			tc->x, tc->y, ret, tc->exp);
 	}
-
-	blexit();
-/*--------------------------------------------------------------*/
-	blenter();
-
-	answer = nextafter(1.0, 0.9);
-	if ((check != answer) && (check != 1.0)) {
-		fprintf(temp, "nextafter returned %e, expected answer or 1.0\n",
-			answer);
-		local_flag = FAILED;
-	}
-
-	blexit();
-/*--------------------------------------------------------------*/
-	blenter();
-
-	answer = nextafter(1.0, 1.0);
-	if (answer != 1.0) {
-		fprintf(temp, "nextafter 3 returned %e, expected 1.0\n",
-			answer);
-		local_flag = FAILED;
-	}
-
-	blexit();
-/*--------------------------------------------------------------*/
-
-	tst_exit();
 }
 
-/*--------------------------------------------------------------*/
-
-/*****	*****	LTP Port	*****/
-
-/* FUNCTIONS */
-
-void setup()
-{
-	temp = stderr;
-}
-
-void blenter()
-{
-	local_flag = PASSED;
-}
-
-void blexit()
-{
-	if (local_flag == PASSED)
-		tst_resm(TPASS, "Test passed");
-	else
-		tst_resm(TFAIL, "Test failed");
-}
-
-/*****	*****		*****/
+static struct tst_test test = {
+	.test = run,
+	.tcnt = ARRAY_SIZE(tcases),
+};

@@ -135,7 +135,7 @@ static int create_thread(int prio, pthread_t * tid)
 	return 0;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int status;
 	int rc;

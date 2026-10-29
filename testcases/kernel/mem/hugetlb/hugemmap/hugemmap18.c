@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Just as normal mmap()s can't have an address, length or offset which
  * is not page aligned, so hugepage mmap()s can't have an address, length
  * or offset with is not hugepage aligned.
@@ -129,7 +127,7 @@ static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO("Hugepagesize:")*1024;
 	page_size = getpagesize();
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -140,7 +138,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "af73e4d9506d"},
+		{"linux-git", "af73e4d9506d3b797509f3c030e7dcd554f7d9c4"},
 		{}
 	},
 	.needs_root = 1,

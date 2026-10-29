@@ -1,9 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
- *
- * Basic openat2() test to check various failures.
  */
+
+/*\
+ * Basic :manpage:`openat2(2)` test to check various failures.
+ */
+
+#define _GNU_SOURCE
+#include <fcntl.h>
+
 #include "tst_test.h"
 #include "lapi/openat2.h"
 

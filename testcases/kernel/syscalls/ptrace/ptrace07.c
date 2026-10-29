@@ -35,9 +35,8 @@
 #include <stdlib.h>
 #include <sys/uio.h>
 #include <sys/wait.h>
+#include <sys/ptrace.h>
 
-#include "config.h"
-#include "ptrace.h"
 #include "tst_safe_macros.h"
 #include "lapi/cpuid.h"
 
@@ -207,7 +206,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "814fb7bb7db5"},
+		{"linux-git", "814fb7bb7db5433757d76f4c4502c96fc53b0b5e"},
 		{"CVE", "2017-15537"},
 		{}
 	}

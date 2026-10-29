@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_* request for file descriptors
  * that aren't namespaces.
  *

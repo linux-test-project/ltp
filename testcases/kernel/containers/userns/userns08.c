@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Reproducer of CVE-2018-18955; broken uid/gid mapping for nested
  * user namespaces with >5 ranges
  *
@@ -31,8 +29,8 @@
 static pid_t clone_newuser(void)
 {
 	const struct tst_clone_args cargs = {
-		CLONE_NEWUSER,
-		SIGCHLD
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
 	};
 
 	return SAFE_CLONE(&cargs);
@@ -121,7 +119,7 @@ static void setup(void)
 	SAFE_WRITE(SAFE_WRITE_ALL, fd, "\n", 1);
 	SAFE_CLOSE(fd);
 
-	SAFE_TRY_FILE_PRINTF("/proc/sys/user/max_user_namespaces", "%d", 10);
+	SAFE_TRY_FILE_PRINTF(PATH_USER_MAX_USER_NAMESPACES, "%d", 10);
 }
 
 static struct tst_test test = {
@@ -135,13 +133,13 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", NULL, TST_SR_SKIP},
-		{"/proc/sys/kernel/unprivileged_userns_clone", "1", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, NULL, TST_SR_SKIP},
+		{PATH_KERN_UNPRIVILEGED_USERNS_CLONE, "1", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "d2f007dbe7e4"},
-		{"CVE", "CVE-2018-18955"},
+		{"linux-git", "d2f007dbe7e4c9583eea6eb04d60001e85c6f1bd"},
+		{"CVE", "2018-18955"},
 		{}
 	},
 };

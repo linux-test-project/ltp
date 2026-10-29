@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setegid() fails with EPERM when the calling process is not
  * privileged and egid does not match the current real group ID,
  * current effective group ID, or current saved set-group-ID.

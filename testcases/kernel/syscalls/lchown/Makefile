@@ -5,8 +5,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-SRCS			:= $(sort $(wildcard $(abs_srcdir)/lchown*.c))
-
 include $(abs_srcdir)/../utils/compat_16.mk
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

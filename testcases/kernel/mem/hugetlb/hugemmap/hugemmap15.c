@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Older ppc64 kernels don't properly flush dcache to icache before
  * giving a cleared page to userspace.  With some exceedingly
  * hairy code, this attempts to test for this bug.
@@ -29,7 +27,7 @@
 #if defined(__powerpc__) || defined(__powerpc64__) || defined(__ia64__) || \
 	defined(__s390__) || defined(__s390x__) || defined(__sparc__) || \
 	defined(__aarch64__) || (defined(__riscv) && __riscv_xlen == 64) || \
-	defined(__i386__) || defined(__x86_64__) || defined(__arm__)
+	defined(__i386__) || defined(__x86_64__) || defined(__arm__) || defined(__loongarch__)
 
 #include <setjmp.h>
 
@@ -47,8 +45,12 @@ static void cacheflush(void *p)
 {
 #if defined(__powerpc__)
 	asm volatile("dcbst 0,%0; sync; icbi 0,%0; isync" : : "r"(p));
-#elif defined(__arm__) || defined(__aarch64__)
+#elif defined(__arm__) || defined(__aarch64__) || defined(__riscv) || defined(__loongarch__)
+# ifdef HAVE_CLEAR_CACHE
 	__clear_cache(p, p + COPY_SIZE);
+# else
+	tst_brk(TCONF, "compiler doesn't have __clear_cache()");
+# endif
 #else
 	(void)p;
 #endif
@@ -70,7 +72,6 @@ static void jumpfunc(int copy, void *p)
 		memcpy(p, l, COPY_SIZE);
 		cacheflush(p);
 	}
-
 	goto *p;
  dummy:
 	tst_res(TWARN, "unreachable?");
@@ -95,6 +96,14 @@ static void sig_handler(int signum, siginfo_t *si, void *uc)
 		tst_res(TINFO, "SIGILL at %p (sig_expected=%p)", si->si_addr,
 				sig_expected);
 		if (si->si_addr == sig_expected)
+			siglongjmp(sig_escape, SUCC_JMP);
+		siglongjmp(sig_escape, FAIL_JMP + SIGILL);
+	}
+#elif defined(__loongarch__)
+	if (signum == SIGILL) {
+		void *pc = (void *)((ucontext_t *)uc)->uc_mcontext.__pc;
+		tst_res(TINFO, "SIGILL at %p (sig_expected=%p)", pc, sig_expected);
+		if (pc == sig_expected)
 			siglongjmp(sig_escape, SUCC_JMP);
 		siglongjmp(sig_escape, FAIL_JMP + SIGILL);
 	}
@@ -204,7 +213,7 @@ static void run_test(void)
 	SAFE_SIGACTION(SIGBUS, &sa, NULL);
 	SAFE_SIGACTION(SIGSEGV, &sa, NULL);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	for (i = 0; i < NUM_REPETITIONS; i++)
 		if (test_once(fd))
@@ -228,7 +237,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "cbf52afdc0eb"},
+		{"linux-git", "cbf52afdc0eb88492cf7808cc4b4f58a46f1b1ad"},
 		{}
 	},
 	.needs_root = 1,

@@ -42,8 +42,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define DEF_MED_PRIO 60		// (softirqd-hrtimer,98)
 #define DEF_ITERATIONS 10000

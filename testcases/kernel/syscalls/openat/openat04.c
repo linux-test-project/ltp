@@ -5,21 +5,14 @@
  */
 
 /*\
- * [Description]
- *
  * Check setgid strip logic whether works correctly when creating tmpfile under
  * filesystem without POSIX ACL supported(by using noacl mount option). Test it
  * with umask S_IXGRP and also check file mode whether has filtered S_IXGRP.
  *
- * Fixed in:
+ * Fixed in kernel v6.0 in commit:
+ * ac6800e279a2 ("fs: Add missing umask strip in vfs_tmpfile")
  *
- *  commit ac6800e279a22b28f4fc21439843025a0d5bf03e
- *  Author: Yang Xu <xuyang2018.jy@fujitsu.com>
- *  Date:   Thu July 14 14:11:26 2022 +0800
- *
- *  fs: Add missing umask strip in vfs_tmpfile
- *
- * The most code is pasted form creat09.c.
+ * Based on code from creat09.c.
  */
 
 #define _GNU_SOURCE
@@ -175,8 +168,8 @@ static struct tst_test test = {
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "ac6800e279a2"},
-		{"linux-git", "426b4ca2d6a5"},
+		{"linux-git", "ac6800e279a22b28f4fc21439843025a0d5bf03e"},
+		{"linux-git", "426b4ca2d6a5ab51f6b6175d06e4f8ddea434cdf"},
 		{}
 	},
 };

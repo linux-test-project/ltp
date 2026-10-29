@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for fchown(). Call fchown() on a fd and expect it to pass.
  */
 

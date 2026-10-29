@@ -5,7 +5,6 @@
  */
 
 /*\
- * [Description]
  * Original reproducer for kernel fix
  * bf40d3435caf NFS: add support for splice writes
  * from v2.6.31-rc1.
@@ -13,6 +12,7 @@
  * http://lkml.org/lkml/2009/4/2/55
  *
  * [ALGORITHM]
+ *
  * - create pipe
  * - fork(), child replace stdin with pipe
  * - parent write to pipe

@@ -4,17 +4,12 @@
  */
 
 /*\
- * [Description]
- *
  * Test mmap(2) with MAP_SHARED_VALIDATE flag.
  *
  * Test expected EOPNOTSUPP errno when testing mmap(2) with MAP_SHARED_VALIDATE
  * flag and invalid flag.
  */
 
-#include <errno.h>
-#include <stdio.h>
-#include <sys/types.h>
 #include "tst_test.h"
 #include "lapi/mmap.h"
 

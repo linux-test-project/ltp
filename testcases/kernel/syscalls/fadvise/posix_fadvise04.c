@@ -1,23 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Red Hat Inc., 2007
+ * Author: Masatake YAMATO <yamato@redhat.com>
  */
 
-/*
- * NAME
- *	posix_fadvise04.c
- *
- * DESCRIPTION
- *	Check the value that posix_fadvise returns for pipe descriptor.
- *
- * USAGE
- *	posix_fadvise04
- *
- * HISTORY
- *	11/2007 Initial version by Masatake YAMATO <yamato@redhat.com>
- *
- * RESTRICTIONS
- *	None
+/*\
+ * Verify that posix_fadvise() returns ESPIPE for pipe descriptor.
  */
 
 #include <fcntl.h>

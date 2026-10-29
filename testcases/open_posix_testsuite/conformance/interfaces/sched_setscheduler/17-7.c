@@ -28,7 +28,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int max_priority, old_priority, old_policy, new_policy, policy;
 	int child_pid, stat_loc;

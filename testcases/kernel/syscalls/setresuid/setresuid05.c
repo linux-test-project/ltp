@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that after updating euid with setresuid(), any file creation
  * also gets the new euid as its owner user ID.
  */

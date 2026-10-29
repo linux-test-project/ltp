@@ -2,8 +2,9 @@
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
- * Basic test for the BLKROSET and BLKROGET ioctls.
+
+/*\
+ * Basic test for :manpage:`ioctl(2)` with BLKROSET and BLKROGET .
  *
  * - Set the device read only, read the value back.
  * - Try to mount the device read write, expect failure.
@@ -81,6 +82,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.format_device = 1,
 	.needs_root = 1,
 	.setup = setup,

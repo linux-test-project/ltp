@@ -5,7 +5,6 @@
 TST_SETUP="setup"
 TST_TESTFUNC="test"
 TST_CLEANUP="cleanup"
-TST_MIN_KVER="3.11"
 TST_NEEDS_TMPDIR=1
 TST_NEEDS_ROOT=1
 TST_NEEDS_CMDS="pkill sysctl ethtool"

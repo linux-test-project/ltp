@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests readv() failures:
  *
  * - EINVAL the sum of the iov_len values overflows an ssize_t value

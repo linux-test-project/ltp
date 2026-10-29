@@ -41,7 +41,7 @@ static void child_proc()
 	exit(0);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result, child_pid, tmp_errno, policy;
 	int min_priority, new_priority, old_priority;

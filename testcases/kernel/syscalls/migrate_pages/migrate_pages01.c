@@ -37,7 +37,7 @@
 #include <pwd.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/syscalls.h"
 #include "numa_helper.h"
 #include "migrate_pages_common.h"

@@ -6,7 +6,6 @@
  * 10/03/2022	Refactor to LTP framework	edliaw@google.com
  */
 /*\
- * [Description]
  * This test stresses mmaps, without dealing with fragments or anything!
  * It forks a specified number of children,
  * all of whom mmap the same file, make a given number of accesses
@@ -159,7 +158,7 @@ static void child_mapper(char *file, unsigned int procno, unsigned int nprocs)
 	nloops = (randloops) ? (lrand48() % MAXLOOPS) : MAXLOOPS;
 
 	if (debug)
-		tst_res(TINFO, "child %d (pid %d): seed %d, fsize %lld, mapsize %ld, off %lld, loop %d",
+		tst_res(TINFO, "child %u (pid %d): seed %d, fsize %lld, mapsize %ld, off %lld, loop %d",
 			procno, getpid(), seed, (long long)filesize,
 			(long)mapsize, (long long)offset / pagesize, nloops);
 
@@ -179,7 +178,7 @@ static void child_mapper(char *file, unsigned int procno, unsigned int nprocs)
 		for (i = procno; i < validsize; i += nprocs) {
 			if (*((unsigned char *)(paddr + i))
 			    != ((procno + pattern) & 0xff))
-				tst_brk(TFAIL, "child %d: invalid data <x%x>\n"
+				tst_brk(TFAIL, "child %u: invalid data <x%x>\n"
 					" at pg %d off %d, exp <x%x>", procno,
 					*((unsigned char *)(paddr + i)),
 					randpage, i, (procno + pattern) & 0xff);
@@ -187,13 +186,13 @@ static void child_mapper(char *file, unsigned int procno, unsigned int nprocs)
 			*(paddr + i) = (procno + pattern) & 0xff;
 		}
 	}
+
 	if (do_sync) {
 		randpage = lrand48() % mappages;
 		paddr = maddr + (randpage * pagesize);	/* page address */
-		if (msync(paddr, (mappages - randpage) * pagesize,
-			  MS_SYNC) == -1)
-			tst_brk(TBROK | TERRNO, "msync failed");
+		SAFE_MSYNC(paddr, (mappages - randpage) * pagesize, MS_SYNC);
 	}
+
 	SAFE_MUNMAP(maddr, mapsize);
 	exit(0);
 }
@@ -220,7 +219,7 @@ static void fileokay(char *file, unsigned char *expbuf)
 	mappages = roundup(mapsize, pagesize) / pagesize;
 
 	for (i = 0; i < mappages; i++) {
-		cnt = SAFE_READ(0, fd, readbuf, pagesize);
+		cnt = SAFE_READ(SAFE_READ_ANY, fd, readbuf, pagesize);
 		if ((unsigned int)cnt != pagesize) {
 			/* Okay if at last page in file... */
 			if ((i * pagesize) + cnt != mapsize)
@@ -362,7 +361,7 @@ static struct tst_test test = {
 		{},
 	},
 	.cleanup = cleanup,
-	.max_runtime = 12,
+	.runtime = 12,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 };

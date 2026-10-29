@@ -15,7 +15,6 @@ TST_CLEANUP=cleanup
 TST_TESTFUNC=do_test
 TST_NEEDS_ROOT=1
 TST_NEEDS_TMPDIR=1
-TST_MIN_KVER="3.18"
 
 LOCAL_MOUNTPOINT="cpuset_test"
 BACKUP_DIRECTORY="cpuset_backup"
@@ -190,21 +189,27 @@ do_test()
 	ROD_SILENT mkdir ${root_cpuset_dir}/testdir
 
 	# Creat an exclusive cpuset.
-	echo 1 > ${root_cpuset_dir}/testdir/${cpu_exclusive}
-	[ $? -ne 0 ] && tst_brk TFAIL "'echo 1 > ${root_cpuset_dir}/testdir/${cpu_exclusive}' failed"
+	if ! echo 1 > ${root_cpuset_dir}/testdir/${cpu_exclusive}; then
+		tst_res TFAIL "'echo 1 > ${root_cpuset_dir}/testdir/${cpu_exclusive}' failed"
+		return
+	fi
 
 	cpu_exclusive_tmp=$(cat ${root_cpuset_dir}/testdir/${cpu_exclusive})
 	if [ "${cpu_exclusive_tmp}" != "1" ]; then
-		tst_brk TFAIL "${cpu_exclusive} is '${cpu_exclusive_tmp}', expected '1'"
+		tst_res TFAIL "${cpu_exclusive} is '${cpu_exclusive_tmp}', expected '1'"
+		return
 	fi
 
 	# This may trigger the kernel crash
-	echo 0 > ${root_cpuset_dir}/testdir/${cpus}
-	[ $? -ne 0 ] && tst_brk TFAIL "'echo 0 > ${root_cpuset_dir}/testdir/${cpus}' failed"
+	if ! echo 0 > ${root_cpuset_dir}/testdir/${cpus}; then
+		tst_res TFAIL "'echo 0 > ${root_cpuset_dir}/testdir/${cpus}' failed"
+		return
+	fi
 
 	cpus_value=$(cat ${root_cpuset_dir}/testdir/${cpus})
 	if [ "${cpus_value}" != "0" ]; then
-		tst_brk TFAIL "${cpus} is '${cpus_value}', expected '0'"
+		tst_res TFAIL "${cpus} is '${cpus_value}', expected '0'"
+		return
 	fi
 
 	tst_res TPASS "Bug is not reproducible"

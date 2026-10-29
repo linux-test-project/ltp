@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2014-2016 Oracle and/or its affiliates. All Rights Reserved.
+ * Copyright (c) 2014-2023 Petr Vorel <pvorel@suse.cz>
  * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
  */
 
@@ -883,9 +884,6 @@ static void setup(void)
 	if (!clients_num)
 		clients_num = sysconf(_SC_NPROCESSORS_ONLN);
 
-	if (busy_poll >= 0 && tst_kvercmp(3, 11, 0) < 0)
-		tst_brk(TCONF, "Test must be run with kernel 3.11 or newer");
-
 	set_protocol_type();
 
 	if (client_mode) {
@@ -1009,7 +1007,7 @@ static struct tst_test test = {
 		{"T:", &type, "Tcp (default), udp, udp_lite, dccp, sctp"},
 		{"z", &zcopy, "Enable SO_ZEROCOPY"},
 		{"P:", &reuse_port, "Enable SO_REUSEPORT"},
-		{"D:", &dev, "Bind to device x"},
+		{"d:", &dev, "Bind to device x"},
 
 		{"H:", &server_addr, "Server name or IP address"},
 		{"l", &client_mode, "Become client, default is server"},
@@ -1018,7 +1016,7 @@ static struct tst_test test = {
 		{"n:", &narg, "Client message size"},
 		{"N:", &Narg, "Server message size"},
 		{"m:", &Targ, "Receive timeout in milliseconds (not used by UDP/DCCP client)"},
-		{"d:", &rpath, "Path to file where result is saved"},
+		{"c:", &rpath, "Path to file where result is saved"},
 		{"A:", &Aarg, "Max payload length (generated randomly)"},
 
 		{"R:", &Rarg, "Server requests after which conn.closed"},
@@ -1026,6 +1024,6 @@ static struct tst_test test = {
 		{"B:", &server_bg, "Run in background, arg is the process directory"},
 		{}
 	},
-	.max_runtime = 300,
+	.timeout = 300,
 	.needs_checkpoints = 1,
 };

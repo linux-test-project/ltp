@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the following file timestamps of statx syscall:
  *
  * - btime - The time before and after the execution of the create system call is noted.
@@ -32,7 +30,7 @@
 
 #define MOUNT_POINT "mount_ext"
 #define TEST_FILE MOUNT_POINT"/test_file.txt"
-#define SIZE 2
+#define SIZE 3
 
 static int fd;
 
@@ -74,7 +72,7 @@ static void read_file(void)
 {
 	char data[SIZE];
 
-	SAFE_READ(0, fd, data, sizeof(data));
+	SAFE_READ(SAFE_READ_ANY, fd, data, sizeof(data));
 }
 
 static void change_mode(void)
@@ -155,7 +153,12 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mntpoint = MOUNT_POINT,
 	.mount_device = 1,
-	.dev_fs_type = "ext4",
-	.dev_fs_opts = (const char *const []){"-I", "256", NULL},
-	.mnt_flags = MS_STRICTATIME,
+	.filesystems = (struct tst_fs[]) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const []){"-I", "256", NULL},
+			.mnt_flags = MS_STRICTATIME,
+		},
+		{}
+	},
 };

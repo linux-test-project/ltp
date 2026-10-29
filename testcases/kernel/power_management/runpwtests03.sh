@@ -24,6 +24,16 @@ export TST_TOTAL=4
 . test.sh
 . pm_include.sh
 
+get_supporting_freq() {
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_frequencies \
+		| uniq
+}
+
+get_supporting_govr() {
+	cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_available_governors \
+		| uniq
+}
+
 check_cpufreq_sysfs_files() {
 	total_cpus=`expr $(tst_ncpus) - 1`
 	RC=0
@@ -115,9 +125,11 @@ pwkm_load_unload() {
 	RC=0
 	loaded_governor=`cat \
 		/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
-	for module in `modprobe -l | grep cpufreq_ | \
-		cut -f8 -d"/" | cut -f1 -d"."`
-	do
+
+	modules=$(find /lib/modules/$(uname -r) -type f -name '*.ko*' |
+		grep cpufreq_ | cut -f8 -d"/"  | cut -f1 -d".")
+
+	for module in $modules; do
 		#echo -n "Loading $module ... "
 		if [ $module != "cpufreq_$loaded_governor" ]; then
 			modprobe $module >/dev/null
@@ -128,9 +140,8 @@ pwkm_load_unload() {
 			fi
 		fi
 	done
-	for module in `modprobe -l | grep cpufreq_ | \
-		cut -f8 -d"/" | cut -f1 -d"."`
-		do
+
+	for module in $modules; do
 		#echo -n "Unloading $module ... "
 		if [ $module != "cpufreq_$loaded_governor" ]; then
 			modprobe -r $module >/dev/null

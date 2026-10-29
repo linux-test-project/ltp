@@ -5,16 +5,12 @@
 ipneigh01_arp ipneigh01.sh -c arp
 ipneigh01_ip ipneigh01.sh -c ip
 arping01 arping01.sh
-clockdiff01 clockdiff01.sh
-ftp ftp01.sh
-host host01.sh
 netstat netstat01.sh
 ping01 ping01.sh
 ping02 ping02.sh
 sendfile sendfile01.sh
 tc01 tc01.sh
 tcpdump tcpdump01.sh
-telnet telnet01.sh
 iptables iptables01.sh
 nft nft01.sh
 dhcpd dhcpd_tests.sh
@@ -22,4 +18,3 @@ dnsmasq dnsmasq_tests.sh
 iproute ip_tests.sh
 tracepath01 tracepath01.sh
 traceroute01 traceroute01.sh
-xinetd xinetd_tests.sh

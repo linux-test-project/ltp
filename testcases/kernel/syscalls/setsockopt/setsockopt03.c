@@ -3,7 +3,8 @@
  * Copyright (c) 2017 Richard Palethorpe <rpalethorpe@suse.com>
  * Based on repro-compatReleaseEntry.c by NCC group
  */
-/*
+
+/*\
  * Test for CVE-2016-4997
  *
  * For a full explanation of how the vulnerability works see:
@@ -11,7 +12,7 @@
  *
  * The original vulnerability was present in the 32-bit compatibility system
  * call, so the test should be compiled with -m32 and run on a 64-bit kernel.
- * For simplicities sake the test requests root privliges instead of creating
+ * For simplicities sake the test requests root privileges instead of creating
  * a user namespace.
  */
 
@@ -45,9 +46,8 @@ struct payload {
 
 static void setup(void)
 {
-	if (tst_kernel_bits() == 32 || sizeof(long) > 4)
-		tst_res(TCONF,
-			"The vulnerability was only present in 32-bit compat mode");
+	if (!tst_is_compat_mode())
+		tst_res(TINFO, "The vulnerability was only present in 32-bit compat mode");
 }
 
 static void run(void)
@@ -78,8 +78,8 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]){
-		{"linux-git", "ce683e5f9d04"},
-		{"CVE", "CVE-2016-4997"},
+		{"linux-git", "ce683e5f9d045e5d67d1312a42b359cb2ab2a13c"},
+		{"CVE", "2016-4997"},
 		{}
 	}
 };

@@ -1,12 +1,9 @@
 #
-# Stress test for major application protocol (ssh, dns, http, ftp)
+# Stress test for major application protocol (ssh, http, ftp)
 #
 
 ssh4-stress ssh-stress.sh
 ssh6-stress ssh-stress.sh -6
-
-dns4-stress dns-stress.sh
-dns6-stress dns-stress.sh -6
 
 http4-stress http-stress.sh
 http6-stress http-stress.sh -6

@@ -39,7 +39,7 @@ struct block {
 	intptr_t filler[FILLER];
 };
 
-static int atomic;
+static tst_atomic_t atomic;
 /* Instead of storing seq_n on the stack (probably next to the atomic variable
  * above), we store it in the middle of some anonymous mapped memory and keep
  * a pointer to it. This should decrease the probability that the value of

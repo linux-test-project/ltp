@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that sendfile() system call updates file position of in_fd correctly
  * when passing NULL as offset.
  */

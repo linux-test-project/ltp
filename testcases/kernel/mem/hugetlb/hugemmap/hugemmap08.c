@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Some kernel versions after hugepage demand allocation was added used a
  * dubious heuristic to check if there was enough hugepage space available
  * for a given mapping.  The number of not-already-instantiated pages in
@@ -104,11 +102,11 @@ static void run_test(unsigned int test_type)
 	switch (test_type) {
 	case WITHOUT_OVERCOMMIT:
 		tst_res(TINFO, "Without overcommit testing...");
-		SAFE_FILE_PRINTF(PATH_OC_HPAGES, "%d", 0);
+		SAFE_FILE_PRINTF(PATH_VM_OVERCOMMIT_HPAGES, "%d", 0);
 		break;
 	case WITH_OVERCOMMIT:
 		tst_res(TINFO, "With overcommit testing...");
-		SAFE_FILE_PRINTF(PATH_OC_HPAGES, "%d", 2);
+		SAFE_FILE_PRINTF(PATH_VM_OVERCOMMIT_HPAGES, "%d", 2);
 		break;
 	}
 	test_chunk_overcommit();
@@ -117,7 +115,7 @@ static void run_test(unsigned int test_type)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	huge_fd = tst_creat_unlinked(MNTPOINT, 0);
+	huge_fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -131,7 +129,7 @@ static struct tst_test test = {
 	.needs_hugetlbfs = 1,
 	.forks_child = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_OC_HPAGES, NULL, TST_SR_TCONF},
+		{PATH_VM_OVERCOMMIT_HPAGES, NULL, TST_SR_TCONF},
 		{}
 	},
 	.tcnt = 2,

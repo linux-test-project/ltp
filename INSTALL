@@ -55,13 +55,10 @@ in the same directory where the source files reside.
 	$ make all
 	$ make \
 	  "DESTDIR=$SYSROOT" \
-	  SKIP_IDCHECK=[0|1] \
 	  install
 
 - Specifying DESTDIR is optional, but required when installing to a non-host
   sysroot, as opposed to the host system's sysroot.
-- Specify SKIP_IDCHECK=1 if and when you don't want to modify /etc/{group,passwd}
-  on the target system's sysroot.
 
 If you get a build error, please report it to ltp@lists.linux.it with
 following information,
@@ -95,13 +92,10 @@ items which need fixing in the LTP tree.
 	  "top_srcdir=$TOP_SRCDIR" \
 	  "top_builddir=$OUT_OF_BUILD_TREE_DIR" \
 	  "DESTDIR=$SYSROOT" \
-	  SKIP_IDCHECK=[0|1]
 	  install
 
 - Specifying DESTDIR is optional, but required when installing to a non-host
   sysroot, as opposed to the host system's sysroot.
-- Specify SKIP_IDCHECK=1 if and when you don't want to modify /etc/{group,passwd}
-  on the target system's sysroot.
 
 Quick Start
 -----------
@@ -110,18 +104,20 @@ Quick Start
 	$ cd ltp
 	$ ./configure
 	$ make all
-	# make install
-	$ /opt/ltp/runltp
+	$ sudo make install
 
 *NOTE:
+- For running tests use kirk [1].
 - LTP assumes the existence of the nobody, bin, and daemon users and their
 groups.  If these IDs do not exist, certain tests will fail. The respective
 user and group IDs should be the same, i.e. if `nobody's' user ID is 99, then
 its group ID should also be 99. The names of the groups are irrelevant.
 - The installation directory is /opt/ltp by default. Please see
-"Using autoconf" above and specify the appropriate path via --prefix.
+"Configuration" above and specify the appropriate path via --prefix.
 DESTDIR= is also honored for install and will install into $DESTDIR/$prefix,
 if you want to install into a chroot or a rootfs for instance.
+
+[1] https://github.com/linux-test-project/kirk
 
 Detailed Installation
 ---------------------
@@ -143,13 +139,7 @@ contributions are welcome.
 3. Build and install everything, as described above. Note the minimum software
    requirements above before doing so.
 
-4. The disk I/O tests can be run by executing the diskio.sh script.  In order
-   for these tests to successfully operate a writable high-density 3.5" floppy
-   must be in the disk drive and a CD-ROM with more than 100Mb of data must be
-   in the CD-ROM drive.  The corresponding tests will fail if either disk is
-   missing.
-
-5. The network tests related installation see testcases/network/README.md.
+4. For network test installation, see testcases/network/README.md.
 
 Cross compiling
 ---------------
@@ -160,7 +150,7 @@ For correct pkgconf / pkg-config detection you need to set
 PKG_CONFIG_SYSROOT_DIR=$SYSROOT
 
 After configure has run, it will generate include/mk/config.mk. You can tweak
-settings in there if need be, but you should not specificy settings on the
+settings in there if need be, but you should not specify settings on the
 command-line when running make.
 
 32 bit build on 64 bit machine
@@ -171,11 +161,27 @@ You need to set CFLAGS=-m32 LDFLAGS=-m32 and PKG_CONFIG_LIBDIR
 * RPM based distributions (openSUSE, Fedora, etc.)
 PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
-* Debian / Ubuntu and derivates
+* Debian / Ubuntu and derivatives
 PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
 
 * Arch Linux
 PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig CFLAGS=-m32 LDFLAGS=-m32 ./configure
+
+Kernel modules
+--------------
+
+LTP contains few kernel modules and tests which are using them.
+These require to be built with the same kernel headers as the running kernel (SUT).
+Sometimes the best way to achieve this is to compile them on the SUT.
+
+Due to Linux Kernel Driver Interface instability [1], an error during building kernel
+modules does not break the build. Make errors fatal can be done by FORCE_MODULES=1
+make variable.
+
+'modules', 'modules-clean' and 'modules-install' make targets are shortcuts
+to build just these modules and tests.
+
+[1] https://docs.kernel.org/process/stable-api-nonsense.html
 
 Android Users
 -------------
@@ -202,47 +208,4 @@ LDLIBS   - libraries listed after objects during link, e.g. -lc, -lpthread,
 	   -lltp.
 
 For other variables and more info about the build systems see
-doc/build-system-guide.txt.
-
-Common Issues
--------------
-
-Issue:    When executing configure it says:
-
-checking for a BSD-compatible install... /usr/bin/install -c
-checking whether build environment is sane... yes
-checking for gawk... gawk
-checking whether make sets $(MAKE)... yes
-configure: error: cannot run /bin/sh ./config.sub
-
-Solution: You must upgrade autoconf to 0.10.2+ and m4 to 1.4.7+; config.guess and config.sub aren't necessarily generated with older revisions of the Gnu autotools chain.
-
-Issue:    When executing make [all] it says:
-
-    " *** No rule to make target `/$*', needed by `pan-all'.  Stop."
-
-Solution: You must upgrade to make 3.81. Please see the Requirements section above.
-
-Issue:    When executing make [all] it says something like:
-
-    # ...
-    install -m 00644 "/scratch/ltp-dev2/ltp/include/test.h" "/scratch/ltp-install12/include/test.h"
-    install -m 00644 "/scratch/ltp-dev2/ltp/include/tlibio.h" "/scratch/ltp-install12/include/tlibio.h"
-    install -m 00644 "/scratch/ltp-dev2/ltp/include/usctest.h" "/scratch/ltp-install12/include/usctest.h"
-    install -m 00644 "/scratch/ltp-dev2/ltp/include/write_log.h" "/scratch/ltp-install12/include/write_log.h"
-    make[1]: Leaving directory `/scratch/ltp-dev2/ltp/include'
-    make -C lib -f "/scratch/ltp-dev2/ltp/lib/Makefile" all
-    make[1]: Entering directory `/scratch/ltp-dev2/ltp/lib'
-    " *** No rule to make target `dataascii.o', needed by `libltp.a'.  Stop." # <-- the error
-
-Solution: You cannot build LTP with -r / --no-builtin-rules and/or
-	  -R / --no-builtin-variables specified. LTP relies heavily on built-in
-	  implicit rules and variables to function properly.
-
-Issue:    When executing make (no target, 3.80), it does the following, and doesn't execute all:
-
-    #
-    make -C testcases/realtime autotools
-    make[1]: Entering directory `/scratch/ltp/testcases/realtime'
-    autoheader
-    make[1]: Leaving directory `/scratch/ltp/testcases/realtime'
+doc/developers/build_system.rst.

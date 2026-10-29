@@ -11,7 +11,7 @@ Compiling
 ---------
 
 First configure ebizzy for your platform by typing "./configure".
-Currently Linux and Solaris anre supported.  Then type "make".  The
+Currently Linux and Solaris are supported.  Then type "make".  The
 resulting binary will be named "ebizzy".
 
 Running

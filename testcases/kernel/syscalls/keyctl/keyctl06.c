@@ -1,19 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
- * Regression test for:
+/*\
+ * Regression test for commit:
  *
- *	commit e645016abc80 ("KEYS: fix writing past end of user-supplied buffer
- *	in keyring_read()").
+ * e645016abc80 ("KEYS: fix writing past end of user-supplied buffer in keyring_read()")
  *
  * as well as its follow-on fix:
  *
- *	commit 3239b6f29bdf ("KEYS: return full count in keyring_read() if
- *	buffer is too small")
- *
+ * commit 3239b6f29bdf ("KEYS: return full count in keyring_read() if buffer is too small")
  */
 
 #include <errno.h>
@@ -23,10 +21,8 @@
 
 static void add_test_key(const char *description)
 {
-	TEST(add_key("user", description, "payload", 7,
-		     KEY_SPEC_PROCESS_KEYRING));
-	if (TST_RET < 0)
-		tst_brk(TBROK | TTERRNO, "Failed to add test key");
+	SAFE_ADD_KEY("user", description, "payload", 7,
+		     KEY_SPEC_PROCESS_KEYRING);
 }
 
 static void do_test(void)
@@ -63,8 +59,8 @@ static void do_test(void)
 static struct tst_test test = {
 	.test_all = do_test,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e645016abc80"},
-		{"linux-git", "3239b6f29bdf"},
+		{"linux-git", "e645016abc803dafc75e4b8f6e4118f088900ffb"},
+		{"linux-git", "3239b6f29bdfb4b0a2ba59df995fc9e6f4df7f1f"},
 		{}
 	}
 };

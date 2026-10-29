@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check for possible double free of rx_owner_map after switching packet
  * interface versions aka CVE-2021-22600.
  *
@@ -113,12 +111,12 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "ec6af094ea28"},
-		{"linux-git", "c800aaf8d869"},
+		{"linux-git", "ec6af094ea28f0f2dda1a6a33b14cd57e36a9755"},
+		{"linux-git", "c800aaf8d869f2b9b47b10c5c312fe19f0a94042"},
 		{"CVE", "2021-22600"},
 		{}
 	}

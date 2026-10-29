@@ -2,11 +2,9 @@ Testcase 06
 -----------
 
 It's been found that sometimes onlining and offlining CPUs confuse some
-of the various system tools.  In particular, we found it caused top to
-crash, and found that sar wouldn't register newly available cpus that
-weren't there when it started.  This test case seeks to exercise these
-known error cases and verify that they behave correctly now.
-
+of the various system tools.  We found it caused top to
+crash.  This test case seeks to exercise this known error cases and
+verify that they behave correctly now.
 
 Algorithm - Top
 ===============
@@ -27,30 +25,5 @@ Loop until done:
 When exiting:
   Kill the top process
   Restore all CPUs to their initial state
-
-
-Algorithm - Sar
-===============
-Given a CPU to test that exists
-
-Make sure the specified cpu is offline
-
-Loop until done:
-  Start up sar writing to a temp log and give it a little time to run
-
-  Verify that SAR has correctly listed the missing CPU as 'nan' in its
-  tmp log
-
-  Take a timestamp and count how many CPUs sar is reporting to be
-  offline
-
-  Online the specified cpu
-
-  Take another timestamp and another count of offlined CPUs.
-
-  Verify that the number of CPUs offline has changed
-
-When exiting:
-  Kill the sar process
 
 

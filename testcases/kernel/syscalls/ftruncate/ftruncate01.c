@@ -4,11 +4,11 @@
  * Copyright (c) 2019 FUJITSU LIMITED. All rights reserved.
  * Author: Wayne Boyer
  */
-/*
- * Test Description:
- *  Verify that, ftruncate() succeeds to truncate a file to a certain length,
- *  if the file previously is smaller than the truncated size, ftruncate()
- *  shall increase the size of the file.
+
+/*\
+ * Verify that, ftruncate() succeeds to truncate a file to a certain length,
+ * if the file previously is smaller than the truncated size, ftruncate()
+ * shall increase the size of the file.
  */
 
 #include <sys/types.h>
@@ -46,7 +46,7 @@ static void check_and_report(off_t offset, char data, off_t trunc_len)
 	}
 
 	SAFE_LSEEK(fd, offset, SEEK_SET);
-	SAFE_READ(0, fd, buf, sizeof(buf));
+	SAFE_READ(SAFE_READ_ANY, fd, buf, sizeof(buf));
 
 	for (i = 0; i < TRUNC_LEN1; i++) {
 		if (buf[i] != data) {

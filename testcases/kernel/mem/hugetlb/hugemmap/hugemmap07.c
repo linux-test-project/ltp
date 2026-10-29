@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Certain kernels have a bug where brk() does not perform the same
  * checks that a MAP_FIXED mmap() will, allowing brk() to create a
  * normal page VMA in a hugepage only address region. This can lead
@@ -112,7 +110,7 @@ cleanup:
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	huge_fd = tst_creat_unlinked(MNTPOINT, 0);
+	huge_fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

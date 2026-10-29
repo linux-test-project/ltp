@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
-#include "old/old_device.h"
+#include "old/tso_device.h"
 
 extern struct tst_test *tst_test;
 

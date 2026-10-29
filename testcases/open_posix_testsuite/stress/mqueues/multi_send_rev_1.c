@@ -80,7 +80,7 @@ static int *mreceive(void *info)
 	pthread_exit(NULL);
 }
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	const char *MQ_NAME[Max_Threads] =
 	    { "/msg1", "/msg2", "/msg3", "/msg4", "/msg5", "/msg6", "/msg7",

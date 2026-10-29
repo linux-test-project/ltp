@@ -56,7 +56,6 @@
 #include <time.h>
 #include <unistd.h>
 #include "list.h"
-#include "realtime_config.h"
 
 extern void setup(void);
 extern void cleanup(int i);
@@ -113,15 +112,9 @@ extern double pass_criteria;
  */
 static inline int atomic_add(int i, atomic_t *v)
 {
-	/* XXX (garrcoop): only available in later versions of gcc */
-#if HAVE___SYNC_ADD_AND_FETCH
 	return __sync_add_and_fetch(&v->counter, i);
-#else
-	printf("%s: %s\n", __func__, strerror(ENOSYS));
-	exit(1);
-	return -1;
-#endif
 }
+
 /* atomic_inc: atomically increment the integer passed by reference
  */
 static inline int atomic_inc(atomic_t *v)
@@ -348,5 +341,22 @@ void latency_trace_stop(void);
  * /proc/latency_trace.
  */
 void latency_trace_print(void);
+
+/* trace_marker_prep: open trace_marker file (optional)
+ */
+void trace_marker_prep(void);
+
+/* trace_marker_write: write buf to trace_marker.
+ * Will open trace_marker file if not already open
+ */
+int trace_marker_write(char *buf, int len);
+
+/* atrace_marker_write: write atrace format message to trace_marker
+ */
+int atrace_marker_write(char *tag, char *msg);
+
+/* get_numcpus: get the number of cpus accessible to the current process
+ */
+int get_numcpus(void);
 
 #endif /* LIBRTTEST_H */

@@ -2,22 +2,17 @@
 /*
  * Copyright (c) 2016 Fujitsu Ltd.
  * Copyright (c) 2017 Petr Vorel <pvorel@suse.cz>
- *
+ * Copyright (c) Linux Test Project, 2017-2024
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Test Name: request_key02
+/*\
+ * Basic request_key(2) failure checking. request_key(2) should return -1 and
+ * set expected errno:
  *
- * Description:
- * 1) request_key(2) fails if no matching key was found.
- * 2) request_key(2) fails if A revoked key was found.
- * 3) request_key(2) fails if An expired key was found.
- *
- * Expected Result:
- * 1) request_key(2) should return -1 and set errno to ENOKEY.
- * 2) request_key(2) should return -1 and set errno to EKEYREVOKED.
- * 3) request_key(2) should return -1 and set errno to EKEYEXPIRED.
+ * 1. ENOKEY (no matching key was found),
+ * 2. EKEYREVOKED (revoked key was found)
+ * 3. EKEYEXPIRED (expired key was found)
  */
 
 #include <errno.h>
@@ -43,19 +38,9 @@ static void verify_request_key(unsigned int n)
 {
 	struct test_case *tc = tcases + n;
 
-	TEST(request_key("keyring", tc->des, NULL, *tc->id));
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "request_key() succeed unexpectly");
-		return;
-	}
-
-	if (TST_ERR == tc->exp_err) {
-		tst_res(TPASS | TTERRNO, "request_key() failed expectly");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO, "request_key() failed unexpectly, "
-		"expected %s", tst_strerrno(tc->exp_err));
+	TST_EXP_FAIL2(request_key("keyring", tc->des, NULL, *tc->id),
+		      tc->exp_err, "request_key(\"keyring\", %s, NULL, %d)",
+		      tc->des, *tc->id);
 }
 
 static int init_key(char *name, int cmd)
@@ -63,14 +48,11 @@ static int init_key(char *name, int cmd)
 	int n;
 	int sec = 1;
 
-	n = add_key("keyring", name, NULL, 0, KEY_SPEC_THREAD_KEYRING);
-	if (n == -1)
-		tst_brk(TBROK | TERRNO, "add_key() failed");
+	n = SAFE_ADD_KEY("keyring", name, NULL, 0, KEY_SPEC_THREAD_KEYRING);
 
 	if (cmd == KEYCTL_REVOKE) {
-		if (keyctl(cmd, n) == -1) {
+		if (keyctl(cmd, n) == -1)
 			tst_brk(TBROK | TERRNO,	"failed to revoke a key");
-		}
 	}
 
 	if (cmd == KEYCTL_SET_TIMEOUT) {

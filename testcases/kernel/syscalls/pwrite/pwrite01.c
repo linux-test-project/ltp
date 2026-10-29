@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the functionality of pwrite() by writing known data using pwrite()
  * to the file at various specified offsets and later read from the file from
  * various specified offsets, comparing the data written aganist the data
@@ -48,7 +46,7 @@ static void check_file_contents(void)
 	for (count = 0; count < NBUFS; count++) {
 		l_seek(fildes, count * K1, SEEK_SET, count * K1);
 
-		SAFE_READ(1, fildes, read_buf[count], K1);
+		SAFE_READ(SAFE_READ_ALL, fildes, read_buf[count], K1);
 
 		if (memcmp(write_buf[count], read_buf[count], K1) != 0) {
 			tst_res(TFAIL, "read/write buffer[%d] data mismatch", count);

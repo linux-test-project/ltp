@@ -81,8 +81,7 @@ static void setup(void)
 	 * gid.
 	 */
 	SAFE_MKDIR(TESTDIR, MODE_RWX);
-	if (setgroups(1, &nobody_u->pw_gid) == -1)
-		tst_brk(TBROK | TERRNO, "setgroups to nobody's gid failed");
+	SAFE_SETGROUPS(1, &nobody_u->pw_gid);
 
 	SAFE_CHOWN(TESTDIR, nobody_u->pw_uid, free_gid);
 

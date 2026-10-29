@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the PIDFD_NONBLOCK flag works with pidfd_open() and
  * that waitid() with a non-blocking pidfd returns EAGAIN.
  */

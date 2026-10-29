@@ -28,7 +28,7 @@
 
 #define SLEEP_SEC 1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sem_t mysemp;
 	struct timespec ts, ts_2;

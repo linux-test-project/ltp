@@ -36,9 +36,12 @@
 #include <linux/ioctl.h>
 #include <linux/pm.h>
 #include <linux/acpi.h>
-#include <linux/genhd.h>
+#ifdef HAVE_LINUX_GENHD_H
+# include <linux/genhd.h>
+#endif
 #include <linux/dmi.h>
 #include <linux/nls.h>
+#include <linux/version.h>
 
 #include "ltp_acpi.h"
 
@@ -123,14 +126,20 @@ static void get_crs_object(acpi_handle handle)
 
 static void get_sysfs_path(acpi_handle handle)
 {
-	acpi_status status;
 	struct acpi_device *device;
 
 	kfree(sysfs_path);
 	sysfs_path = NULL;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
+	acpi_status status;
+
 	status = acpi_bus_get_device(handle, &device);
 	if (ACPI_SUCCESS(status))
+#else
+	device = acpi_fetch_acpi_dev(handle);
+	if (device)
+#endif
 		sysfs_path = kobject_get_path(&device->dev.kobj, GFP_KERNEL);
 }
 
@@ -257,7 +266,7 @@ static int acpi_init(void)
 	if (acpi_hw_reduced)
 		prk_alert("Detected the Hardware-reduced ACPI mode");
 
-	prk_alert("TEST -- acpi_get_handle ");
+	prk_alert("TEST -- acpi_get_handle");
 	status = acpi_get_handle(NULL, "\\_SB", &parent_handle);
 	if (acpi_failure(status, "acpi_get_handle"))
 		return 1;
@@ -276,7 +285,7 @@ static int acpi_init(void)
 		dev_info->type);
 	kfree(dev_info);
 
-	prk_alert("TEST -- acpi_get_parent ");
+	prk_alert("TEST -- acpi_get_parent");
 	status = acpi_get_parent(dev_handle, &parent_handle);
 	return acpi_failure(status, "acpi_get_parent failed");
 }
@@ -373,7 +382,7 @@ static int acpi_global_lock(void)
 	acpi_status status;
 	u32 global_lock = 0;
 
-	prk_alert("TEST -- acpi_acquire_global_lock ");
+	prk_alert("TEST -- acpi_acquire_global_lock");
 	if (acpi_hw_reduced) {
 		prk_alert("Skipped due to the HW-reduced mode");
 		return 0;
@@ -382,7 +391,7 @@ static int acpi_global_lock(void)
 	if (acpi_failure(status, "acpi_acquire_global_lock"))
 		return 1;
 
-	prk_alert("TEST -- acpi_release_global_lock ");
+	prk_alert("TEST -- acpi_release_global_lock");
 	status = acpi_release_global_lock(global_lock);
 	return acpi_failure(status, "acpi_release_global_lock");
 }
@@ -398,12 +407,18 @@ static int acpi_test_bus(void)
 	if (acpi_failure(status, "acpi_get_handle"))
 		return 1;
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 18, 0)
 	prk_alert("TEST -- acpi_bus_get_device");
 	status = acpi_bus_get_device(bus_handle, &device);
 	if (acpi_failure(status, "acpi_bus_get_device"))
+#else
+	prk_alert("TEST -- acpi_fetch_acpi_dev");
+	device = acpi_fetch_acpi_dev(bus_handle);
+	if (!device)
+#endif
 		return 1;
 
-	prk_alert("TEST -- acpi_bus_update_power ");
+	prk_alert("TEST -- acpi_bus_update_power");
 	status = acpi_bus_update_power(device->handle, &state);
 	if (acpi_failure(status, "error reading power state"))
 		return 1;
@@ -439,7 +454,7 @@ static int acpi_test_resources(void)
 	err |= acpi_failure(status, "get_possible_resources");
 #endif
 
-	prk_alert("TEST -- acpi_walk_resources ");
+	prk_alert("TEST -- acpi_walk_resources");
 	status = acpi_walk_resources(res_handle, METHOD_NAME__CRS,
 		acpi_ec_io_ports, NULL);
 	err |= acpi_failure(status, "Failed walk_resources");
@@ -453,7 +468,7 @@ static int acpi_sleep_test(void)
 	acpi_status status;
 	u32 i;
 	u8 type_a, type_b;
-	prk_alert("TEST -- acpi_get_sleep_type_data ");
+	prk_alert("TEST -- acpi_get_sleep_type_data");
 
 	for (i = 0; i < ACPI_S_STATE_COUNT; ++i) {
 		status = acpi_get_sleep_type_data(i, &type_a, &type_b);
@@ -522,7 +537,7 @@ static acpi_status ltp_get_dev_callback(acpi_handle obj, u32 depth,
 static int acpi_test_dev_callback(void)
 {
 	acpi_status status;
-	prk_alert("TEST -- acpi_get_devices ");
+	prk_alert("TEST -- acpi_get_devices");
 	status = acpi_get_devices(NULL, ltp_get_dev_callback, "LTP0001", NULL);
 	return acpi_failure(status, "acpi_get_devices");
 }

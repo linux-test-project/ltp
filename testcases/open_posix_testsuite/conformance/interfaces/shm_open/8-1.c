@@ -32,7 +32,7 @@
 
 #define SHM_NAME "posixtest_8-1"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd1, fd2;
 	char path[25] = "/tmp/posixtestXXXXXX";

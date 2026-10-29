@@ -5,10 +5,10 @@
  */
 
 /*\
- * [Description]
  * Testcase to check the basic functionality of getgid().
  *
  * [Algorithm]
+ *
  * For functionality test the return value from getgid() is compared to passwd
  * entry.
  */

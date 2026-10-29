@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that root can provide a negative value to nice() system call and hence
  * root can decrease the nice value of the process using nice().
  */

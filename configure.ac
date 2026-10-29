@@ -1,9 +1,14 @@
+# Copyright (c) Linux Test Project, 2008-2025
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 AC_PREREQ(2.64)
 AC_INIT([ltp], [LTP_VERSION], [ltp@lists.linux.it])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([include/config.h])
 AC_CONFIG_MACRO_DIR([m4])
+
+# Adding files here? Please update include/mk/automake.mk
 AC_CONFIG_FILES([ \
     include/mk/config.mk \
     include/mk/config-openposix.mk \
@@ -27,6 +32,7 @@ AC_PROG_RANLIB
 AC_DEFUN([AC_PROG_STRIP], [AC_CHECK_TOOL(STRIP, strip, :)])
 AC_PROG_STRIP
 AC_PROG_YACC
+AC_CHECK_TOOL([OBJCOPY], [objcopy], [:])
 
 m4_ifndef([PKG_CHECK_EXISTS],
 	[m4_fatal([must install pkg-config or pkgconfig and pkg.m4 macro (usual dependency), see INSTALL])])
@@ -34,16 +40,23 @@ m4_ifndef([PKG_CHECK_EXISTS],
 AC_PREFIX_DEFAULT(/opt/ltp)
 
 AC_CHECK_DECLS([IFLA_NET_NS_PID],,,[#include <linux/if_link.h>])
+AC_CHECK_DECLS([LANDLOCK_RULE_PATH_BENEATH],,,[#include <linux/landlock.h>])
+AC_CHECK_DECLS([LANDLOCK_RULE_NET_PORT],,,[#include <linux/landlock.h>])
 AC_CHECK_DECLS([MADV_MERGEABLE],,,[#include <sys/mman.h>])
+AC_CHECK_DECLS([NFTA_CHAIN_ID, NFTA_VERDICT_CHAIN_ID],,,[#include <linux/netfilter/nf_tables.h>])
 AC_CHECK_DECLS([PR_CAPBSET_DROP, PR_CAPBSET_READ],,,[#include <sys/prctl.h>])
 AC_CHECK_DECLS([SEM_STAT_ANY],,,[#include <sys/sem.h>])
+AC_CHECK_DECLS([IORING_OP_READ],,,[#include <linux/io_uring.h>])
+AC_CHECK_DECLS([IORING_OP_WRITE],,,[#include <linux/io_uring.h>])
 
 AC_CHECK_HEADERS_ONCE([ \
+    aio.h \
     asm/ldt.h \
+    asm/prctl.h \
     cpuid.h \
     emmintrin.h \
     ifaddrs.h \
-    keyutils.h \
+    linux/blkdev.h \
     linux/can.h \
     linux/cgroupstats.h \
     linux/cryptouser.h \
@@ -52,18 +65,22 @@ AC_CHECK_HEADERS_ONCE([ \
     linux/fs.h \
     linux/futex.h \
     linux/genetlink.h \
+    linux/genhd.h \
     linux/if_alg.h \
     linux/if_ether.h \
     linux/if_packet.h \
     linux/io_uring.h \
     linux/ioprio.h \
     linux/keyctl.h \
+    linux/landlock.h \
+    linux/lsm.h \
     linux/mempolicy.h \
     linux/module.h \
     linux/mount.h \
     linux/netlink.h \
     linux/seccomp.h \
     linux/securebits.h \
+    linux/tls.h \
     linux/tty.h \
     linux/types.h \
     linux/userfaultfd.h \
@@ -74,6 +91,7 @@ AC_CHECK_HEADERS_ONCE([ \
     sys/inotify.h \
     sys/pidfd.h
     sys/prctl.h \
+    sys/random.h \
     sys/shm.h \
     sys/timerfd.h \
     sys/ustat.h \
@@ -86,6 +104,7 @@ AC_SUBST(HAVE_FTS_H, $have_fts)
 AC_CHECK_HEADERS(linux/vm_sockets.h, [], [], [#include <sys/socket.h>])
 
 AC_CHECK_FUNCS_ONCE([ \
+    cachestat \
     clone3 \
     close_range \
     copy_file_range \
@@ -94,7 +113,8 @@ AC_CHECK_FUNCS_ONCE([ \
     execveat \
     faccessat2 \
     fallocate \
-    fchownat \
+    file_getattr \
+    file_setattr \
     fsconfig \
     fsmount \
     fsopen \
@@ -113,13 +133,12 @@ AC_CHECK_FUNCS_ONCE([ \
     mallinfo \
     mallinfo2 \
     mallopt \
-    mkdirat \
-    mknodat \
     modify_ldt \
     mount_setattr \
     move_mount \
     name_to_handle_at \
     open_tree \
+    open_tree_attr \
     openat \
     openat2 \
     pidfd_getfd \
@@ -133,11 +152,11 @@ AC_CHECK_FUNCS_ONCE([ \
     pwritev2 \
     quotactl_fd \
     rand_r \
-    readlinkat \
     recvmmsg \
-    renameat \
     renameat2 \
+    sched_getattr \
     sched_getcpu \
+    sched_setattr \
     sendmmsg \
     sethostid \
     setns \
@@ -157,6 +176,7 @@ AC_CHECK_FUNCS_ONCE([ \
 ])
 AC_CHECK_FUNCS(mkdtemp,[],AC_MSG_ERROR(mkdtemp() not found!))
 
+AC_CHECK_MEMBERS([struct iocb.aio_rw_flags],,,[#include <linux/aio_abi.h>])
 AC_CHECK_MEMBERS([struct fanotify_event_info_fid.fsid.__val],,,[#include <sys/fanotify.h>])
 AC_CHECK_MEMBERS([struct perf_event_mmap_page.aux_head],,,[#include <linux/perf_event.h>])
 AC_CHECK_MEMBERS([struct sigaction.sa_sigaction],[],[],[#include <signal.h>])
@@ -171,23 +191,41 @@ AC_CHECK_MEMBERS([struct utsname.domainname],,,[
 ])
 
 AC_CHECK_TYPES([enum kcmp_type],,,[#include <linux/kcmp.h>])
+AC_CHECK_TYPES([enum pedit_header_type],,,[#include <linux/tc_act/tc_pedit.h>])
+AC_CHECK_TYPES([enum pedit_cmd],,,[#include <linux/tc_act/tc_pedit.h>])
+AC_CHECK_DECLS([TCA_PEDIT_PARMS_EX, TCA_PEDIT_KEYS_EX, TCA_PEDIT_KEY_EX,
+	TCA_PEDIT_KEY_EX_HTYPE, TCA_PEDIT_KEY_EX_CMD],,,[
+#include <linux/tc_act/tc_pedit.h>
+])
 AC_CHECK_TYPES([struct acct_v3],,,[#include <sys/acct.h>])
 AC_CHECK_TYPES([struct af_alg_iv, struct sockaddr_alg],,,[# include <linux/if_alg.h>])
+AC_CHECK_TYPES([struct clone_args],,,[#include <sched.h>])
+AC_CHECK_TYPES([struct sched_attr],,,[#include <sched.h>])
+AC_CHECK_TYPES([struct elf_prpsinfo, struct elf_prstatus],,,[#include <sys/procfs.h>])
 AC_CHECK_TYPES([struct fanotify_event_info_fid, struct fanotify_event_info_error,
-		struct fanotify_event_info_header, struct fanotify_event_info_pidfd],,,[#include <sys/fanotify.h>])
+		struct fanotify_event_info_header, struct fanotify_event_info_pidfd,
+		struct fanotify_event_info_range],,,[#include <sys/fanotify.h>])
+AC_CHECK_TYPES([struct file_clone_range],,,[#include <linux/fs.h>])
 AC_CHECK_TYPES([struct file_dedupe_range],,,[#include <linux/fs.h>])
+AC_CHECK_TYPES([struct procmap_query],,,[#include <linux/fs.h>])
 
 AC_CHECK_TYPES([struct file_handle],,,[
 #define _GNU_SOURCE
 #include <fcntl.h>
 ])
 
-AC_CHECK_TYPES([struct fs_quota_statv],,,[#include <xfs/xqm.h>])
+AC_CHECK_TYPES([struct fs_quota_statv],,,[
+#define _GNU_SOURCE
+#include <xfs/xqm.h>
+])
+
 AC_CHECK_TYPES([struct if_nextdqblk],,,[#include <linux/quota.h>])
 AC_CHECK_TYPES([struct iovec],,,[#include <sys/uio.h>])
 AC_CHECK_TYPES([struct ipc64_perm],,,[#include <sys/ipcbuf.h>])
 AC_CHECK_TYPES([struct loop_config],,,[#include <linux/loop.h>])
-
+AC_CHECK_TYPES([struct landlock_path_beneath_attr],,,[#include <linux/landlock.h>])
+AC_CHECK_TYPES([struct landlock_net_port_attr],,,[#include <linux/landlock.h>])
+AC_CHECK_TYPES([struct lsm_ctx],,,[#include <linux/lsm.h>])
 AC_CHECK_TYPES([struct mmsghdr],,,[
 #define _GNU_SOURCE
 #include <sys/types.h>
@@ -222,9 +260,11 @@ AC_CHECK_TYPES([struct xt_entry_match, struct xt_entry_target],,,[
 ])
 
 AC_CHECK_TYPES([struct __kernel_old_timeval, struct __kernel_old_timespec, struct __kernel_timespec,
-                struct __kernel_old_itimerspec, struct __kernel_itimerspec],,,[#include <sys/socket.h>])
+                struct __kernel_old_itimerspec, struct __kernel_itimerspec,
+                struct __kernel_old_itimerval],,,[#include <sys/socket.h>])
 
 AC_CHECK_TYPES([struct futex_waitv],,,[#include <linux/futex.h>])
+AC_CHECK_TYPES([struct io_uring_clone_buffers],,,[#include <linux/io_uring.h>])
 AC_CHECK_TYPES([struct mount_attr],,,[
 #ifdef HAVE_MOUNT_SETATTR
 # include <sys/mount.h>
@@ -232,6 +272,38 @@ AC_CHECK_TYPES([struct mount_attr],,,[
 # include <linux/mount.h>
 #endif
 ])
+
+AC_CHECK_TYPES([struct cachestat_range],,,[#include <sys/mman.h>])
+AC_CHECK_TYPES([struct cachestat],,,[#include <sys/mman.h>])
+
+# Defined in <linux/mount.h>, but include/lapi/mount.h includes <sys/mount.h> */
+AC_CHECK_MEMBERS([struct mnt_id_req.mnt_ns_fd],,,[#include <sys/mount.h>])
+AC_CHECK_TYPES([struct statmount],,,[#include <sys/mount.h>])
+AC_CHECK_MEMBERS([struct statmount.mnt_ns_id],,,[#include <unistd.h>
+#include <linux/mount.h>])
+
+AC_CHECK_TYPES([struct pidfd_info],,,[#include <sys/pidfd.h>])
+AC_CHECK_TYPES([struct file_attr],,,[#include <linux/fs.h>])
+
+AC_CHECK_TYPES([struct fsxattr],,,[#include <linux/fs.h>])
+
+AC_CHECK_TYPES([struct logical_block_metadata_cap],,,[#include <linux/fs.h>])
+
+AC_CHECK_TYPES([struct prctl_mm_map],,,[#include <sys/prctl.h>])
+
+AC_CHECK_TYPES([struct sockaddr_vm],,,[
+#include <sys/socket.h>
+#include <linux/vm_sockets.h>
+])
+
+AC_CHECK_TYPES([struct uffdio_move],,,[#include <linux/userfaultfd.h>])
+AC_CHECK_TYPES([struct uffdio_poison],,,[#include <linux/userfaultfd.h>])
+AC_CHECK_TYPES([struct uffdio_writeprotect],,,[#include <linux/userfaultfd.h>])
+
+AC_CHECK_TYPES([struct keyctl_dh_params, struct keyctl_kdf_params,
+	struct keyctl_pkey_query, struct keyctl_pkey_params],,,
+	[#include <linux/keyctl.h>])
+AC_CHECK_MEMBERS([struct keyctl_dh_params.private],,,[#include <linux/keyctl.h>])
 
 # Tools knobs
 
@@ -247,33 +319,6 @@ if test "x$with_bash" = xyes; then
 else
     AC_SUBST([WITH_BASH],["no"])
 fi
-
-# metadata
-AC_ARG_ENABLE([metadata],
-  [AS_HELP_STRING([--disable-metadata],
-	[Disable metadata generation (both HTML and PDF, default no)])],
-  [], [enable_metadata=yes]
-)
-AC_ARG_ENABLE([metadata_html],
-  [AS_HELP_STRING([--disable-metadata-html],
-	[Disable metadata HTML generation (default no)])],
-  [], [enable_metadata_html=yes]
-)
-
-AC_ARG_ENABLE([metadata_pdf],
-  [AS_HELP_STRING([--enable-metadata-pdf],
-	[Enable metadata PDF generation (default no)])],
-  [], [enable_metadata_pdf=no]
-)
-
-AC_ARG_WITH([metadata_generator],
-  [AS_HELP_STRING([--with-metadata-generator=asciidoc|asciidoctor],
-	[Specify metadata generator to use (default autodetect)])],
-  [with_metadata_generator=$withval],
-  [with_metadata_generator=detect]
-)
-
-LTP_DOCPARSE
 
 # Expect
 AC_ARG_WITH([expect],
@@ -359,44 +404,39 @@ fi
 # TODO: testcases/realtime requires bash and python.
 AC_ARG_WITH([realtime-testsuite],
   [AS_HELP_STRING([--with-realtime-testsuite],
-    [compile and install the realtime testsuite])],
+    [unused, kept for compatibility reason])],
   [with_realtime_testsuite=$withval],
   [with_realtime_testsuite=no]
 )
 
 if test "x$with_realtime_testsuite" = xyes; then
     AC_SUBST([WITH_REALTIME_TESTSUITE],["yes"])
-    # Run configure on testcases/realtime as well.
-    AC_CONFIG_SUBDIRS([testcases/realtime])
 else
     AC_SUBST([WITH_REALTIME_TESTSUITE],["no"])
 fi
 
-AC_CONFIG_COMMANDS([syscalls.h], [cd ${ac_top_srcdir}/include/lapi/syscalls; ./regen.sh])
+AC_CONFIG_COMMANDS([syscalls.h], [cd ${ac_top_srcdir}/include/lapi/syscalls; ./generate_syscalls.sh ../syscalls.h; cd - >/dev/null])
 
 # custom functions
 # NOTE: don't create custom functions for simple checks, put them into this file
 LTP_CHECK_ACL_SUPPORT
 LTP_CHECK_ATOMIC_MEMORY_MODEL
-LTP_CHECK_BUILTIN_CLEAR_CACHE
 LTP_CHECK_CAPABILITY_SUPPORT
 LTP_CHECK_CC_WARN_OLDSTYLE
+LTP_CHECK_CLEAR_CACHE
 LTP_CHECK_CRYPTO
 LTP_CHECK_FORTIFY_SOURCE
 LTP_CHECK_KERNEL_DEVEL
-LTP_CHECK_KEYUTILS_SUPPORT
 LTP_CHECK_LIBMNL
-LTP_CHECK_LINUX_PTRACE
-LTP_CHECK_LINUXRANDOM
-LTP_CHECK_NOMMU_LINUX
 LTP_CHECK_SELINUX
 LTP_CHECK_SYNC_ADD_AND_FETCH
 LTP_CHECK_SYSCALL_EVENTFD
-LTP_CHECK_SYSCALL_FCNTL
 LTP_CHECK_FSVERITY
 
 AX_CHECK_COMPILE_FLAG([-no-pie], [LTP_CFLAGS_NOPIE=1])
+AX_CHECK_COMPILE_FLAG([-ffixed-ebp], [LTP_CFLAGS_FFIXED_EBP=1])
 AC_SUBST([LTP_CFLAGS_NOPIE])
+AC_SUBST([LTP_CFLAGS_FFIXED_EBP])
 
 if test "x$with_numa" = xyes; then
 	LTP_CHECK_SYSCALL_NUMA
@@ -407,7 +447,6 @@ fi
 AC_DEFINE_UNQUOTED(NUMA_ERROR_MSG, ["$numa_error_msg"], [Error message when no NUMA support])
 
 
-LTP_CHECK_SYSCALL_SIGNALFD
 LTP_CHECK_SYSCALL_UTIMENSAT
 LTP_CHECK_TASKSTATS
 test "x$with_tirpc" = xyes && LTP_CHECK_TIRPC
@@ -422,10 +461,12 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM()],
   [
     AC_MSG_RESULT([yes])
     AC_SUBST([WITH_KVM_TESTSUITE],["yes"])
+    have_kvm=yes
   ],
   [
     AC_MSG_RESULT([no])
     AC_SUBST([WITH_KVM_TESTSUITE],["no"])
+    have_kvm=no
   ])
 _AC_LANG_PREFIX[]FLAGS="$ltp_backup_flags"
 LDFLAGS="$ltp_backup_ldflags"
@@ -435,11 +476,12 @@ AC_OUTPUT
 cat << EOF
 
 TESTSUITES
+kernel modules: $WITH_MODULES (kernel: $LINUX_VERSION)
+KVM testsuite: $have_kvm
 open posix testsuite: ${with_open_posix_testsuite:-no}
-realtime testsuite: ${with_realtime_testsuite:-no}
+TI-RPC testsuite: ${with_tirpc:-yes}
 
 LIBRARIES
-keyutils: ${have_keyutils:-yes}
 libacl: ${have_libacl:-no}
 libaio: ${have_libaio:-no} (aio: ${have_aio:-no})
 libcap: $cap_libs (newer: ${has_newer_libcap:-no})
@@ -448,9 +490,8 @@ libmnl: ${have_libmnl:-yes}
 libnuma: ${have_libnuma:-no} (headers: ${have_numa_headers:-yes}, v2 headers: ${have_numa_headers_v2:-no})
 libtirpc: ${have_libtirpc:-no}
 glibc SUN-RPC: ${have_rpc_glibc:-no}
-
-METADATA
-metadata generator: $with_metadata_generator
-HTML metadata: $with_metadata_html
-PDF metadata: $with_metadata_pdf
 EOF
+
+if test "x$with_realtime_testsuite" = xyes; then
+    AC_MSG_WARN([--with-realtime-testsuite has no effect and is kept for compatibilty reason. It will be removed in the future.])
+fi

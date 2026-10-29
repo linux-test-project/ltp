@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This code tests the following flags with statx syscall:
  *
  * - AT_EMPTY_PATH

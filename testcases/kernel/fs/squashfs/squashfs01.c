@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Kernel commits
  *
  * - f37aa4c7366 (squashfs: add more sanity checks in id lookup)
@@ -104,17 +102,17 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_device = 1,
 	.dev_min_size = 1,
-	.needs_cmds = (const char *const []) {
-		"mksquashfs",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "mksquashfs"},
+		{}
 	},
-	.needs_drivers = (const char *const []) {
-		"squashfs",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_SQUASHFS",
 		NULL
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "c1b2028315c"},
-		{"linux-git", "8b44ca2b634"},
+		{"linux-git", "c1b2028315c6b15e8d6725e0d5884b15887d3daa"},
+		{"linux-git", "8b44ca2b634527151af07447a8090a5f3a043321"},
 		{}
 	},
 };

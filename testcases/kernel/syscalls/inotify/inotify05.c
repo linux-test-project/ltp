@@ -2,14 +2,12 @@
 /*
  * Copyright (c) 2014 SUSE Linux.  All Rights Reserved.
  * Author: Jan Kara <jack@suse.cz>
- *
- * DESCRIPTION
- *     Check that inotify overflow event is properly generated
- *
- * ALGORITHM
- *     Generate enough events without reading them and check that overflow
- *     event is generated.
  */
+
+/*\
+ * Check that inotify overflow event is properly generated.
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -50,7 +48,7 @@ void verify_inotify(void)
 
 	for (i = 0; i < max_events; i++) {
 		SAFE_LSEEK(fd, 0, SEEK_SET);
-		SAFE_READ(1, fd, buf, BUF_SIZE);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, BUF_SIZE);
 		SAFE_LSEEK(fd, 0, SEEK_SET);
 		SAFE_WRITE(SAFE_WRITE_ALL, fd, buf, BUF_SIZE);
 	}
@@ -62,12 +60,8 @@ void verify_inotify(void)
 		/*
 		 * get list on events
 		 */
-		len = read(fd_notify, event_buf, EVENT_BUF_LEN);
-		if (len < 0) {
-			tst_brk(TBROK | TERRNO,
-				"read(%d, buf, %zu) failed",
-				fd_notify, EVENT_BUF_LEN);
-		}
+		len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf,
+				EVENT_BUF_LEN);
 
 		/*
 		 * check events
@@ -148,6 +142,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,

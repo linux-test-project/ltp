@@ -13,7 +13,7 @@
  * STEPS:
  * 1. Create a joinable thread
  * 2. Detach that thread with pthread_detach()
- * 3. Try and join the thread to main() using pthread_join()
+ * 3. Try and join the thread to test_main() using pthread_join()
  * 4. An error should return from the pthread_join() function saying that the
  *    thread is detched.  The test passes.
  * 5. Else, if pthread_join is successful, the test fails.
@@ -37,7 +37,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_attr_t new_attr;
 	pthread_t new_th;

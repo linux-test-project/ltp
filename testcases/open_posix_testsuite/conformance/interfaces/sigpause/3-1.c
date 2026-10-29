@@ -9,10 +9,10 @@
  when it returns.
 
  Steps:
- 1. From the main() function, create a new thread. Give the new thread a
+ 1. From the test_main() function, create a new thread. Give the new thread a
     a second to set up for receiving a signal, and to suspend itself using
     sigpause().
- 2. From the main() thread, send signal to new thread to make sigpause return.
+ 2. From the test_main() thread, send signal to new thread to make sigpause return.
  3. Verify that sigpause returns -1 and sets errno to EINTR.
  */
 
@@ -69,7 +69,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

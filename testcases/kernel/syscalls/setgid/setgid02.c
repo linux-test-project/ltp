@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if setgid() system call sets errno to EPERM correctly.
  *
  * [Algorithm]

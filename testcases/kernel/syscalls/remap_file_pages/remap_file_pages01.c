@@ -85,6 +85,7 @@
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <linux/unistd.h>
+#include <lapi/mmap.h>
 
 #include "test.h"		/*LTP Specific Include File */
 
@@ -92,6 +93,7 @@
 #define WINDOW_START 0x48000000
 
 static int page_sz;
+static int granula;
 size_t page_words;
 size_t cache_pages;
 size_t cache_sz;
@@ -140,10 +142,10 @@ static void test_nonlinear(int fd)
 	char *data = NULL;
 	int i, j, repeat = 2;
 
-	for (i = 0; i < (int)cache_pages; i++) {
+	for (i = 0; i < (int)cache_pages; i += granula) {
 		char *page = cache_contents + i * page_sz;
 
-		for (j = 0; j < (int)page_words; j++)
+		for (j = 0; j < (int)page_words * granula; j++)
 			page[j] = i;
 	}
 
@@ -164,24 +166,24 @@ static void test_nonlinear(int fd)
 	}
 
 again:
-	for (i = 0; i < (int)window_pages; i += 2) {
+	for (i = 0; i < (int)window_pages; i += 2 * granula) {
 		char *page = data + i * page_sz;
 
-		if (remap_file_pages(page, page_sz * 2, 0,
-				     (window_pages - i - 2), 0) == -1) {
+		if (remap_file_pages(page, 2 * MMAP_GRANULARITY, 0,
+				     (window_pages - i - 2 * granula), 0) == -1) {
 			tst_resm(TFAIL | TERRNO,
 				 "remap_file_pages error for page=%p, "
-				 "page_sz=%d, window_pages=%zu",
-				 page, (page_sz * 2), (window_pages - i - 2));
+				 "remap_sz=%d, window_pages=%zu",
+				 page, 2 * MMAP_GRANULARITY, (window_pages - i - 2 * granula));
 			cleanup(data);
 		}
 	}
 
-	for (i = 0; i < (int)window_pages; i++) {
+	for (i = 0, j = 0; i < (int)window_pages; i += granula, j++) {
 		/*
 		 * Double-check the correctness of the mapping:
 		 */
-		if (i & 1) {
+		if (j & 1) {
 			if (data[i * page_sz] != ((int)window_pages) - i) {
 				tst_resm(TFAIL,
 					 "hm, mapped incorrect data, "
@@ -191,12 +193,12 @@ again:
 				cleanup(data);
 			}
 		} else {
-			if (data[i * page_sz] != ((int)window_pages) - i - 2) {
+			if (data[i * page_sz] != ((int)window_pages) - i - 2 * granula) {
 				tst_resm(TFAIL,
 					 "hm, mapped incorrect data, "
-					 "data[%d]=%d, (window_pages-%d-2)=%zu",
+					 "data[%d]=%d, (window_pages-%d-2 * min_pages)=%zu",
 					 (i * page_sz), data[i * page_sz], i,
-					 (window_pages - i - 2));
+					 (window_pages - i - 2 * granula));
 				cleanup(data);
 			}
 		}
@@ -223,13 +225,15 @@ void setup(void)
 
 	page_words = page_sz;
 
+	granula = MMAP_GRANULARITY / page_sz;
+
 	/* Set the cache size */
-	cache_pages = 1024;
+	cache_pages = 1024 * granula;
 	cache_sz = cache_pages * page_sz;
 	cache_contents = malloc(cache_sz * sizeof(char));
 
 	/* Set the window size */
-	window_pages = 16;
+	window_pages = 16 * granula;
 	window_sz = window_pages * page_sz;
 
 	sprintf(fname, "/dev/shm/cache_%d", getpid());

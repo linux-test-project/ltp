@@ -108,12 +108,16 @@ zram_max_streams()
 
 	for max_s in $zram_max_streams; do
 		local sys_path="/sys/block/zram${i}/max_comp_streams"
-		echo $max_s > $sys_path || \
-			tst_brk TFAIL "failed to set '$max_s' to $sys_path"
+		if ! echo $max_s > $sys_path; then
+			tst_res TFAIL "failed to set '$max_s' to $sys_path"
+			return
+		fi
 		local max_streams=$(cat $sys_path)
 
-		[ "$max_s" -ne "$max_streams" ] && \
-			tst_brk TFAIL "can't set max_streams '$max_s', get $max_stream"
+		if [ "$max_s" -ne "$max_streams" ]; then
+			tst_res TFAIL "can't set max_streams '$max_s', get $max_stream"
+			return
+		fi
 
 		i=$(($i + 1))
 		tst_res TINFO "$sys_path = '$max_streams'"
@@ -124,13 +128,6 @@ zram_max_streams()
 
 zram_compress_alg()
 {
-	if tst_kvcmp -lt "3.15"; then
-		tst_res TCONF "device attribute comp_algorithm is"\
-			"introduced since kernel v3.15, the running kernel"\
-			"does not support it"
-		return
-	fi
-
 	local i=$dev_start
 
 	tst_res TINFO "test that we can set compression algorithm"
@@ -140,8 +137,10 @@ zram_compress_alg()
 	for i in $(seq $dev_start $dev_end); do
 		for alg in $algs; do
 			local sys_path="/sys/block/zram${i}/comp_algorithm"
-			echo "$alg" >  $sys_path || \
-				tst_brk TFAIL "can't set '$alg' to $sys_path"
+			if ! echo "$alg" >  $sys_path; then
+				tst_res TFAIL "can't set '$alg' to $sys_path"
+				return
+			fi
 			tst_res TINFO "$sys_path = '$alg'"
 		done
 	done
@@ -157,8 +156,10 @@ zram_set_disksizes()
 	tst_res TINFO "set disk size to zram device(s)"
 	for ds in $zram_sizes; do
 		local sys_path="/sys/block/zram${i}/disksize"
-		echo "$ds" >  $sys_path || \
-			tst_brk TFAIL "can't set '$ds' to $sys_path"
+		if ! echo "$ds" >  $sys_path; then
+			tst_res TFAIL "can't set '$ds' to $sys_path"
+			return
+		fi
 
 		i=$(($i + 1))
 		tst_res TINFO "$sys_path = '$ds'"
@@ -169,13 +170,6 @@ zram_set_disksizes()
 
 zram_set_memlimit()
 {
-	if tst_kvcmp -lt "3.18"; then
-		tst_res TCONF "device attribute mem_limit is"\
-			"introduced since kernel v3.18, the running kernel"\
-			"does not support it"
-		return
-	fi
-
 	local i=$dev_start
 	local ds
 
@@ -183,8 +177,10 @@ zram_set_memlimit()
 
 	for ds in $zram_mem_limits; do
 		local sys_path="/sys/block/zram${i}/mem_limit"
-		echo "$ds" >  $sys_path || \
-			tst_brk TFAIL "can't set '$ds' to $sys_path"
+		if ! echo "$ds" >  $sys_path; then
+			tst_res TFAIL "can't set '$ds' to $sys_path"
+			return
+		fi
 
 		i=$(($i + 1))
 		tst_res TINFO "$sys_path = '$ds'"

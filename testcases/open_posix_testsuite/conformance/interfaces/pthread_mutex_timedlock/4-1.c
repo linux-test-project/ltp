@@ -38,7 +38,7 @@ static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;	/* The mutex */
  * MAIN()
  *
  * *************************/
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 

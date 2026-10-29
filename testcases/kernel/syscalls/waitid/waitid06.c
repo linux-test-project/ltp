@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if waitid() filters children correctly by the PID.
  *
  * - waitid() with PID + 1 returns ECHILD

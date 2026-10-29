@@ -75,8 +75,6 @@ void cleanup();
 char *TCID = "mlockall01";
 int TST_TOTAL = 3;
 
-#if !defined(UCLINUX)
-
 struct test_case_t {
 	int flag;
 	char *fdesc;
@@ -126,16 +124,6 @@ int main(int ac, char **av)
 
 	tst_exit();
 }
-
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif
 
 /*
  * setup() - performs all ONE TIME setup for this test.

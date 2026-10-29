@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int policy, invalid_priority, old_priority;
 	struct sched_param param;

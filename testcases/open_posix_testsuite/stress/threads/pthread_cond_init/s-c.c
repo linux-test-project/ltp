@@ -89,7 +89,7 @@ typedef struct _teststruct {
 	struct _teststruct *prev;
 } teststruct_t;
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	struct rlimit rl;
 	int ret;
@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 }
 
 #else /* WITHOUT_XOPEN */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	output_init();
 	UNRESOLVED(0, "This test requires XSI features");

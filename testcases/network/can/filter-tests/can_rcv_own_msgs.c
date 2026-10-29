@@ -42,7 +42,8 @@ static void test_sockets(canid_t can_id, int expect_rxs, int expect_rxt)
 		if (FD_ISSET(s, &rdfs)) {
 
 			have_rx = 1;
-			SAFE_READ(1, s, &frame, sizeof(struct can_frame));
+			SAFE_READ(SAFE_READ_ALL, s, &frame,
+				  sizeof(struct can_frame));
 
 			if (frame.can_id != can_id)
 				tst_res(TFAIL, "received wrong can_id!");
@@ -53,7 +54,8 @@ static void test_sockets(canid_t can_id, int expect_rxs, int expect_rxt)
 		if (FD_ISSET(t, &rdfs)) {
 
 			have_rx = 1;
-			SAFE_READ(1, t, &frame, sizeof(struct can_frame));
+			SAFE_READ(SAFE_READ_ALL, t, &frame,
+				  sizeof(struct can_frame));
 
 			if (frame.can_id != can_id)
 				tst_res(TFAIL, "received wrong can_id!");
@@ -134,7 +136,7 @@ static void run(void)
 
 static struct tst_test test = {
 	.options = (struct tst_option[]) {
-		{"D:", &can_dev_name, "CAN device name"},
+		{"d:", &can_dev_name, "CAN device name"},
 		{}
 	},
 	.setup = setup,
@@ -145,9 +147,9 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
 		{}
 	},
-	.needs_drivers = (const char *const[]) {
-		"vcan",
-		"can-raw",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_CAN_VCAN",
+		"CONFIG_CAN_RAW",
 		NULL
 	}
 };

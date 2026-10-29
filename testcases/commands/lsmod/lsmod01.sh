@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2016-2021
+# Copyright (c) Linux Test Project, 2016-2025
 # Copyright (c) 2015 Fujitsu Ltd.
 # Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
 #
@@ -13,6 +13,10 @@ TST_NEEDS_TMPDIR=1
 TST_NEEDS_CMDS="lsmod"
 
 module_inserted=
+
+# lsmod triggers zcrypt refcount increase if it links against libssl
+# which uses hardware acceleration
+whitelist_modules='zcrypt'
 
 setup()
 {
@@ -42,12 +46,15 @@ lsmod_matches_proc_modules()
 {
 	lsmod_output=$(lsmod \
 			| awk '!/Module/{print $1, $2, ($3==-2) ? "-" : $3}' \
-			| sort)
+			| sort | grep -v "^$whitelist_modules")
+
 	if [ -z "$lsmod_output" ]; then
 		tst_brk TBROK "Failed to parse the output from lsmod"
 	fi
 
-	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort)
+	modules_output=$(awk '{print $1, $2, $3}' /proc/modules | sort \
+		| grep -v "^$whitelist_modules")
+
 	if [ -z "$modules_output" ]; then
 		tst_brk TBROK "Failed to parse /proc/modules"
 	fi

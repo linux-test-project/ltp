@@ -1,15 +1,23 @@
-#!/bin/sh
+#!/bin/sh -eux
+# SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2018-2021 Petr Vorel <pvorel@suse.cz>
-set -ex
 
-yum="yum -y install --skip-broken"
+if command -v dnf5 >/dev/null 2>&1; then
+	yum="dnf5 -y install --skip-broken --skip-unavailable"
+elif command -v dnf >/dev/null 2>&1; then
+	yum="dnf -y install --skip-broken"
+else
+	yum="yum -y install --skip-broken"
+fi
 
 $yum \
-	asciidoc \
 	autoconf \
 	automake \
 	make \
 	clang \
+	gawk \
+	curl \
+	jq \
 	gcc \
 	git \
 	findutils \
@@ -17,11 +25,9 @@ $yum \
 	numactl-devel \
 	libtirpc \
 	libtirpc-devel \
-	perl-JSON \
-	perl-libwww-perl \
 	pkg-config \
+	e2fsprogs \
 	redhat-lsb-core
 
 # CentOS 8 fixes
 $yum libmnl-devel || $yum libmnl
-$yum rubygem-asciidoctor || true

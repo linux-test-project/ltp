@@ -31,7 +31,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("Inside dummy handler\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Extended ioprio_set() test.
  * Tests to set all 8 priority levels for best effort priority, then
  * switches to test all 8 priority levels for idle priority.

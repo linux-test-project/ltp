@@ -211,7 +211,7 @@ static void *test(void *arg PTS_ATTRIBUTE_UNUSED)
 }
 
 /* Main function */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	pthread_t th_work, th_sig1, th_sig2;
@@ -292,6 +292,11 @@ int main(void)
 		do_it = 0;
 	}
 	while (do_it);
+
+#ifdef WITH_SYNCHRO
+	sem_post(&semsig1);
+	sem_post(&semsig2);
+#endif
 
 	if ((ret = pthread_join(th_sig1, NULL))) {
 		UNRESOLVED(ret, "Signal 1 sender thread join failed");

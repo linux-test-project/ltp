@@ -57,6 +57,14 @@ create_subgroup()
 
 common_setup()
 {
+    # Check if the controller is already enabled at root before
+    # cgroup_require potentially enables it, so that cleanup does
+    # not disable a controller the system was already using.
+    if [ -f /sys/fs/cgroup/cgroup.subtree_control ] && \
+       grep -qw "$subsystem" /sys/fs/cgroup/cgroup.subtree_control; then
+        ctrl_was_enabled=1
+    fi
+
     cgroup_require "$subsystem"
     mount_point=$(cgroup_get_mountpoint "$subsystem")
     start_path=$(cgroup_get_test_path "$subsystem")
@@ -71,11 +79,20 @@ common_cleanup()
 {
     killall -9 cgroup_fj_proc >/dev/null 2>&1
 
-    tst_res TINFO "Removing all ltp subgroups..."
-
-    [ -d "$start_path" ] && find "$start_path" -depth -type d -exec rmdir '{}' \;
+    if [ -n "$start_path" ] && [ -d "$start_path" ]; then
+        tst_res TINFO "Removing all ltp subgroups"
+        find "$start_path" -depth -type d -exec rmdir '{}' \;
+    fi
 
     cgroup_cleanup
+
+    if [ "$cgroup_version" = "2" ] && [ "$ctrl_was_enabled" != "1" ]; then
+        case "$subsystem" in
+        cpu|io|memory|pids)
+            :;;
+        *) ROD echo "-$subsystem" \> "/sys/fs/cgroup/cgroup.subtree_control";;
+        esac
+    fi
 }
 
 . cgroup_lib.sh

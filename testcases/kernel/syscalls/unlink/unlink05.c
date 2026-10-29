@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2006-2024
  */
 
-/*
- * Description:
- * The testcase checks the basic functionality of the unlink(2).
- * 1) unlink() can delete regular file successfully.
- * 2) unlink() can delete fifo file successfully.
+/*\
+ * Test the basic functionality of :manpage:`unlink(2)`:
+ *
+ * - :manpage:`unlink(2)` can delete regular file successfully
+ * - :manpage:`unlink(2)` can delete fifo file successfully
  */
 
 #include <errno.h>
@@ -15,17 +16,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "tst_test.h"
-
-static void file_create(char *);
-static void fifo_create(char *);
-
-static struct test_case_t {
-	void (*setupfunc)(char *);
-	char *desc;
-} tcases[] = {
-	{file_create, "file"},
-	{fifo_create, "fifo"},
-};
 
 static void file_create(char *name)
 {
@@ -38,6 +28,14 @@ static void fifo_create(char *name)
 	sprintf(name, "tfifo_%d", getpid());
 	SAFE_MKFIFO(name, 0777);
 }
+
+static struct test_case_t {
+	void (*setupfunc)(char *name);
+	char *desc;
+} tcases[] = {
+	{file_create, "file"},
+	{fifo_create, "fifo"},
+};
 
 static void verify_unlink(unsigned int n)
 {

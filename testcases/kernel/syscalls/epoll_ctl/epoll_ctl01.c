@@ -5,16 +5,14 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of the epoll_ctl:
  *
  * - When epoll_ctl succeeds to register fd on the epoll instance and associates
- * event with fd, epoll_wait will get registered fd and event correctly.
+ *   event with fd, epoll_wait will get registered fd and event correctly.
  * - When epoll_ctl succeeds to change event which is related to fd, epoll_wait
- * will get changed event correctly.
+ *   will get changed event correctly.
  * - When epoll_ctl succeeds to deregister fd from the epoll instance epoll_wait
- * won't get deregistered fd and event.
+ *   won't get deregistered fd and event.
  */
 
 #include <poll.h>
@@ -117,7 +115,7 @@ static void check_epoll_ctl(int opt, int exp_num)
 	tst_res(TPASS, "epoll_ctl() succeeds with op %i", opt);
 
 end:
-	SAFE_READ(1, fd[0], read_buf, sizeof(write_buf));
+	SAFE_READ(SAFE_READ_ALL, fd[0], read_buf, sizeof(write_buf));
 }
 
 static void opera_epoll_ctl(int opt, int fd, struct epoll_event *epvs)

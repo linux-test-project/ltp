@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Red Hat, Inc.
  * Copyright (C) 2021 SUSE LLC Andrea Cervesato <andrea.cervesato@suse.com>
  */
 
 /*\
- * [Description]
- *
  * Tests a private mount: private mount does not forward or receive
  * propagation.
  *
@@ -20,14 +18,18 @@
  * - Clones a new child process with CLONE_NEWNS flag
  * - There are two test cases (where X is parent namespace and Y child
  *   namespace):
- *  1. First test case
- *   .. X: bind mounts DIR_B to DIR_A
- *   .. Y: must see DIR_A/"A" and must not see DIR_A/"B"
- *   .. X: umounts DIR_A
- *  2. Second test case
- *   .. Y: bind mounts DIR_B to DIR_A
- *   .. X: must see DIR_A/"A" and must not see DIR_A/"B"
- *   .. Y: umounts DIRA
+ *
+ *   1. First test case
+ *
+ *     - X: bind mounts DIR_B to DIR_A
+ *     - Y: must see DIR_A/"A" and must not see DIR_A/"B"
+ *     - X: umounts DIR_A
+ *
+ *   2. Second test case
+ *
+ *     - Y: bind mounts DIR_B to DIR_A
+ *     - X: must see DIR_A/"A" and must not see DIR_A/"B"
+ *     - Y: umounts DIRA
  */
 
 #include <sys/wait.h>
@@ -56,7 +58,10 @@ static void child_func(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWNS, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWNS,
+		.exit_signal = SIGCHLD,
+	};
 
 	SAFE_UNSHARE(CLONE_NEWNS);
 

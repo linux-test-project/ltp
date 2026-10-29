@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Moves a network interface to the namespace of a process specified by a PID.
  */
 

@@ -128,7 +128,8 @@ static void run(unsigned int n)
 
 		if (FD_ISSET(s, &rdfs)) {
 			have_rx = 1;
-			SAFE_READ(1, s, &frame, sizeof(struct can_frame));
+			SAFE_READ(SAFE_READ_ALL, s, &frame,
+				  sizeof(struct can_frame));
 
 			if ((frame.can_id & CAN_SFF_MASK) != ID)
 				tst_res(TFAIL, "received wrong can_id!");
@@ -172,7 +173,7 @@ static void run(unsigned int n)
 static struct tst_test test = {
 	.tcnt = TC,
 	.options = (struct tst_option[]) {
-		{"D:", &can_dev_name, "CAN device name"},
+		{"d:", &can_dev_name, "CAN device name"},
 		{}
 	},
 	.setup = setup,
@@ -183,9 +184,9 @@ static struct tst_test test = {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
 		{}
 	},
-	.needs_drivers = (const char *const[]) {
-		"vcan",
-		"can-raw",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_CAN_VCAN",
+		"CONFIG_CAN_RAW",
 		NULL
 	}
 };

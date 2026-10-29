@@ -5,16 +5,14 @@
  */
 
 /*\
- * [Description]
- *
- * Verify that unlink(2) fails with
+ * Verify that :manpage:`unlink(2)`: fails with:
  *
  * - ENOENT when file does not exist
  * - ENOENT when pathname is empty
  * - ENOENT when a component in pathname does not exist
  * - EFAULT when pathname points outside the accessible address space
  * - ENOTDIR when a component used as a directory in pathname is not,
- * in fact, a directory
+ *   in fact, a directory
  * - ENAMETOOLONG when pathname is too long
  */
 

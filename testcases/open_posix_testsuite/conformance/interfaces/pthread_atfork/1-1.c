@@ -56,7 +56,7 @@ static void child_handler()
 	return;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 

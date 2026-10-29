@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if waitid() returns EINVAL when passed invalid options flag value.
  */
 

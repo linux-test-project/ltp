@@ -48,7 +48,7 @@ static void *fn_chld(void *arg PTS_ATTRIBUTE_UNUSED)
 	exit(PTS_PASS);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t child_thread;
 

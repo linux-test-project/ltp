@@ -6,9 +6,7 @@
  */
 
 /*\
- * [Description]
- *
- * This test case will verify basic function of openat.
+ * This test case will verify basic function of :manpage:`openat(2)`.
  *
  * - pathname is relative, then it is interpreted relative to the directory
  *   referred to by the file descriptor dirfd

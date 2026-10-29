@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll receives EPOLLRDHUP event when we hang a reading
  * half-socket we are polling on.
  */

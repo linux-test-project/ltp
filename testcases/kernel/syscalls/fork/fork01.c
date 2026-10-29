@@ -6,10 +6,8 @@
  */
 
 /*\
- *[Description]
- *
- * - fork returns without error
- * - fork returns the pid of the child
+ * This test verifies that fork returns without error and that it returns the
+ * pid of the child.
  */
 
 #include <errno.h>

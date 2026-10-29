@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Matthew Bobrowski. All Rights Reserved.
  *
@@ -6,8 +6,9 @@
  */
 
 /*\
- * [Description]
- * Validate that the newly introduced FAN_OPEN_EXEC mask functions as expected.
+ * Validate that the newly introduced :manpage:`fanotify_mark(2)` FAN_OPEN_EXEC
+ * mask functions as expected.
+ *
  * The idea is to generate a sequence of open related actions to ensure that
  * the correct event flags are being set depending on what event mask was
  * requested when the object was marked.
@@ -178,7 +179,7 @@ static void do_test(unsigned int n)
 		goto cleanup;
 
 	/* Read available events into buffer */
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	event = (struct fanotify_event_metadata *) event_buf;
 
@@ -222,11 +223,10 @@ cleanup:
 
 static void do_setup(void)
 {
-	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC,
-								      FAN_CLASS_NOTIF, 0);
-
 	sprintf(fname, "fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
+	exec_events_unsupported = fanotify_flags_supported_on_fs(FAN_CLASS_NOTIF,
+					0, FAN_OPEN_EXEC, fname);
 }
 
 static void do_cleanup(void)

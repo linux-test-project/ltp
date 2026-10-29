@@ -6,6 +6,7 @@
 #ifndef LAPI_IOCTL_NS_H__
 #define LAPI_IOCTL_NS_H__
 
+#include <stdint.h>
 #include <asm-generic/ioctl.h>
 
 #ifndef NSIO
@@ -23,6 +24,8 @@
 #ifndef NS_GET_NSTYPE
 #define NS_GET_NSTYPE		_IO(NSIO, 0x3)
 #endif
-
+#ifndef NS_GET_MNTNS_ID
+#define NS_GET_MNTNS_ID		_IOR(NSIO, 0x5, uint64_t)
+#endif
 
 #endif /* LAPI_IOCTL_NS_H__ */

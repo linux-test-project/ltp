@@ -83,8 +83,6 @@ long l_seek(int, long, int);
 void setup(void);
 void cleanup(void);
 
-#if !defined(UCLINUX)
-
 int main(int argc, char **argv)
 {
 	int lc;
@@ -178,16 +176,6 @@ int main(int argc, char **argv)
 
 }
 
-#else
-
-int main(void)
-{
-	tst_resm(TINFO, "test is not available on uClinux");
-	tst_exit();
-}
-
-#endif /* if !defined(UCLINUX) */
-
 /*
  * setup()
  *	performs all ONE TIME setup for this test
@@ -210,8 +198,7 @@ void setup(void)
 	strcpy(name, DATA_FILE);
 	sprintf(f_name, "%s.%d", name, getpid());
 
-	bad_addr = mmap(0, 1, PROT_NONE,
-			MAP_PRIVATE_EXCEPT_UCLINUX | MAP_ANONYMOUS, 0, 0);
+	bad_addr = mmap(0, 1, PROT_NONE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	if (bad_addr == MAP_FAILED) {
 		printf("mmap failed\n");
 	}

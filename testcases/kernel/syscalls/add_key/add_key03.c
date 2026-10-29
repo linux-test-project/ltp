@@ -24,13 +24,8 @@
 
 static key_serial_t create_keyring(const char *description)
 {
-	TEST(add_key("keyring", description, NULL, 0,
-		     KEY_SPEC_PROCESS_KEYRING));
-	if (TST_RET < 0) {
-		tst_brk(TBROK | TTERRNO,
-			"unable to create keyring '%s'", description);
-	}
-	return TST_RET;
+	return SAFE_ADD_KEY("keyring", description, NULL, 0,
+		     KEY_SPEC_PROCESS_KEYRING);
 }
 
 static key_serial_t get_keyring_id(key_serial_t special_id)
@@ -84,7 +79,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "237bbd29f7a0"},
+		{"linux-git", "237bbd29f7a049d310d907f4b2716a7feef9abf3"},
 		{}
 	}
 };

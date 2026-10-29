@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2013 SUSE.  All Rights Reserved.
  *
@@ -6,8 +6,7 @@
  */
 
 /*\
- * [Description]
- * Check that fanotify permission events work.
+ * Check that :manpage:`fanotify(7)` permission events work.
  */
 
 #define _GNU_SOURCE
@@ -121,12 +120,29 @@ static struct tcase {
 			{FAN_OPEN_EXEC_PERM, FAN_DENY}
 		}
 	},
+	{
+		"parent watching children, FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM events",
+		INIT_FANOTIFY_MARK_TYPE(PARENT),
+		FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM | FAN_EVENT_ON_CHILD, 2,
+		{
+			{FAN_ACCESS_PERM, FAN_DENY},
+			{FAN_OPEN_EXEC_PERM, FAN_DENY}
+		}
+	},
+	{
+		"parent not watching children, FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM events",
+		INIT_FANOTIFY_MARK_TYPE(PARENT),
+		FAN_ACCESS_PERM | FAN_OPEN_EXEC_PERM, 0,
+		{
+		}
+	},
 };
 
-static void generate_events(void)
+static void generate_events(struct tcase *tc)
 {
 	int fd;
 	char *const argv[] = {FILE_EXEC_PATH, NULL};
+	int exp_ret, exp_errno = tc->event_count ? EPERM : 0;
 
 	/*
 	 * Generate sequence of events
@@ -136,13 +152,21 @@ static void generate_events(void)
 	SAFE_WRITE(SAFE_WRITE_ANY, fd, fname, 1);
 	SAFE_LSEEK(fd, 0, SEEK_SET);
 
-	if (read(fd, buf, BUF_SIZE) != -1)
+	exp_ret = exp_errno ? -1 : 1;
+	errno = 0;
+	if (read(fd, buf, BUF_SIZE) != exp_ret || errno != exp_errno) {
+		tst_res(TFAIL, "read() got errno %d (expected %d)", errno, exp_errno);
 		exit(3);
+	}
 
 	SAFE_CLOSE(fd);
 
-	if (execve(FILE_EXEC_PATH, argv, environ) != -1)
+	exp_ret = exp_errno ? -1 : 0;
+	errno = 0;
+	if (execve(FILE_EXEC_PATH, argv, environ) != exp_ret || errno != exp_errno) {
+		tst_res(TFAIL, "execve() got errno %d (expected %d)", errno, exp_errno);
 		exit(5);
+	}
 }
 
 static void child_handler(int tmp)
@@ -156,7 +180,7 @@ static void child_handler(int tmp)
 	fd_notify = -1;
 }
 
-static void run_child(void)
+static void run_child(struct tcase *tc)
 {
 	struct sigaction child_action;
 
@@ -174,7 +198,7 @@ static void run_child(void)
 	if (child_pid == 0) {
 		/* Child will generate events now */
 		SAFE_CLOSE(fd_notify);
-		generate_events();
+		generate_events(tc);
 		exit(0);
 	}
 }
@@ -220,6 +244,12 @@ static int setup_mark(unsigned int n)
 
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
+	if (mark->flag == FAN_MARK_PARENT) {
+		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag,
+				   tc->mask, AT_FDCWD, MOUNT_PATH);
+		return 0;
+	}
+
 	for (; i < ARRAY_SIZE(files); i++) {
 		SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | mark->flag,
 				  tc->mask, AT_FDCWD, files[i]);
@@ -237,7 +267,7 @@ static void test_fanotify(unsigned int n)
 	if (setup_mark(n) != 0)
 		return;
 
-	run_child();
+	run_child(tc);
 
 	/*
 	 * Process events
@@ -320,13 +350,13 @@ static void test_fanotify(unsigned int n)
 
 static void setup(void)
 {
-	require_fanotify_access_permissions_supported_by_kernel();
-
-	filesystem_mark_unsupported = fanotify_mark_supported_by_kernel(FAN_MARK_FILESYSTEM);
-	exec_events_unsupported = fanotify_events_supported_by_kernel(FAN_OPEN_EXEC_PERM,
-								      FAN_CLASS_CONTENT, 0);
 	sprintf(fname, MOUNT_PATH"/fname_%d", getpid());
 	SAFE_FILE_PRINTF(fname, "1");
+
+	require_fanotify_access_permissions_supported_on_fs(fname);
+	filesystem_mark_unsupported = fanotify_mark_supported_on_fs(FAN_MARK_FILESYSTEM, fname);
+	exec_events_unsupported = fanotify_flags_supported_on_fs(FAN_CLASS_CONTENT,
+					0, FAN_OPEN_EXEC_PERM, fname);
 
 	SAFE_CP(TEST_APP, FILE_EXEC_PATH);
 }
@@ -343,6 +373,7 @@ static const char *const resource_files[] = {
 };
 
 static struct tst_test test = {
+	.timeout = 1,
 	.test = test_fanotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup,

@@ -2,22 +2,19 @@
 /*
  * Copyright (C) 2015  Yi Zhang <wetpzy@gmail.com>
  *                     Li Wang <liwang@redhat.com>
+ */
+
+/*\
+ * A regression test for kernel commit from 3.11:
+ * 13d60f4b6ab5b ("futex: Take hugepages into account when generating futex_key")
  *
- * DESCRIPTION:
+ * The implementation of :manpage:`futex(2)` doesn't produce unique keys for
+ * futexes in shared huge pages, so threads waiting on different futexes may end
+ * up on the same wait list. This results in incorrect threads being woken by
+ * FUTEX_WAKE.
  *
- *   It is a regression test for commit:
- *   http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/
- *   commit/?id=13d60f4
- *
- *   The implementation of futex doesn't produce unique keys for futexes
- *   in shared huge pages, so threads waiting on different futexes may
- *   end up on the same wait list. This results in incorrect threads being
- *   woken by FUTEX_WAKE.
- *
- *   Needs to be run as root unless there are already enough huge pages available.
- *   In the fail case, which happens in the CentOS-6.6 kernel (2.6.32-504.8.1),
- *   the tests hangs until it times out after a 30-second wait.
- *
+ * If the test fail (happens in the CentOS-6.6 kernel (2.6.32-504.8.1)),
+ * the test hangs until it times out (30 sec).
  */
 
 #include <stdio.h>

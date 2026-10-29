@@ -192,7 +192,7 @@ err0:
 	return err;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int aio_cbs = 10;
 	int buf_size = 1024 * 64;

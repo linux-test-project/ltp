@@ -44,8 +44,8 @@
 #include <math.h>
 #include <stdint.h>
 #include <pthread.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #include "tst_tsc.h"
 

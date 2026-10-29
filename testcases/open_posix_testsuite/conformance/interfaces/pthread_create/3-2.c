@@ -395,7 +395,7 @@ static void *schedtest(void *arg)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret = 0;
 	int do_stack_tests;

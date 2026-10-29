@@ -201,7 +201,7 @@ static void *thread_fault(void *args)
 			 * (pages_num / NUMTHREAD)
 			 * local_args[PAGESIZ]);
 	char read_from_addr = 0;	/* address to which read from page is done   */
-	char write_to_addr[] = { 'a' };	/* character to be writen to the page    */
+	char write_to_addr[] = { 'a' };	/* character to be written to the page    */
 
     /*************************************************************/
 	/*   The way it was, args could be overwritten by subsequent uses

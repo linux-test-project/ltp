@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This is a regression test for a silent data corruption for a mmaped file
  * when filesystem gets out of space.
  *
@@ -176,23 +174,19 @@ static struct tst_test test = {
 	.needs_checkpoints = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
-	.dev_fs_opts = (const char *const[]){
-		"-b",
-		"1024",
-		NULL,
-	},
-	.dev_extra_opts = (const char *const[]){
-		"10240",
-		NULL,
-	},
-	.needs_cmds = (const char *const[]){
-		"mkfs.ext4",
-		NULL,
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]){
+				"-b", "1024", NULL
+			},
+			.mkfs_size_opt = "10240",
+		},
+		{}
 	},
 	.tags = (const struct tst_tag[]){
-		{"linux-git", "d6320cbfc929"},
-		{"linux-git", "0572639ff66d"},
+		{"linux-git", "d6320cbfc92910a3e5f10c42d98c231c98db4f60"},
+		{"linux-git", "0572639ff66dcffe62d37adfe4c4576f9fc398f4"},
 		{},
 	},
 };

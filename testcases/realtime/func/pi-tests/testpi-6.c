@@ -39,7 +39,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-#include <librttest.h>
+#include "librttest.h"
 
 pthread_mutex_t child_mutex;
 

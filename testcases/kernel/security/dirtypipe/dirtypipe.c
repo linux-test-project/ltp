@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright 2022 CM4all GmbH / IONOS SE
  *
@@ -8,8 +8,6 @@
  */
 
 /*\
- * [Description]
- *
  * Proof-of-concept exploit for the Dirty Pipe
  * vulnerability (CVE-2022-0847) caused by an uninitialized
  * "pipe_buffer.flags" variable.  It demonstrates how to overwrite any
@@ -54,7 +52,7 @@ static char *pattern_buf, *read_buf;
 static void check_file_contents(void)
 {
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, read_buf, 4096);
+	SAFE_READ(SAFE_READ_ALL, fd, read_buf, 4096);
 
 	if (memcmp(pattern_buf, read_buf, 4096) != 0)
 		tst_res(TFAIL, "read buf data mismatch, bug exists");
@@ -90,7 +88,7 @@ static void prepare_pipe(void)
 	 */
 	for (total = pipe_size; total > 0;) {
 		n = total > sizeof(buffer) ? sizeof(buffer) : total;
-		len = SAFE_READ(1, p[0], buffer, n);
+		len = SAFE_READ(SAFE_READ_ALL, p[0], buffer, n);
 		total -= len;
 	}
 
@@ -165,8 +163,8 @@ static struct tst_test test = {
 		{},
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "9d2231c5d74e"},
-		{"CVE", "CVE-2022-0847"},
+		{"linux-git", "9d2231c5d74e13b2a0546fee6737ee4446017903"},
+		{"CVE", "2022-0847"},
 		{},
 	}
 };

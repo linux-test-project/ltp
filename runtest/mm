@@ -1,13 +1,9 @@
 #DESCRIPTION:Memory Mgmt tests
-mm01 mmap001 -m 10000
+mmap21_01 mmap21 -m 10000
 # 40 Mb mmap() test.
 # Creates a 10000 page mmap, touches all of the map, sync's it, and
 # munmap()s it.
-mm02 mmap001
-# simple mmap() test.
-#mm03 mmap001 -i 0 -I 1 -m 100
-# repetitive mmapping test.
-# Creates a one page map repetitively for one minute.
+mmap21_02 mmap21
 
 mtest01 mtest01 -p80
 mtest01w mtest01 -p80 -w
@@ -32,7 +28,6 @@ shmt02 shmt02
 shmt03 shmt03
 shmt04 shmt04
 shmt05 shmt05
-shmt06 shmt06
 shmt07 shmt07
 shmt08 shmt08
 shmt09 shmt09
@@ -46,17 +41,16 @@ mmapstress02 mmapstress02
 mmapstress03 mmapstress03
 mmapstress04 mmapstress04
 mmapstress05 mmapstress05
-mmapstress06 mmapstress06 20
-mmapstress07 TMPFILE=`mktemp /tmp/example.XXXXXXXXXXXX`; mmapstress07 $TMPFILE
+mmapstress06 mmapstress06
+mmapstress07 TMPFILE=`mktemp $TMPDIR/example.XXXXXXXXXXXX`; mmapstress07 $TMPFILE
 mmapstress08 mmapstress08
 mmapstress09 mmapstress09 -p 20 -t 0.2
 mmapstress10 mmapstress10 -p 20 -t 0.2
 
 mmap10 mmap10
-mmap10_1 mmap10 -a
-mmap10_2 mmap10 -s
-mmap10_3 mmap10 -a -s
-mmap10_4 mmap10 -a -s -i 60
+mmap10_1 mmap10 -i 60
+
+kallsyms kallsyms
 
 ksm01 ksm01
 ksm01_1 ksm01 -u 128
@@ -66,12 +60,14 @@ ksm03 ksm03
 ksm03_1 ksm03 -u 128
 ksm04 ksm04
 ksm04_1 ksm04 -u 128
-ksm05 ksm05 -I 10
+ksm05 ksm05
 ksm06 ksm06
 ksm06_1 ksm06 -n 10
 ksm06_2 ksm06 -n 8000
+ksm07 ksm07
 
 cpuset01 cpuset01
+cpuset02 cpuset02
 
 oom01 oom01
 oom02 oom02
@@ -81,7 +77,7 @@ oom05 oom05
 
 swapping01 swapping01 -i 5
 
-thp01 thp01 -I 120
+thp01 thp01
 thp02 thp02
 thp03 thp03
 thp04 thp04

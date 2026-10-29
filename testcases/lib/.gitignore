@@ -10,6 +10,7 @@
 /tst_get_unused_port
 /tst_hexdump
 /tst_kvcmp
+/tst_lockdown_enabled
 /tst_net_iface_prefix
 /tst_net_ip_prefix
 /tst_net_vars
@@ -18,6 +19,11 @@
 /tst_ns_ifmove
 /tst_random
 /tst_rod
+/tst_secureboot_enabled
 /tst_sleep
 /tst_supported_fs
 /tst_timeout_kill
+/tst_res_
+/tst_run_shell
+/tst_remaining_runtime
+/tst_runas

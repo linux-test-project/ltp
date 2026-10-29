@@ -38,7 +38,7 @@ static void alarm_handler(int signo PTS_ATTRIBUTE_UNUSED)
 	exit(PTS_PASS);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_mutex_t mutex;
 	pthread_mutexattr_t mta;

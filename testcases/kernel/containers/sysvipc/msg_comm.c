@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test SysV IPC message passing through different processes.
  *
  * [Algorithm]

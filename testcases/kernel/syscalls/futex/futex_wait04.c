@@ -4,9 +4,11 @@
  *
  * Based on futextest (futext_wait_uninitialized_heap.c)
  * written by KOSAKI Motohiro <kosaki.motohiro@jp.fujitsu.com>
- *
+ */
+
+/*\
  * Wait on uninitialized heap. It shold be zero and FUTEX_WAIT should return
- * immediately. This test tests zero page handling in futex code.
+ * immediately. This test tests zero page handling in :manpage:`futex(2)` code.
  */
 
 #include <errno.h>

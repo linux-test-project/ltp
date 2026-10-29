@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_PARENT request.
  *
  * Child cloned with the CLONE_NEWPID flag is created in a new pid namespace.
@@ -105,4 +103,8 @@ static struct tst_test test = {
 	.min_kver = "4.9",
 	.setup = setup,
 	.cleanup = cleanup,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

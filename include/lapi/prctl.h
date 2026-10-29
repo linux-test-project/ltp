@@ -7,7 +7,9 @@
 #ifndef LAPI_PRCTL_H__
 #define LAPI_PRCTL_H__
 
+#include <stdint.h>
 #include <sys/prctl.h>
+#include "config.h"
 
 #ifndef PR_SET_NAME
 # define PR_SET_NAME 15
@@ -57,6 +59,28 @@
 #ifndef PR_GET_SPECULATION_CTRL
 # define PR_GET_SPECULATION_CTRL 52
 # define PR_SET_SPECULATION_CTRL 53
+#endif
+
+#ifndef PR_SET_MM
+# define PR_SET_MM		35
+#endif
+
+#ifndef PR_SET_MM_MAP
+# define PR_SET_MM_MAP	14
+#endif
+
+#ifndef HAVE_STRUCT_PRCTL_MM_MAP
+struct prctl_mm_map {
+	uint64_t start_code, end_code;
+	uint64_t start_data, end_data;
+	uint64_t start_brk, brk;
+	uint64_t start_stack;
+	uint64_t arg_start, arg_end;
+	uint64_t env_start, env_end;
+	uint64_t *auxv;
+	uint32_t auxv_size;
+	uint32_t exe_fd;
+};
 #endif
 
 #endif /* LAPI_PRCTL_H__ */

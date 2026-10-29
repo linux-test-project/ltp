@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * quotactl(2) with XGETNEXTQUOTA looks for the next active quota for an user
  * equal or higher to a given ID, in this test the ID is specified to a value
  * close to UINT_MAX(max value of unsigned int). When reaching the upper limit
@@ -83,12 +81,17 @@ static struct tst_test test = {
 	},
 	.test_all = verify_quota,
 	.mount_device = 1,
-	.dev_fs_type = "xfs",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "xfs",
+			.mnt_data = "usrquota",
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
-	.mnt_data = "usrquota",
 	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "657bdfb7f5e6"},
+		{"linux-git", "657bdfb7f5e68ca5e2ed009ab473c429b0d6af85"},
 		{}
 	}
 };

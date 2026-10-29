@@ -3,6 +3,7 @@ ftrace_regression01	ftrace_regression01.sh
 ftrace_regression02	ftrace_regression02.sh
 ftrace-stress-test	ftrace_stress_test.sh 90
 dynamic_debug01		dynamic_debug01.sh
+fanotify25 fanotify25
 pt_full_trace_basic pt_test
 pt_snapshot_trace_basic pt_test -m
 pt_ex_user pt_test -e user

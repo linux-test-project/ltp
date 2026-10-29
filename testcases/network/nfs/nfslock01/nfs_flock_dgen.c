@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tool to generate data for testing file locking.
  * Used in nfslock01.sh.
  */

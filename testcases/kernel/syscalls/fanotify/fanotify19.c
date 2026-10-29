@@ -6,12 +6,11 @@
  */
 
 /*\
- * [Description]
  * This set of tests is to ensure that the unprivileged listener feature of
- * fanotify is functioning as expected. The objective of this test file is
- * to generate a sequence of events and ensure that the returned events
- * contain the limited values that an unprivileged listener is expected
- * to receive.
+ * :manpage:`fanotify(7)` is functioning as expected. The objective of this test
+ * file is to generate a sequence of events and ensure that the returned events
+ * contain the limited values that an unprivileged listener is expected to
+ * receive.
  */
 
 #define _GNU_SOURCE
@@ -108,7 +107,7 @@ static void generate_events(void)
 	fd = SAFE_OPEN(TEST_FILE, O_RDWR);
 
 	/* FAN_ACCESS */
-	SAFE_READ(0, fd, buf, BUF_SIZE);
+	SAFE_READ(SAFE_READ_ANY, fd, buf, BUF_SIZE);
 
 	/* FAN_MODIFY */
 	SAFE_WRITE(SAFE_WRITE_ALL, fd, TEST_FILE, 1);
@@ -192,7 +191,8 @@ static void test_fanotify(unsigned int n)
 	}
 
 	/* Read events from queue */
-	len = SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			EVENT_BUF_LEN - len);
 
 	event = event_buf;
 
@@ -287,7 +287,7 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a8b98c808eab"},
+		{"linux-git", "a8b98c808eab3ec8f1b5a64be967b0f4af4cae43"},
 		{}
 	}
 };

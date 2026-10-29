@@ -4,15 +4,16 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
- * Description:
- * 1) Witout a user namespace, getxattr(2) should get same data when
- *    acquiring the value of system.posix_acl_access twice.
- * 2) With/Without mapped root UID in a user namespaces, getxattr(2) should
- *    get same data when acquiring the value of system.posix_acl_access twice.
+/*\
+ * This test verifies that:
+ *
+ * - Without a user namespace, getxattr(2) should get same data when
+ *   acquiring the value of system.posix_acl_access twice.
+ * - With/Without mapped root UID in a user namespaces, getxattr(2) should
+ *   get same data when acquiring the value of system.posix_acl_access twice.
  *
  * This issue included by getxattr05 has been fixed in kernel:
- * '82c9a927bc5d ("getxattr: use correct xattr length")'
+ * 82c9a927bc5d ("getxattr: use correct xattr length")
  */
 
 #define _GNU_SOURCE
@@ -37,7 +38,6 @@
 
 #define TEST_FILE	"testfile"
 #define SELF_USERNS	"/proc/self/ns/user"
-#define MAX_USERNS	"/proc/sys/user/max_user_namespaces"
 #define UID_MAP	"/proc/self/uid_map"
 
 static acl_t acl;
@@ -151,9 +151,9 @@ static void setup(void)
 	 */
 	if (access(SELF_USERNS, F_OK) != 0) {
 		user_ns_supported = 0;
-	} else if (!access(MAX_USERNS, F_OK)) {
-		SAFE_FILE_SCANF(MAX_USERNS, "%d", &orig_max_userns);
-		SAFE_FILE_PRINTF(MAX_USERNS, "%d", 10);
+	} else if (!access(PATH_USER_MAX_USER_NAMESPACES, F_OK)) {
+		SAFE_FILE_SCANF(PATH_USER_MAX_USER_NAMESPACES, "%d", &orig_max_userns);
+		SAFE_FILE_PRINTF(PATH_USER_MAX_USER_NAMESPACES, "%d", 10);
 	}
 
 }
@@ -161,7 +161,7 @@ static void setup(void)
 static void cleanup(void)
 {
 	if (orig_max_userns != -1)
-		SAFE_FILE_PRINTF(MAX_USERNS, "%d", orig_max_userns);
+		SAFE_FILE_PRINTF(PATH_USER_MAX_USER_NAMESPACES, "%d", orig_max_userns);
 
 	if (acl)
 		acl_free(acl);
@@ -175,6 +175,10 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = do_getxattr,
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "82c9a927bc5df6e06b72d206d24a9d10cced4eb5"},
+		{}
+},
 };
 
 #else /* HAVE_SYS_XATTR_H && HAVE_LIBACL*/

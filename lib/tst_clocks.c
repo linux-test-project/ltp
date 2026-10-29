@@ -11,13 +11,15 @@
 #include "tst_clocks.h"
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
+#include "lapi/common_timers.h"
+#include "tst_kconfig.h"
 
 typedef int (*mysyscall)(clockid_t clk_id, void *ts);
 
 int syscall_supported_by_kernel(long sysnr)
 {
 	int ret;
-	struct timespec foo;
+	struct __kernel_timespec foo = { 0, };
 
 	ret = syscall(sysnr, 0, &foo);
 	if (ret == -1 && errno == ENOSYS)
@@ -144,15 +146,37 @@ const char *tst_clock_name(clockid_t clk_id)
 	}
 }
 
-time_t tst_get_fs_timestamp(void)
+time_t tst_clock_get_timestamp(clockid_t clk_id)
 {
 	struct timespec ts;
 	int ret;
 
-	ret = tst_clock_gettime(CLOCK_REALTIME_COARSE, &ts);
+	ret = tst_clock_gettime(clk_id, &ts);
 
-	if (ret < 0)
-		tst_brk(TBROK | TERRNO, "clock_gettime(CLOCK_REALTIME_COARSE)");
+	if (ret < 0) {
+		tst_brk(TBROK | TERRNO, "clock_gettime(%s)",
+			tst_clock_name(clk_id));
+	}
 
 	return ts.tv_sec;
+}
+
+time_t tst_fs_timestamp_start(void)
+{
+	return tst_clock_get_timestamp(CLOCK_REALTIME_COARSE);
+}
+
+time_t tst_fs_timestamp_end(void)
+{
+	return tst_clock_get_timestamp(CLOCK_REALTIME);
+}
+
+int tst_get_max_clocks(void)
+{
+	static const char * const kconf_aux[] = {"CONFIG_POSIX_AUX_CLOCKS=y", NULL};
+
+	if (!tst_kconfig_check(kconf_aux))
+		return MAX_CLOCKS + MAX_AUX_CLOCKS;
+	else
+		return MAX_CLOCKS;
 }

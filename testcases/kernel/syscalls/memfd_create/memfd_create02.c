@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2017  Red Hat, Inc.
+ * Port to LTP <jracek@redhat.com>
  */
 
- /*
-  *  Based on Linux/tools/testing/selftests/memfd/memfd_test.c
-  *  by David Herrmann <dh.herrmann@gmail.com>
-  *
-  *  24/02/2017   Port to LTP    <jracek@redhat.com>
-  */
+/*\
+ * Test based on :kselftest:`memfd/memfd_test.c`.
+ */
 
 #define _GNU_SOURCE
 

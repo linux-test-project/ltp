@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that /proc/PID/uid_map and /proc/PID/gid_map contains three values
  * separated by white space:
  *
@@ -117,7 +115,10 @@ static void child_fn2(int cpid1, int parentuid, int parentgid)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid1, cpid2;
 	uid_t parentuid;
 	gid_t parentgid;

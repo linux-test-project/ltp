@@ -25,6 +25,6 @@ static void run(void)
 
 static struct tst_test test = {
 	.test_all = run,
-	.max_runtime = 4,
+	.runtime = 4,
 	.test_variants = 2,
 };

@@ -56,7 +56,8 @@ static void pipe_pipe(void)
 			tst_res(TFAIL | TERRNO, "splice error");
 			goto exit;
 		}
-		SAFE_READ(1, pp2[0], arr_out + num_len_data - i, ret);
+		SAFE_READ(SAFE_READ_ALL, pp2[0], arr_out + num_len_data - i,
+			  ret);
 	}
 
 	for (i = 0; i < num_len_data; i++) {

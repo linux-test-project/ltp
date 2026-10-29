@@ -74,7 +74,7 @@ extern long sysconf(int name);
 		local_flag = FAILED;
 		anyfail();
 	}
-	/* The brk is now at the begining of a page. */
+	/* The brk is now at the beginning of a page. */
 
 	if ((munmap_begin = mmapaddr = (caddr_t) sbrk(0)) == (caddr_t) - 1) {
 		ERROR("couldn't find top of brk");

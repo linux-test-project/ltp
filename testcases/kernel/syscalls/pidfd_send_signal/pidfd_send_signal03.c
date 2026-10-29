@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test checks if the pidfd_send_signal syscall wrongfully sends
  * a signal to a new process which inherited the PID of the actual
  * target process.

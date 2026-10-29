@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test statx syscall with STATX_ATTR_ENCRYPTED flag, setting a key is required
  * for the file to be encrypted by the filesystem.
  *
@@ -121,10 +119,13 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.needs_device = 1,
 	.mntpoint = MNTPOINT,
-	.dev_fs_type = "ext4",
-	.needs_cmds = (const char *[]) {
-		"mkfs.ext4 >= 1.43.0",
-		"e4crypt",
-		NULL
+	.filesystems = (struct tst_fs []) {
+		{.type = "ext4"},
+		{}
+	},
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "mkfs.ext4 >= 1.43.0"},
+		{.cmd = "e4crypt"},
+		{}
 	}
 };

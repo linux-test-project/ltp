@@ -22,7 +22,7 @@
 #define TEST "1-1"
 #define FUNCTION "mq_close"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[50];
 	mqd_t queue;

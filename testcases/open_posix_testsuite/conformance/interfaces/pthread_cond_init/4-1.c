@@ -103,7 +103,7 @@ static void child(void)
 	exit(rc);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pid_t pid;
 	int child_status;

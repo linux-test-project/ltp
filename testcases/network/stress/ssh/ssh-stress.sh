@@ -39,8 +39,13 @@ cleanup()
 
 setup()
 {
-	local port rc
+	local port rc version
+	local major=0 minor=0
 
+	version=$(sshd -V 2>&1 | sed -nE 's/^.*OpenSSH_([0-9]+)\.([0-9]+).*$/\1 \2/p' | head -n1)
+	set -- $version
+	major=$1
+	minor=$2
 
 	port=$(tst_rhost_run -c "tst_get_unused_port ipv${TST_IPVER} stream")
 
@@ -60,6 +65,11 @@ HostKey $TST_TMPDIR/ssh_host_ecdsa_key
 HostKey $TST_TMPDIR/ssh_host_ed25519_key
 EOF
 
+	if [ "$major" -gt 9 ] || [ "$major" -eq 9 -a "$minor" -ge 8 ]; then
+		cat << EOF >> sshd_config
+PerSourcePenalties no
+EOF
+	fi
 	ssh-keygen -q -N "" -t rsa -b 4096 -f $TST_TMPDIR/ssh_host_rsa_key
 	ssh-keygen -q -N "" -t ecdsa -f $TST_TMPDIR/ssh_host_ecdsa_key
 	ssh-keygen -q -N "" -t ed25519 -f $TST_TMPDIR/ssh_host_ed25519_key
@@ -93,8 +103,10 @@ IdentityFile $TST_TMPDIR/id_rsa\n\" > $RHOST_SSH_CONF"
 
 test_ssh_connectivity()
 {
-	tst_rhost_run -c "$RHOST_SSH 'true >/dev/null 2>&1' >/dev/null"
-	[ $? -ne 0 ] && tst_brk TFAIL "SSH not reachable"
+	if ! tst_rhost_run -c "$RHOST_SSH 'true >/dev/null 2>&1' >/dev/null"; then
+		tst_res TFAIL "SSH not reachable"
+		return
+	fi
 }
 
 test1()
@@ -121,7 +133,10 @@ test1()
 		[ $? -ne 0 ] && num=$((num + 1))
 	done
 
-	[ $num -ne 0 ] && tst_brk TFAIL "$num ssh processes died unexpectedly during execution"
+	if [ $num -ne 0 ]; then
+		tst_res TFAIL "$num ssh processes died unexpectedly during execution"
+		return
+	fi
 
 	test_ssh_connectivity
 
@@ -216,7 +231,10 @@ test3()
 
 	# Setup an ssh tunnel from the remote host to testhost
 	tst_rhost_run -c "$RHOST_SSH -f -N -L $lport:$rhost:$port </dev/null >/dev/null 2>&1"
-	[ "$?" -ne 0 ] && tst_brk TFAIL "Failed to create an SSH session with port forwarding"
+	if [ "$?" -ne 0 ]; then
+		tst_res TFAIL "Failed to create an SSH session with port forwarding"
+		return
+	fi
 	RHOST_PIDS=$(tst_rhost_run -c "pgrep -f '^ssh .*$lport:$rhost:$port'")
 
 	# Start the TCP traffic clients

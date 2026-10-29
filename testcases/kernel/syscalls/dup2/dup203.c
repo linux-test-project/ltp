@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the basic functionality of dup2().
  *
  * - Attempt to dup2() on an open file descriptor.
@@ -67,7 +65,7 @@ static void run(unsigned int i)
 	}
 
 	memset(buf, 0, sizeof(buf));
-	SAFE_READ(0, fd2, buf, sizeof(buf));
+	SAFE_READ(SAFE_READ_ANY, fd2, buf, sizeof(buf));
 	if (strcmp(buf, filename0) != 0)
 		tst_res(TFAIL, "read from file got bad data");
 	else

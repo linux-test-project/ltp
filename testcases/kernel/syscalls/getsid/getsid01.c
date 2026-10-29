@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that session IDs returned by getsid() (with argument pid=0)
  * are same in parent and child process.
  */

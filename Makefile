@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2009-2022
+# Copyright (c) Linux Test Project, 2009-2025
 # Copyright (c) Cisco Systems Inc., 2009-2010
 # Ngie Cooper, July 2009
 
@@ -13,7 +13,6 @@ top_srcdir		?= $(CURDIR)
 
 include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/automake.mk
-include $(top_srcdir)/include/mk/gitignore.mk
 
 .SUFFIXES:
 .SUFFIXES: .am .default .h .in .m4 .mk
@@ -25,10 +24,6 @@ vpath %.in		$(top_srcdir)/include
 vpath %.m4		$(top_srcdir)/m4
 vpath %.mk		$(top_srcdir)/mk:$(top_srcdir)/mk/include
 
-# User wants uclinux binaries?
-UCLINUX			?= 0
-export UCLINUX
-
 # CLEAN_TARGETS:	Targets which exist solely in clean.
 # COMMON_TARGETS:	Targets which exist in all, clean, and install.
 # INSTALL_TARGETS:	Targets which exist in clean and install (contains
@@ -36,11 +31,7 @@ export UCLINUX
 # BOOTSTRAP_TARGETS:	Directories required to bootstrap out-of-build-tree
 # 			support.
 
-# We're not using uclinux based targets (default).
-ifneq ($(UCLINUX),1)
-COMMON_TARGETS		:= pan utils
-INSTALL_TARGETS		:= doc
-endif
+COMMON_TARGETS		:= utils
 
 define target_to_dir_dep_mapping
 ifeq ($$(filter %-clean,$(1)),) # not *-clean
@@ -54,8 +45,8 @@ COMMON_TARGETS		+= testcases tools metadata
 
 # Don't want to nuke the original files if we're installing in-build-tree.
 ifneq ($(BUILD_TREE_STATE),$(BUILD_TREE_SRCDIR_INSTALL))
-INSTALL_TARGETS		+= runtest scenario_groups testscripts
-CLEAN_TARGETS		+= include runtest scenario_groups testscripts
+INSTALL_TARGETS		+= runtest testscripts
+CLEAN_TARGETS		+= include runtest testscripts
 endif
 INSTALL_TARGETS		+= $(COMMON_TARGETS)
 CLEAN_TARGETS		+= $(COMMON_TARGETS) lib libs
@@ -105,8 +96,8 @@ $(filter-out include-clean,$(CLEAN_TARGETS))::
 
 # Just like everything depends on include-all / -install, we need to get rid
 # of include last to ensure that things won't be monkey screwed up. Only do
-# this if we're invoking clean or a subclean directly though.
-ifneq ($(filter clean,$(MAKECMDGOALS)),)
+# this if we're invoking clean, distclean or a subclean directly though.
+ifneq ($(filter clean distclean,$(MAKECMDGOALS)),)
 INCLUDE_CLEAN_RDEP_SUBJECT	:= $(CLEAN_TARGETS)
 else
 ifneq ($(filter %clean,$(MAKECMDGOALS)),)
@@ -178,6 +169,9 @@ INSTALL_TARGETS		+= $(addprefix $(DESTDIR)/$(bindir)/,$(BINDIR_INSTALL_SCRIPTS))
 
 $(INSTALL_TARGETS): $(INSTALL_DIR) $(DESTDIR)/$(bindir)
 
+.PHONY: doc
+doc: metadata-all
+
 .PHONY: check
 check: $(CHECK_TARGETS)
 
@@ -194,6 +188,7 @@ ifneq ($(build),$(host))
 	$(error running tests on cross-compile build not supported)
 endif
 	$(call _test)
+	$(MAKE) test-shell-loader
 	$(MAKE) test-metadata
 
 test-c: lib-all
@@ -208,17 +203,41 @@ ifneq ($(build),$(host))
 endif
 	$(call _test,-s)
 
+test-shell-loader: lib-all
+ifneq ($(build),$(host))
+	$(error running tests on cross-compile build not supported)
+endif
+	$(top_srcdir)/testcases/lib/run_tests.sh -b $(abs_builddir)
+
 test-metadata: metadata-all
-	$(MAKE) -C $(abs_srcdir)/metadata/ test
+ifneq ($(build),$(host))
+	$(error running tests on cross-compile build not supported)
+endif
+	METAPARSEDIR=$(abs_builddir)/metadata $(MAKE) -C $(abs_srcdir)/metadata test
+
+MODULE_DIRS :=  $(shell \
+	dirname $$(grep -l 'include.*module\.mk' $$(find $(abs_srcdir)/testcases/ -type f -name 'Makefile')))
+
+
+.PHONY: modules modules-clean modules-install
+modules:
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(dir) || exit $$?; \
+)
+modules-clean:
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(dir) clean || exit $$?; \
+)
+modules-install: modules
+	@$(foreach dir,$(MODULE_DIRS),\
+		echo "Build $(dir)";\
+		$(MAKE) -C $(dir) install || exit $$?; \
+)
 
 ## Help
 .PHONY: help
 help:
 	@echo "Please read the Configuration section in $(top_srcdir)/INSTALL"
 	@exit 1
-
-## Menuconfig
-menuconfig:
-	@$(SHELL) "$(top_srcdir)/ltpmenu"
-
-## End misc targets.

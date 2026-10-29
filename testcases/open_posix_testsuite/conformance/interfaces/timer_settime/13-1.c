@@ -56,7 +56,7 @@ static int testlist[NUMTESTS][4] = {
 	{1, 0, -1073743192, 0},	// value.it_interval.tv_sec < 0
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct sigevent ev;
 	timer_t tid;

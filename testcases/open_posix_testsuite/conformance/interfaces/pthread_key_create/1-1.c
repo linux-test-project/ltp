@@ -31,7 +31,7 @@
 
 static pthread_key_t keys[NUM_OF_KEYS];
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int i;
 	void *rc;

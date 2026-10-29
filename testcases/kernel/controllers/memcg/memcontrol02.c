@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2021-2022 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
 /*\
- *
- * [Description]
- *
- * Conversion of second kself test in cgroup/test_memcontrol.c.
+ * Conversion of second kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
  * Original description:
+ *
  * "This test creates a memory cgroup, allocates some anonymous memory
  * and some pagecache and check memory.current and some memory.stat
  * values."
@@ -14,20 +16,20 @@
  * file in V2. Besides error reporting, this test differs from the
  * kselftest in the following ways:
  *
- * . It supports V1.
- * . It writes instead of reads to fill the page cache. Because no
+ * - It supports V1.
+ * - It writes instead of reads to fill the page cache. Because no
  *   pages were allocated on tmpfs.
- * . It runs on most filesystems available
- * . On EXFAT and extN we change the margin of error between all and file
+ * - It runs on most filesystems available
+ * - On EXFAT and extN we change the margin of error between all and file
  *   memory to 50%. Because these allocate non-page-cache memory during writes.
  */
-#define _GNU_SOURCE
 
+#define _GNU_SOURCE
 #include "memcontrol_common.h"
 
 static size_t page_size;
 static struct tst_cg_group *cg_child;
-static int fd;
+static int fd = -1;
 static int file_to_all_error = 10;
 
 static void alloc_anon_50M_check(void)
@@ -126,6 +128,8 @@ static void cleanup(void)
 {
 	if (cg_child)
 		cg_child = tst_cg_group_rm(cg_child);
+	if (fd != -1)
+		SAFE_CLOSE(fd);
 }
 
 static struct tst_test test = {
@@ -134,7 +138,7 @@ static struct tst_test test = {
 	.tcnt = 2,
 	.test = test_memcg_current,
 	.mount_device = 1,
-	.dev_min_size = 256,
+	.dev_min_size = 300,
 	.mntpoint = TMPDIR,
 	.all_filesystems = 1,
 	.forks_child = 1,

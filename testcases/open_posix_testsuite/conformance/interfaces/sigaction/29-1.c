@@ -103,7 +103,7 @@ static void handler(int sig PTS_ATTRIBUTE_UNUSED, siginfo_t *info,
 }
 
 /* main function */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	long rts;

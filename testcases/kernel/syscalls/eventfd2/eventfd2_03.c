@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test verifies that eventfd2 semaphore-like support is properly working.
  */
 
@@ -21,7 +19,7 @@ static void xsem_wait(int fd)
 {
 	u_int64_t cntr;
 
-	SAFE_READ(0, fd, &cntr, sizeof(cntr));
+	SAFE_READ(SAFE_READ_ANY, fd, &cntr, sizeof(cntr));
 }
 
 static void xsem_post(int fd, int count)

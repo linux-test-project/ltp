@@ -20,6 +20,19 @@ pc_file			:= $(DESTDIR)/$(datarootdir)/pkgconfig/ltp.pc
 
 INSTALL_TARGETS		:= $(pc_file)
 
+tst_test.o: ltp-version.h
+
+ltp-version.h: gen_version
+
+MAKE_TARGETS += gen_version
+
+.PHONY: gen_version
+gen_version:
+	@echo GEN ltp-version.h
+	@$(top_srcdir)/lib/gen_version.sh
+
+CLEAN_TARGETS += ltp-version.h cached-version
+
 $(pc_file):
 	test -d "$(@D)" || mkdir -p "$(@D)"
 	install -m $(INSTALL_MODE) "$(builddir)/$(@F)" "$@"

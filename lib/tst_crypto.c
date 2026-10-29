@@ -10,102 +10,42 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_crypto.h"
-#include "tst_netlink.h"
 
-void tst_crypto_open(struct tst_crypto_session *ses)
-{
-	const long ret = socket(AF_NETLINK, SOCK_DGRAM, NETLINK_CRYPTO);
-
-	if (ret < 0 && errno == EPROTONOSUPPORT)
-		tst_brk(TCONF | TERRNO, "NETLINK_CRYPTO is probably disabled");
-
-	if (ret < 0) {
-		tst_brk(TBROK | TERRNO,
-			"socket(AF_NETLINK, SOCK_DGRAM, NETLINK_CRYPTO)");
-	}
-
-	ses->fd = ret;
-	ses->seq_num = 0;
-}
-
-void tst_crypto_close(struct tst_crypto_session *ses)
-{
-	SAFE_CLOSE(ses->fd);
-}
-
-static int tst_crypto_recv_ack(struct tst_crypto_session *ses)
-{
-	uint32_t len;
-	char buf[BUFSIZ];
-	struct nlmsghdr *nh;
-
-	len = SAFE_NETLINK_RECV(ses->fd, buf, sizeof(buf));
-
-	for (nh = (struct nlmsghdr *) buf;
-	     NLMSG_OK(nh, len);
-	     nh = NLMSG_NEXT(nh, len)) {
-		if (nh->nlmsg_seq != ses->seq_num) {
-			tst_brk(TBROK,
-				"Message out of sequence; type=0%hx, seq_num=%u (not %u)",
-				nh->nlmsg_type, nh->nlmsg_seq, ses->seq_num);
-		}
-
-		/* Acks use the error message type with error number set to
-		 * zero. Ofcourse we could also receive an actual error.
-		 */
-		if (nh->nlmsg_type == NLMSG_ERROR)
-			return ((struct nlmsgerr *)NLMSG_DATA(nh))->error;
-
-		tst_brk(TBROK, "Unexpected message type; type=0x%hx, seq_num=%u",
-			nh->nlmsg_type, nh->nlmsg_seq);
-	}
-
-	tst_brk(TBROK, "Empty message from netlink socket?");
-
-	return ENODATA;
-}
-
-int tst_crypto_add_alg(struct tst_crypto_session *ses,
+int tst_crypto_add_alg(struct tst_netlink_context *ctx,
 		       const struct crypto_user_alg *alg)
 {
 	struct nlmsghdr nh = {
-		.nlmsg_len = sizeof(struct nlmsghdr) + sizeof(*alg),
 		.nlmsg_type = CRYPTO_MSG_NEWALG,
 		.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK,
-		.nlmsg_seq = ++(ses->seq_num),
-		.nlmsg_pid = 0,
 	};
 
-	SAFE_NETLINK_SEND(ses->fd, &nh, alg);
-
-	return tst_crypto_recv_ack(ses);
+	NETLINK_ADD_MESSAGE(ctx, &nh, alg, sizeof(struct crypto_user_alg));
+	return NETLINK_SEND_VALIDATE(ctx) ? 0 : -tst_netlink_errno;
 }
 
-int tst_crypto_del_alg(struct tst_crypto_session *ses,
-		       const struct crypto_user_alg *alg)
+int tst_crypto_del_alg(struct tst_netlink_context *ctx,
+	const struct crypto_user_alg *alg, unsigned int retries)
 {
-	long ret;
+	int ret;
 	unsigned int i = 0;
 	struct nlmsghdr nh = {
-		.nlmsg_len = sizeof(struct nlmsghdr) + sizeof(*alg),
 		.nlmsg_type = CRYPTO_MSG_DELALG,
 		.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK,
-		.nlmsg_pid = 0,
 	};
 
-	while (1) {
-		nh.nlmsg_seq = ++(ses->seq_num),
+	for (i = 0; i < retries; i++) {
+		NETLINK_ADD_MESSAGE(ctx, &nh, alg,
+			sizeof(struct crypto_user_alg));
 
-		SAFE_NETLINK_SEND(ses->fd, &nh, alg);
+		if (NETLINK_SEND_VALIDATE(ctx))
+			return 0;
 
-		ret = tst_crypto_recv_ack(ses);
-		if (ret != -EBUSY || i >= ses->retries)
+		ret = -tst_netlink_errno;
+
+		if (ret != -EBUSY)
 			break;
 
-		if (usleep(1) && errno != EINTR)
-			tst_brk(TBROK | TERRNO, "usleep(1)");
-
-		++i;
+		usleep(1);
 	}
 
 	return ret;

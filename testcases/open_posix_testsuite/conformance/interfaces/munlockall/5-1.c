@@ -19,7 +19,7 @@
 
 #if !defined(_POSIX_MEMLOCK) || _POSIX_MEMLOCK == -1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	printf("Does not support ML (Memory Lock).\n");
 	return PTS_UNSUPPORTED;
@@ -28,7 +28,7 @@ int main(void)
 #else
 
 #if _POSIX_MEMLOCK != 0
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result;
 
@@ -50,7 +50,7 @@ int main(void)
 
 #else
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result;
 	long memlock;

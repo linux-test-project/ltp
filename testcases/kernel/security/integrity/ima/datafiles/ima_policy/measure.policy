@@ -8,7 +8,7 @@ dont_measure fsmagic=0x62656572
 # DEBUGFS_MAGIC
 dont_measure fsmagic=0x64626720
 # TMPFS_MAGIC
-dont_measure fsmagic=0x01021994
+dont_measure fsmagic=0x1021994 func=FILE_CHECK
 # SECURITYFS_MAGIC
 dont_measure fsmagic=0x73636673
 measure func=FILE_MMAP mask=MAY_EXEC

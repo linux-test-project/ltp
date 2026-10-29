@@ -138,7 +138,7 @@ int runtest(int fd_r, int fd_w, int iter, off_t offset, int action)
 			return (-1);
 		}
 		if (vbufcmp(iov1, iov2, nvector) != 0) {
-			tst_resm(TFAIL, "readv/writev comparision failed");
+			tst_resm(TFAIL, "readv/writev comparison failed");
 			return (-1);
 		}
 	}

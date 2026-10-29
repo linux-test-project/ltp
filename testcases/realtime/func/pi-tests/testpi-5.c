@@ -39,7 +39,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <unistd.h>
-#include <librttest.h>
+#include "librttest.h"
 pthread_mutex_t child_mutex;
 
 void *child_thread(void *arg)
@@ -69,8 +69,6 @@ int do_test(int argc, char **argv)
 	pthread_mutexattr_t mutexattr;
 	int retc, protocol;
 
-#if HAS_PRIORITY_INHERIT
-
 	if (pthread_mutexattr_init(&mutexattr) != 0)
 		printf("Failed to init mutexattr\n");
 
@@ -91,9 +89,6 @@ int do_test(int argc, char **argv)
 	join_threads();
 
 	return 0;
-#else
-	return 1;
-#endif
 }
 
 #include "test-skeleton.c"

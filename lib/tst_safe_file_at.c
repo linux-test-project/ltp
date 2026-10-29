@@ -67,7 +67,7 @@ ssize_t safe_file_readat(const char *const file, const int lineno,
 	if (fd < 0)
 		return -1;
 
-	rval = safe_read(file, lineno, NULL, 0, fd, buf, nbyte - 1);
+	rval = safe_read(file, lineno, NULL, SAFE_READ_ANY, fd, buf, nbyte - 1);
 	if (rval < 0)
 		return -1;
 

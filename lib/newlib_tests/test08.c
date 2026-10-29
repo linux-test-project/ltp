@@ -22,7 +22,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	static int flag;
+	static tst_atomic_t flag;
 
 	/* Avoid subsequent threads to enter the cleanup */
 	if (tst_atomic_inc(&flag) != 1)

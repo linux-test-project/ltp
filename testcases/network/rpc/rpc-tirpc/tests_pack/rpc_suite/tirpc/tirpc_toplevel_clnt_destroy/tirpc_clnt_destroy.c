@@ -58,6 +58,13 @@ int main(int argn, char *argc[])
 	//first create client
 	clnt = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
+	if (clnt == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	//then call destroy macro
 	clnt_destroy(clnt);
 

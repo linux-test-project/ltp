@@ -47,7 +47,7 @@
 #include <unistd.h>
 #include <limits.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "numa_helper.h"
 
 char *TCID = "vma04";
@@ -202,9 +202,8 @@ static void get_vmas(char *retbuf, void *addr_s, void *addr_e)
 
 	retbuf[0] = '\0';
 	flag = 0;
-	fp = fopen("/proc/self/maps", "r");
-	if (fp == NULL)
-		tst_brkm(TBROK | TERRNO, cleanup, "fopen");
+	fp = SAFE_FOPEN(NULL, "/proc/self/maps", "r");
+
 	while (fgets(buf, BUFSIZ, fp) != NULL) {
 		if (sscanf(buf, "%p-%p ", &s, &t) != 2)
 			continue;

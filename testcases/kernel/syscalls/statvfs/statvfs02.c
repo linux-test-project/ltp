@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that statvfs() fails with:
  *
  * - EFAULT when path points to an invalid address.

@@ -22,7 +22,7 @@
 
 static const int sigs[] = {-1, -10000, INT32_MIN, INT32_MIN + 1};
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sigset_t signalset;
 	int ret, err = 0;

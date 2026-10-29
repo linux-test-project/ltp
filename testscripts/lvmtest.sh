@@ -14,5 +14,5 @@ fi
 
 export PATH="${PATH}:${LTPROOT}:${LTPROOT}/bin:${LTPROOT}/testcases/bin"
 
-generate_lvm_runfile.sh && prepare_lvm.sh && runltp -f lvm.local
+generate_lvm_runfile.sh && prepare_lvm.sh && kirk -f lvm.local
 cleanup_lvm.sh

@@ -19,7 +19,7 @@ static struct tcase {
 	int exp_errno;
 } tcases[] = {
 	{"invalid-fd", &invalid_fd, FSMOUNT_CLOEXEC, 0, EBADF},
-	{"invalid-flags", &fd, 0x02, 0, EINVAL},
+	{"invalid-flags", &fd, 0x80000000, 0, EINVAL},
 	{"invalid-attrs", &fd, FSMOUNT_CLOEXEC, 0x100, EINVAL},
 };
 
@@ -68,6 +68,7 @@ static void run(unsigned int n)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = run,
 	.setup = setup,

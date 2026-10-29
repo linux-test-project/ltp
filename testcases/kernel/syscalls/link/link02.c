@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests that link(2) succeeds.
  */
 

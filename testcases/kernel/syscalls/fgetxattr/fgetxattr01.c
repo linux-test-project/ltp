@@ -134,6 +134,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 10,
 	.setup = setup,
 	.test = verify_fgetxattr,
 	.cleanup = cleanup,

@@ -13,7 +13,7 @@
  * Test when a thread is PTHREAD_CANCEL_ASYNCHRONOUS
  *
  * STEPS:
- * 1. Setup a mutex and lock it in main()
+ * 1. Setup a mutex and lock it in test_main()
  * 2. Create a thread.
  * 3. In the thread function, set the type to PTHREAD_CANCEL_ASYNCHRONOUS
  * 4. Setup a cleanup handler for the thread.
@@ -21,8 +21,8 @@
  * 6. Send out a thread cancel request to the new thread
  * 7. If the cancel request was honored immediately and correctly, the
  *    cleanup handler would have been executed, and the test will pass.
- * 8. If not, main will wait for 10 seconds before it  unlocks the mutex, and the thread
- *    will exit, failing the test.
+ * 8. If not, test_main will wait for 10 seconds before it  unlocks the mutex,
+ *    and the thread will exit, failing the test.
  */
 
 #include <pthread.h>
@@ -55,11 +55,11 @@ static void *a_thread_func()
 
 	pthread_cleanup_push(a_cleanup_func, NULL);
 
-	/* Indicate to main() that the thread has been created. */
+	/* Indicate to test_main() that the thread has been created. */
 	sem1 = INMAIN;
 
-	/* Lock the mutex. It should have already been locked in main, so the thread
-	 * should block. */
+	/* Lock the mutex. It should have already been locked in test_main,
+	 * so the thread should block. */
 	if (pthread_mutex_lock(&mutex) != 0) {
 		perror("Error in pthread_mutex_lock()\n");
 		pthread_exit((void *)PTS_UNRESOLVED);
@@ -74,7 +74,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	int i = 0;

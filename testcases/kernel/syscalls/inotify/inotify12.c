@@ -6,11 +6,10 @@
  */
 
 /*\
- * [Description]
  * Test special inotify mask flags.
  *
  * Regression test for kernel commit:
- * a32e697cda27 ("inotify: show inotify mask flags in proc fdinfo")
+ * a32e697cda27 ("inotify: show inotify mask flags in proc fdinfo").
  */
 
 #include "config.h"
@@ -94,7 +93,7 @@ static void verify_inotify(unsigned int n)
 	/*
 	 * Read the 1st IN_MODIFY event
 	 */
-	len = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	if (len < (int)sizeof(*event)) {
 		tst_res(TFAIL, "Got no events");
@@ -152,13 +151,13 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 10,
+	.timeout = 10,
 	.needs_tmpdir = 1,
 	.cleanup = cleanup,
 	.test = verify_inotify,
 	.tcnt = ARRAY_SIZE(tcases),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a32e697cda27"},
+		{"linux-git", "a32e697cda27679a0327ae2cafdad8c7170f548f"},
 		{}
 	},
 };

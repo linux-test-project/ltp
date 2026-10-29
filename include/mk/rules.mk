@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (c) Linux Test Project, 2020-2022
+
 target_rel_dir := $(if $(cwd_rel_from_top),$(cwd_rel_from_top)/,)
 
 %.o: %.S
@@ -32,9 +35,9 @@ endif
 
 $(HOST_MAKE_TARGETS): %: %.c
 ifdef VERBOSE
-	$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $< $(HOST_LDLIBS) -o $@
+	$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $^ $(HOST_LDLIBS) -o $@
 else
-	@$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $< $(HOST_LDLIBS) -o $@
+	@$(HOSTCC) $(HOST_CFLAGS) $(HOST_LDFLAGS) $^ $(HOST_LDLIBS) -o $@
 	@echo HOSTCC $(target_rel_dir)$@
 endif
 

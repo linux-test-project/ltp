@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_ctl() fails with ELOOP if fd refers to an epoll instance
  * and this EPOLL_CTL_ADD operation would result in a circular loop of epoll
  * instances monitoring one another.

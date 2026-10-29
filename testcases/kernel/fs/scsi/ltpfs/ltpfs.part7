@@ -1,3 +1,0 @@
-#DESCRIPTION:filesystem tests
-# Check the JFS filesystems
-bfs701 ltpfstest /test/growfiles/jfs

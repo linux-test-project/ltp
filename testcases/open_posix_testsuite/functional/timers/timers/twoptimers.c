@@ -21,7 +21,7 @@
 
 #define CHILDPASS 1
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int pid;
 	struct timespec ts;

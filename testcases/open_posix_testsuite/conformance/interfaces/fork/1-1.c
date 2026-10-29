@@ -50,7 +50,7 @@
 
 #define SEM_NAME "/semfork1_1"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret, status;
 	pid_t child, ctl;

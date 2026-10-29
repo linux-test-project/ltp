@@ -55,7 +55,7 @@ static void shared_hugepage(void)
 		tst_brk(TBROK | TERRNO, "shmget");
 
 	while (boundary <= BOUNDARY_MAX
-		&& range_is_mapped(boundary, boundary+SIZE))
+		&& tst_mapping_in_range(boundary, boundary+SIZE))
 		boundary += 128*1024*1024;
 	if (boundary > BOUNDARY_MAX)
 		tst_brk(TCONF, "failed to find free unmapped range");
@@ -82,8 +82,8 @@ static void setup(void)
 	long hpage_size, orig_hugepages;
 	unsigned long new_shmmax;
 
-	orig_hugepages = get_sys_tune("nr_hugepages");
-	SAFE_FILE_SCANF(PATH_SHMMAX, "%lu", &new_shmmax);
+	orig_hugepages = TST_SYS_CONF_LONG_GET(PATH_VM_NR_HPAGES);
+	SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%lu", &new_shmmax);
 
 	if (new_shmmax < SIZE)
 		tst_brk(TCONF,	"shmmax too low, have: %lu", new_shmmax);
@@ -96,7 +96,7 @@ static void setup(void)
 
 static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "c5c99429fa57"},
+		{"linux-git", "c5c99429fa57dcf6e05203ebe3676db1ec646793"},
 		{}
 	},
 	.needs_root = 1,
@@ -108,7 +108,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.hugepages = {1, TST_NEEDS},
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_SHMMAX, "1073741824", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
+		{PATH_KERN_SHMMAX, "1073741824", TST_SR_TCONF_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 };

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Fujitsu Ltd.
  * Author: Zeng Linggang <zenglg.jy@cn.fujitsu.com>
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that sbrk() on failure sets errno to ENOMEM.
  */
 
@@ -19,21 +17,8 @@ static long increment = INC;
 
 static void run(void)
 {
-	TESTPTR(sbrk(increment));
-
-	if (TST_RET_PTR != (void *)-1) {
-		tst_res(TFAIL, "sbrk(%ld) unexpectedly passed and returned %p, "
-						"expected (void *)-1 with errno=%d",
-						increment, TST_RET_PTR, ENOMEM);
-		return;
-	}
-
-	if (TST_ERR == ENOMEM)
-		tst_res(TPASS | TTERRNO, "sbrk(%ld) failed as expected", increment);
-	else
-		tst_res(TFAIL | TTERRNO, "sbrk(%ld) failed but unexpected errno, "
-								"expected errno=%d - %s",
-								increment, ENOMEM, strerror(ENOMEM));
+	TST_EXP_FAIL_PTR_VOID(sbrk(increment), ENOMEM,
+		"sbrk(%ld) returned %p", increment, TST_RET_PTR);
 }
 
 static void setup(void)

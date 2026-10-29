@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test case checks whether swapoff(2) system call  returns
  *  1. EINVAL when the path does not exist
  *  2. ENOENT when the path exists but is invalid
@@ -16,7 +14,11 @@
 #include <pwd.h>
 #include "tst_test.h"
 #include "lapi/syscalls.h"
-#include "libswap.h"
+#include "tse_swap.h"
+
+#define MNTPOINT	"mntpoint"
+#define TEST_FILE	MNTPOINT"/testswap"
+#define SWAP_FILE	MNTPOINT"/swapfile"
 
 static int setup01(void);
 static void cleanup01(void);
@@ -32,8 +34,8 @@ static struct tcase {
 	void (*cleanup)(void);
 } tcases[] = {
 	{"path does not exist", ENOENT, "ENOENT", "./doesnotexist", NULL, NULL},
-	{"Invalid file", EINVAL, "EINVAL", "./swapfile01", NULL, NULL},
-	{"Permission denied", EPERM, "EPERM", "./swapfile01", setup01, cleanup01}
+	{"Invalid file", EINVAL, "EINVAL", SWAP_FILE, NULL, NULL},
+	{"Permission denied", EPERM, "EPERM", SWAP_FILE, setup01, cleanup01}
 };
 
 static void verify_swapoff(unsigned int i)
@@ -82,18 +84,15 @@ static void setup(void)
 	nobody = SAFE_GETPWNAM("nobody");
 	nobody_uid = nobody->pw_uid;
 
-	is_swap_supported("./tstswap");
-
-	if (!tst_fs_has_free(".", 1, TST_KB))
-		tst_brk(TBROK, "Insufficient disk space to create swap file");
-
-	if (tst_fill_file("./swapfile01", 0x00, 1024, 1))
-		tst_brk(TBROK, "Failed to create swapfile");
+	is_swap_supported(TEST_FILE);
+	SAFE_MAKE_SMALL_SWAPFILE(SWAP_FILE);
 }
 
 static struct tst_test test = {
+	.mntpoint = MNTPOINT,
+	.mount_device = 1,
+	.all_filesystems = 1,
 	.needs_root = 1,
-	.needs_tmpdir = 1,
 	.test = verify_swapoff,
 	.tcnt = ARRAY_SIZE(tcases),
 	.setup = setup

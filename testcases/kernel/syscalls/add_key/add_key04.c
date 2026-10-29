@@ -50,18 +50,12 @@ static void do_test(void)
 
 		for (i = 0; i < ASSOC_ARRAY_FAN_OUT; i++) {
 			sprintf(description, "keyring%d", i);
-			TEST(add_key("keyring", description, NULL, 0,
-				     KEY_SPEC_SESSION_KEYRING));
-			if (TST_RET < 0) {
-				tst_brk(TBROK | TTERRNO,
-					"unable to create keyring %d", i);
-			}
+			SAFE_ADD_KEY("keyring", description, NULL, 0,
+				     KEY_SPEC_SESSION_KEYRING);
 		}
 
-		TEST(add_key("user", "userkey", payload, sizeof(PAYLOAD),
-			     KEY_SPEC_SESSION_KEYRING));
-		if (TST_RET < 0)
-			tst_brk(TBROK | TTERRNO, "unable to create user key");
+		SAFE_ADD_KEY("user", "userkey", payload, sizeof(PAYLOAD),
+			     KEY_SPEC_SESSION_KEYRING);
 
 		exit(0);
 	}
@@ -86,7 +80,7 @@ static struct tst_test test = {
 	.forks_child = 1,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-12193"},
-		{"linux-git", "ea6789980fda"},
+		{"linux-git", "ea6789980fdaa610d7eb63602c746bf6ec70cd2b"},
 		{}
 	}
 };

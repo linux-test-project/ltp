@@ -83,7 +83,7 @@ static void *fn_rd_2(void *arg PTS_ATTRIBUTE_UNUSED)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int cnt = 0;
 	int rc = 0;
@@ -91,26 +91,26 @@ int main(void)
 	pthread_t rd_thread1, rd_thread2;
 
 	if (pthread_rwlock_init(&rwlock, NULL) != 0) {
-		printf("main: Error at pthrad_rwlock_init()\n");
+		printf("test_main: Error at pthrad_rwlock_init()\n");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: attempt pthread_rwlock_tryrdlock\n");
+	printf("test_main: attempt pthread_rwlock_tryrdlock\n");
 	/* We have no lock, this read lock should succeed */
 	rc = pthread_rwlock_tryrdlock(&rwlock);
 	if (rc != 0) {
 		printf
-		    ("Test FAILED: in main()  at pthread_rwlock_tryrdlock, error code:%d\n",
+		    ("Test FAILED: in test_main()  at pthread_rwlock_tryrdlock, error code:%d\n",
 		     rc);
 		return PTS_FAIL;
 	}
 
-	printf("main: acquired read lock\n");
+	printf("test_main: acquired read lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
-	printf("main: create rd_thread1\n");
+	printf("test_main: create rd_thread1\n");
 	if (pthread_create(&rd_thread1, NULL, fn_rd_1, NULL) != 0) {
-		printf("main: Error at creating rd_thread1\n");
+		printf("test_main: Error at creating rd_thread1\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -134,30 +134,30 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: unlock read lock\n");
+	printf("test_main: unlock read lock\n");
 	if (pthread_rwlock_unlock(&rwlock) != 0) {
-		printf("main: Error at pthread_rwlock_unlock\n");
+		printf("test_main: Error at pthread_rwlock_unlock\n");
 		return PTS_UNRESOLVED;
 	}
 
 	if (pthread_join(rd_thread1, NULL) != 0) {
-		printf("main: Error joining rd_thread1\n");
+		printf("test_main: Error joining rd_thread1\n");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: attempt write lock\n");
+	printf("test_main: attempt write lock\n");
 	if (pthread_rwlock_wrlock(&rwlock) != 0) {
-		printf("main: Error getting write lock\n");
+		printf("test_main: Error getting write lock\n");
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: acquired write lock\n");
+	printf("test_main: acquired write lock\n");
 
 	thread_state = NOT_CREATED_THREAD;
 	cnt = 0;
-	printf("main: create rd_thread2\n");
+	printf("test_main: create rd_thread2\n");
 	if (pthread_create(&rd_thread2, NULL, fn_rd_2, NULL) != 0) {
-		printf("main: Error at creating rd_thread2\n");
+		printf("test_main: Error at creating rd_thread2\n");
 		return PTS_UNRESOLVED;
 	}
 
@@ -175,10 +175,10 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	printf("main: unlock write lock\n");
+	printf("test_main: unlock write lock\n");
 	thread_state = NOT_CREATED_THREAD;
 	if (pthread_rwlock_unlock(&rwlock) != 0) {
-		printf("main: Error at releasing write lock\n");
+		printf("test_main: Error at releasing write lock\n");
 		return PTS_UNRESOLVED;
 	}
 

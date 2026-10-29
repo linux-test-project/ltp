@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) International Business Machines  Corp., 2005
  *   Robbie Williamson <robbiew@us.ibm.com>
@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpagesize(2) returns the number of bytes in a
  * memory page as expected.
  */

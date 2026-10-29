@@ -61,7 +61,7 @@ static void handler(int sig PTS_ATTRIBUTE_UNUSED)
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	struct timespec ts_ref, ts_fin;

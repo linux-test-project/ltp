@@ -39,8 +39,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 #include <getopt.h>
 
 #define SIGNAL_PRIO 89

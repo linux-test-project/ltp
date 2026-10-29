@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  *	Author: William Roske
@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify the basic functionality of setreuid(2) system call when executed
  * as non-root user.
  */

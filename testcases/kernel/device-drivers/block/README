@@ -5,19 +5,6 @@ Module under test: linux/block/genhd.c
  -----------------------------+---------------+---------------
   register_blkdev()           | linux/fs.h    | ltp_block_dev.c
   unregister_blkdev()         | linux/fs.h    | ltp_block_dev.c
-  blk_register_region()       | linux/genhd.h |
-  blk_unregister_region()     | linux/genhd.h |
-  add_disk()                  | linux/genhd.h |
-  del_gendisk()               | linux/genhd.h | test_genhd.c
-  blk_lookup_devt()           | linux/genhd.h |
-  alloc_disk()                | linux/genhd.h | test_genhd.c
-  alloc_disk_node()           | linux/genhd.h |
-  get_disk()                  | linux/genhd.h |
-  put_disk()                  | linux/genhd.h |
-  set_device_ro()             | linux/genhd.h |
-  set_disk_ro()               | linux/genhd.h |
-  bdev_read_only()            | linux/fs.h    |
-  invalidate_partition()      | linux/fs.h    |
 
-For possible test results please see "A POSIX conforming test framework" at
-http://www.gnu.org/software/dejagnu/manual/x47.html#posix
+For possible test results please see "A POSIX compliant test framework" at
+https://www.gnu.org/software/dejagnu/manual/A-POSIX-Conforming-Test-Framework.html

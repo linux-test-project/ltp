@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  *
- *   Copyright (c) International Business Machines Corp., 2001
+ * Copyright (c) Linux Test Project, 2004-2025
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
 /*
@@ -17,8 +18,6 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include "tst_test.h"
-#include "old_tmpdir.h"
-#include "mem.h"
 
 #define PALIGN(p, a) ((void *)LTP_ALIGN((unsigned long)(p), (a)))
 
@@ -57,4 +56,7 @@ int getipckey(void);
 int getuserid(char *user);
 void rm_shm(int shm_id);
 int do_readback(void *p, size_t size, char *desc);
+
+void update_shm_size(size_t *shm_size);
+
 #endif /* hugetlb.h */

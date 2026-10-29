@@ -263,4 +263,4 @@ case $TEST_NUM in
 	echo "Memory Resource Controller test executed successfully.";
 	cleanup;
 	cd $PWD
-	exit 0;         #to let PAN reprt success of test
+	exit 0;

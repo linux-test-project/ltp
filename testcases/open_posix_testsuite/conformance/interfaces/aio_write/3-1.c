@@ -37,7 +37,7 @@
 
 #define TNAME "aio_write/3-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 #define BUF_SIZE 512

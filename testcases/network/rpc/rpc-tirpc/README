@@ -46,6 +46,6 @@ instead of a bunch of scripts from the above web page.
 The basic group of test cases can be executed from
  * runtest/net.rpc_tests - for TS-RPC testing
  * runtest/net.tirpc_tests - for TI-RPC testing
-using the LTP framework (ltp-pan, runltp and etc).
+using kirk.
 
 Additional test cases (like stress, complex and etc) are to be integrated.

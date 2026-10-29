@@ -27,8 +27,9 @@
 #include <unistd.h>
 
 #include "test.h"
-#include "old_module.h"
-#include "safe_macros.h"
+#include "tso_module.h"
+#include "tso_safe_macros.h"
+#include "tst_security.h"
 
 #include "ltp_uaccess.h"
 
@@ -38,6 +39,12 @@ static const char dev_result[]	= "/sys/devices/" DEV_NAME "/result";
 static const char dev_tcase[]	= "/sys/devices/" DEV_NAME "/tcase";
 static const char module_name[]	= DEV_NAME ".ko";
 static int module_loaded;
+
+static void setup(void)
+{
+	if (tst_lockdown_enabled() > 0 || tst_secureboot_enabled() > 0)
+		tst_brkm(TCONF, NULL, "Cannot load unsigned modules in Lockdown/Secure Boot");
+}
 
 static void cleanup(void)
 {
@@ -94,10 +101,12 @@ int main(int argc, char *argv[])
 {
 	tst_parse_opts(argc, argv, NULL, NULL);
 
-	tst_require_root();
+	setup();
 
+	tst_require_root();
 	tst_sig(FORK, DEF_HANDLER, cleanup);
 
+	tst_requires_module_signature_disabled();
 	tst_module_load(NULL, module_name, NULL);
 	module_loaded = 1;
 

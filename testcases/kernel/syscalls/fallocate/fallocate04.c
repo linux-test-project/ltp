@@ -2,9 +2,15 @@
 /*
  * Copyright (c) 2015 Oracle and/or its affiliates. All Rights Reserved.
  * Author: Alexey Kodanev <alexey.kodanev@oracle.com>
+ */
+
+/*\
+ * Test :manpage:`fallocate(2)` a file with specified size then tests
+ * the following modes:
  *
- * Test allocates a file with specified size then tests the following modes:
- * FALLOC_FL_PUNCH_HOLE, FALLOC_FL_ZERO_RANGE and FALLOC_FL_COLLAPSE_RANGE.
+ * - FALLOC_FL_PUNCH_HOLE
+ * - FALLOC_FL_ZERO_RANGE
+ * - FALLOC_FL_COLLAPSE_RANGE
  */
 
 #define _GNU_SOURCE
@@ -66,7 +72,7 @@ static void check_file_data(const char exp_buf[], size_t size)
 	tst_res(TINFO, "reading the file, compare with expected buffer");
 
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, rbuf, size);
+	SAFE_READ(SAFE_READ_ALL, fd, rbuf, size);
 
 	if (memcmp(exp_buf, rbuf, size)) {
 		if (verbose) {
@@ -147,11 +153,6 @@ static void test02(void)
 static void test03(void)
 {
 	tst_res(TINFO, "zeroing file space with FALLOC_FL_ZERO_RANGE");
-
-	if (tst_kvercmp(3, 15, 0) < 0) {
-		tst_brk(TCONF,
-			"FALLOC_FL_ZERO_RANGE needs Linux 3.15 or newer");
-	}
 
 	size_t alloc_size0 = get_allocsize();
 
@@ -287,6 +288,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 9,
 	.options = (struct tst_option[]) {
 		{"v", &verbose, "Turns on verbose mode"},
 		{}

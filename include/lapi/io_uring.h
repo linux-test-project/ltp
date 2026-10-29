@@ -11,10 +11,9 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/uio.h>
 #include <stdlib.h>
-#include <linux/fs.h>
+#include <linux/types.h>
 
 #include "lapi/syscalls.h"
 
@@ -254,7 +253,33 @@ struct io_uring_probe {
 	struct io_uring_probe_op ops[0];
 };
 
+#else /* IOSQE_FIXED_FILE */
+
+#if !HAVE_DECL_IORING_OP_READ
+#define IORING_OP_READ 22
+#endif
+
+#if !HAVE_DECL_IORING_OP_WRITE
+#define IORING_OP_WRITE 23
+#endif
+
 #endif /* IOSQE_FIXED_FILE */
+
+#ifndef IORING_REGISTER_CLONE_BUFFERS
+# define IORING_REGISTER_CLONE_BUFFERS	30
+#endif
+
+/* Argument for IORING_REGISTER_CLONE_BUFFERS */
+#ifndef HAVE_STRUCT_IO_URING_CLONE_BUFFERS
+struct io_uring_clone_buffers {
+	uint32_t src_fd;
+	uint32_t flags;
+	uint32_t src_off;
+	uint32_t dst_off;
+	uint32_t nr;
+	uint32_t pad[3];
+};
+#endif
 
 #ifndef IOSQE_IO_HADRLINK
 /* like LINK, but stronger */

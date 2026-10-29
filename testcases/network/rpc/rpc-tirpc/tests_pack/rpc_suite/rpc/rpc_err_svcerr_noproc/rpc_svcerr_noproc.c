@@ -65,6 +65,13 @@ int main(int argn, char *argc[])
 
 	client = clnt_create(argc[1], progNum, VERSNUM, nettype);
 
+	if (client == NULL) {
+		clnt_pcreateerror("err");
+		printf("%d\n", rpc_createerr.cf_stat);
+
+		return 1;
+	}
+
 	//Then call remote procedure
 	cs = clnt_call((CLIENT *) client, PROCNUM, (xdrproc_t) xdr_int, (char *)&var_snd,	// xdr_in
 		       (xdrproc_t) xdr_int, (char *)&var_snd,	// xdr_out

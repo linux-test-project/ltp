@@ -28,7 +28,7 @@ static const int sigs[] = {
 	SIGURG,
 };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	sigset_t signalset;
 	unsigned int i;

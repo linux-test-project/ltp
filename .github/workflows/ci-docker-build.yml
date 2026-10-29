@@ -1,0 +1,210 @@
+# Copyright (c) 2021-2024 Petr Vorel <pvorel@suse.cz>
+
+name: "Test building in various distros in Docker"
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      SERIES_ID:
+        description: LTP patch series ID
+        required: false
+        default: ''
+      SERIES_MBOX:
+        description: LTP patch series URL
+        required: false
+        default: ''
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # 32bit build
+          - container: "debian:stable"
+            env:
+              CC: gcc
+              VARIANT: i386
+
+          # cross compilation builds
+          - container: "debian:stable"
+            env:
+              ARCH: ppc64el
+              CC: powerpc64le-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          - container: "debian:stable"
+            env:
+              ARCH: arm64
+              CC: aarch64-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          - container: "debian:stable"
+            env:
+              ARCH: s390x
+              CC: s390x-linux-gnu-gcc
+              MAKE_INSTALL: 1
+              TREE: out
+              VARIANT: cross-compile
+
+          # musl (native)
+          - container: "alpine:latest"
+            env:
+              CC: gcc
+
+          # build with minimal dependencies
+          - container: "debian:stable"
+            env:
+              CC: gcc
+              TREE: out
+              VARIANT: minimal
+
+          # oldest distros
+          - container: "opensuse/archive:42.2"
+            env:
+              CC: gcc
+
+          - container: "quay.io/centos/centos:stream9"
+            env:
+              CC: gcc
+              TREE: out
+
+          - container: "debian:testing"
+            env:
+              CC: gcc
+
+          - container: "debian:oldstable"
+            env:
+              CC: clang
+
+          # other builds
+          - container: "fedora:latest"
+            env:
+              CC: clang
+              MAKE_INSTALL: 1
+
+          - container: "opensuse/leap:latest"
+            env:
+              CC: gcc
+
+          - container: "debian:oldstable"
+            env:
+              CC: gcc
+
+          - container: "debian:testing"
+            env:
+              CC: clang
+
+          - container: "ubuntu:jammy"
+            env:
+              CC: gcc
+              TREE: out
+
+          - container: "ubuntu:noble"
+            env:
+              CC: gcc
+
+    container:
+      image: ${{ matrix.container }}
+      env: ${{ matrix.env }}
+      options: --privileged -v/boot:/boot
+
+    steps:
+    - name: Show OS
+      run: cat /etc/os-release
+
+    - name: Git checkout
+      uses: actions/checkout@v1
+
+    - name: Install additional packages
+      run: |
+        INSTALL=${{ matrix.container }}
+        INSTALL="${INSTALL%%:*}"
+        INSTALL="${INSTALL%%/*}"
+        ACTION="$VARIANT" ./ci/$INSTALL.sh || if [ $? -eq 106 ]; then
+          echo "::warning ::Skipping job due broken repositories"
+          ./ci/tools/patchwork.sh check \
+            "${{ inputs.SERIES_ID }}" \
+            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "${{ matrix.container }}" \
+            "pending" "Skipping job due broken repositories"
+          exit 0
+        fi
+        if [ "$VARIANT" ]; then ./ci/$INSTALL.$VARIANT.sh; fi
+
+    - name: Compiler version
+      run: $CC --version
+
+    - name: Apply Patchwork series
+      if: inputs.SERIES_ID != ''
+      env:
+        PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+      run: |
+        git config --global user.name 'GitHub CI'
+        git config --global user.email 'github@example.com'
+        git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+        git checkout -b review_patch_series_"${{ inputs.SERIES_ID }}"
+        ./ci/tools/patchwork.sh apply "${{ inputs.SERIES_ID }}"
+
+        ./ci/tools/patchwork.sh state "${{ inputs.SERIES_ID }}" "needs-ack"
+
+    - name: ver_linux
+      run: ./ver_linux
+
+    - name: Autotools
+      run: ./build.sh -r autotools
+
+    - name: Configure
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r configure -o ${TREE:-in} -t $BUILD -c $CC
+
+    - name: Compile
+      run: ./build.sh -r build -o ${TREE:-in}
+
+    - name: Test C API
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r test-c -o ${TREE:-in} -t $BUILD
+
+    - name: Test metadata
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r test-metadata -o ${TREE:-in} -t $BUILD
+
+    - name: Test shell API
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r test-shell -o ${TREE:-in} -t $BUILD
+
+    - name: Test shell loader
+      run: |
+        case "$VARIANT" in cross-compile*) BUILD="cross";; i386) BUILD="32";; *) BUILD="native";; esac
+        ./build.sh -r test-shell-loader -o ${TREE:-in} -t $BUILD
+
+    - name: Install
+      run: |
+        if [ "$MAKE_INSTALL" = 1 ]; then INSTALL_OPT="-i"; fi
+        ./build.sh -r install -o ${TREE:-in} $INSTALL_OPT
+
+    - name: Send results to Patchwork
+      if: always() && inputs.SERIES_ID != ''
+      env:
+        PATCHWORK_TOKEN: ${{ secrets.PATCHWORK_TOKEN }}
+      run: |
+        ./ci/tools/patchwork.sh check \
+          "${{ inputs.SERIES_ID }}" \
+          "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          "${{ matrix.container }}" \
+          "${{ job.status }}"

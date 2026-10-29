@@ -20,7 +20,7 @@ using the default make target.
 	(cd testcases/kernel/security/smack; make && make install)
 
 5) Running the tests:
-	./runltp -f smack
+	kirk -f smack
 
 Each test exits with 0 on success and an error code on failure.
 

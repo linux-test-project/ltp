@@ -35,7 +35,7 @@
 
 #define TNAME "aio_read/10-1.c"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #define BUF_SIZE 111
 	char buf[BUF_SIZE];

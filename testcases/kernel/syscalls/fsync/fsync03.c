@@ -4,14 +4,14 @@
  *   Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
- * Test Description:
- *  Testcase to check that fsync(2) sets errno correctly.
- *  1. Call fsync() on a pipe(fd), and expect EINVAL.
- *  2. Call fsync() on a socket(fd), and expect EINVAL.
- *  3. Call fsync() on a closed fd, and test for EBADF.
- *  4. Call fsync() on an invalid fd, and test for EBADF.
- *  5. Call fsync() on a fifo(fd), and expect EINVAL.
+/*\
+ * Verify that, fsync(2) returns -1 and sets errno to
+ *
+ * - EINVAL if calling fsync() on a pipe(fd).
+ * - EINVAL if calling fsync() on a socket(fd).
+ * - EBADF if calling fsync() on a closed fd.
+ * - EBADF if calling fsync() on an invalid fd.
+ * - EINVAL if calling fsync() on a fifo(fd).
  */
 
 #include <unistd.h>

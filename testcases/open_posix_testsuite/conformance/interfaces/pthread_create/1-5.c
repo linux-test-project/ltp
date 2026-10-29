@@ -82,7 +82,7 @@
 /********************************************************************************************/
 /***********************************    Test cases  *****************************************/
 /********************************************************************************************/
-#define STD_MAIN		/* This allows main() to be defined in the included file */
+#define STD_MAIN		/* This allows test_main() to be defined in the included file */
 #include "../testfrmw/threads_scenarii.c"
 
 /* This file will define the following objects:

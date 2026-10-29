@@ -17,7 +17,7 @@
  *     the test a pass (most likely no signal was sent).
  */
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (kill(getpid(), 0) != 0) {
 		printf("Could not call kill with sig = 0\n");

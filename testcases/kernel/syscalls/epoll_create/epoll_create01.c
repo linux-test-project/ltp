@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_create return a nonnegative file descriptor on success.
  *
  * The size argument informed the kernel of the number of file descriptors

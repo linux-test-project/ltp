@@ -26,7 +26,7 @@
 # include <numaif.h>
 #endif
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #define MNTPOINT "mntpoint"
 #define FILES 10
@@ -36,7 +36,7 @@
 #include "set_mempolicy.h"
 
 static size_t page_size;
-static struct tst_nodemap *nodes;
+static struct tse_nodemap *nodes;
 
 static void setup(void)
 {
@@ -44,14 +44,14 @@ static void setup(void)
 
 	page_size = getpagesize();
 
-	nodes = tst_get_nodemap(TST_NUMA_MEM, node_min_pages * page_size / 1024);
+	nodes = tse_get_nodemap(TST_NUMA_MEM, node_min_pages * page_size / 1024);
 	if (nodes->cnt <= 1)
 		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 }
 
 static void cleanup(void)
 {
-	tst_nodemap_free(nodes);
+	tse_nodemap_free(nodes);
 }
 
 static void alloc_and_check(void)
@@ -61,7 +61,7 @@ static void alloc_and_check(void)
 	unsigned int total_pages = 0;
 	unsigned int sum_pages = 0;
 
-	tst_nodemap_reset_counters(nodes);
+	tse_nodemap_reset_counters(nodes);
 
 	/*
 	 * The inner loop loops node->cnt times to ensure the sum could
@@ -133,7 +133,10 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.all_filesystems = 1,
 	.mntpoint = MNTPOINT,
-	.needs_checkpoints = 1,
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_NUMA=y",
+		NULL
+	}
 };
 
 #else

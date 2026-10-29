@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that the user ID and group ID, which are inside a container,
  * can be modified by its parent process.
  */
@@ -32,7 +30,10 @@ static void child_fn1(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	int childpid;
 	int parentuid;
 	int parentgid;

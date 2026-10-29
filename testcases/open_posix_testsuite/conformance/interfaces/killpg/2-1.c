@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (killpg(getpgrp(), 0) != 0) {
 		printf("Could not call killpg with sig = 0\n");

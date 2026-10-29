@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, on any attempt to write to a pipe which is closed for
  * reading will generate a SIGPIPE signal and write will fail with
  * EPIPE errno.

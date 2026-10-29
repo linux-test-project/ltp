@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test to preserve a reserved page against no-reserved mapping. If all
  * hugepages are reserved, access to no-reserved shared mapping cause a
  * process die, instead of stealing a hugepage which is reserved for other
@@ -99,8 +97,8 @@ cleanup:
 static void setup(void)
 {
 	hpage_size = tst_get_hugepage_size();
-	fd1 = tst_creat_unlinked(MNTPOINT, 0);
-	fd2 = tst_creat_unlinked(MNTPOINT, 0);
+	fd1 = tst_creat_unlinked(MNTPOINT, 0, 0600);
+	fd2 = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

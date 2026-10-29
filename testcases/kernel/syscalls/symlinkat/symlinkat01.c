@@ -42,7 +42,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/syscalls.h"
 
 #define MYRETCODE -999
@@ -181,7 +181,8 @@ static void mysymlinkat_test(struct test_struct *desc)
 			SAFE_CLOSE(cleanup, fd);
 
 			fd = SAFE_OPEN(cleanup, desc->referencefn2, O_RDONLY);
-			SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
+			SAFE_READ(cleanup, SAFE_READ_ALL, fd, &vnum,
+				  sizeof(vnum));
 			SAFE_CLOSE(cleanup, fd);
 
 			if (tnum == vnum)

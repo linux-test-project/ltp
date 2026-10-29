@@ -46,7 +46,6 @@
 #include <errno.h>
 #include <linux/unistd.h>
 
-#include "lapi/mkdirat.h"
 #include "tst_safe_pthread.h"
 #include "tst_safe_stdio.h"
 #include "tst_test.h"
@@ -85,7 +84,7 @@ static void run_targets(const char *dirname, char *cfile, pid_t tid)
 			tst_cmd(cmd_run, output_file, NULL, 0);
 
 			fd = SAFE_OPEN(output_file, O_RDONLY);
-			SAFE_READ(1, fd, buf, 11);
+			SAFE_READ(SAFE_READ_ALL, fd, buf, 11);
 			if (strncmp(buf, "hello world", 11))
 				tst_brk(TFAIL, "command printed wrong message");
 			SAFE_CLOSE(fd);
@@ -215,5 +214,5 @@ static struct tst_test test = {
 	.options = opts,
 	.test_all = do_test,
 	.setup = setup,
-	.max_runtime = 300,
+	.timeout = 300,
 };

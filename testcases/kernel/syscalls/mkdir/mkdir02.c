@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that new directory created by mkdir(2) inherites the group ID from
  * the parent directory and S_ISGID bit, if the S_ISGID bit is set in the
  * parent directory.

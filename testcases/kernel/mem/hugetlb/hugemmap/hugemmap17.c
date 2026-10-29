@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Descriptiom]
- *
  * At one stage, a misconversion of hugetlb_vmtruncate_list to a prio_tree
  * meant that on 32-bit machines, certain combinations of mapping and
  * truncations could truncate incorrect pages, or overwrite pmds from
@@ -79,7 +77,7 @@ static void setup(void)
 		tst_brk(TCONF, "Huge page size is too large");
 	if (TRUNCATE_POINT % hpage_size)
 		tst_brk(TCONF, "Truncation point is not aligned to huge page size");
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -90,7 +88,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "856fc2950555"},
+		{"linux-git", "856fc29505556cf263f3dcda2533cf3766c14ab6"},
 		{}
 	},
 	.needs_root = 1,

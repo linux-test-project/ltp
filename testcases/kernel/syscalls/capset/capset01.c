@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Author: Saji Kumar.V.R <saji.kumar@wipro.com>
@@ -10,8 +10,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test capset() with with LINUX_CAPABILITY_VERSION_{1,2,3}.
  */
 

@@ -108,7 +108,7 @@ tst_require_root()
 
 tst_exit()
 {
-	if [ -n "${TST_CLEANUP:-}" -a -z "${TST_NO_CLEANUP:-}" ]; then
+	if [ -n "${TST_CLEANUP:-}" -a -z "${LTP_NO_CLEANUP:-}" ]; then
 		$TST_CLEANUP
 	fi
 
@@ -148,6 +148,11 @@ tst_rmdir()
 	fi
 }
 
+tst_cmd_available()
+{
+	command -v $1 >/dev/null 2>&1
+}
+
 #
 # Checks if commands passed as arguments exists
 #
@@ -155,9 +160,7 @@ tst_require_cmds()
 {
 	local cmd
 	for cmd in $*; do
-		if ! command -v $cmd > /dev/null 2>&1; then
-			tst_brkm TCONF "'$cmd' not found"
-		fi
+		tst_cmd_available $cmd || tst_brkm TCONF "'$cmd' not found"
 	done
 }
 
@@ -330,6 +333,8 @@ tst_mkfs()
 tst_virt_hyperv()
 {
 	local v
+
+	tst_cmd_available systemd-detect-virt || return 1
 
 	v="$(systemd-detect-virt)"
 

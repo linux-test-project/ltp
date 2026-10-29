@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This code tests the functionality of statx system call.
  *
  * The metadata for normal file are tested against expected values:

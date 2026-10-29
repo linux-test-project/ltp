@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test to verify inheritance of environment variables by child.
  */
 

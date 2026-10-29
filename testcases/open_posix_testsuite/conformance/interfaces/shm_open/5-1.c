@@ -69,7 +69,7 @@ static int child_process()
 	return PTS_PASS;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd, child_pid;
 	char *buf;

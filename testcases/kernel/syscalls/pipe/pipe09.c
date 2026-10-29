@@ -51,7 +51,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define	PIPEWRTCNT	100	/* must be an even number */
 
@@ -98,7 +98,7 @@ int main(int ac, char **av)
 			continue;
 		}
 
-		if ((fork_1 = FORK_OR_VFORK()) == -1) {
+		if ((fork_1 = tst_fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #1 failed");
 		}
 
@@ -125,7 +125,7 @@ int main(int ac, char **av)
 			tst_brkm(TBROK, cleanup, "child exited abnormally");
 		}
 
-		if ((fork_2 = FORK_OR_VFORK()) == -1) {
+		if ((fork_2 = tst_fork()) == -1) {
 			tst_brkm(TBROK, cleanup, "fork() #2 failed");
 		}
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2022 CTERA Networks.  All Rights Reserved.
  *
@@ -6,8 +6,7 @@
  */
 
 /*\
- * [Description]
- * Check evictable fanotify inode marks.
+ * Check evictable :manpage:`fanotify(7)` inode marks.
  */
 
 #define _GNU_SOURCE
@@ -36,7 +35,6 @@
 #define DROP_CACHES_FILE "/proc/sys/vm/drop_caches"
 #define CACHE_PRESSURE_FILE "/proc/sys/vm/vfs_cache_pressure"
 
-static int old_cache_pressure;
 static int fd_notify;
 
 static unsigned long long event_set[EVENT_MAX];
@@ -135,7 +133,7 @@ static void test_fanotify(void)
 	tst_count++;
 
 	/* Read events so far */
-	ret = SAFE_READ(0, fd_notify, event_buf, EVENT_BUF_LEN);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 	len = ret;
 
 	/*
@@ -178,7 +176,8 @@ static void test_fanotify(void)
 	tst_count++;
 
 	/* Read events to verify ATTRIB event was properly generated */
-	ret = SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	ret = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			EVENT_BUF_LEN - len);
 	len += ret;
 
 	/*
@@ -230,12 +229,11 @@ static void setup(void)
 {
 	SAFE_TOUCH(TEST_FILE, 0666, NULL);
 
-	REQUIRE_MARK_TYPE_SUPPORTED_BY_KERNEL(FAN_MARK_EVICTABLE);
+	REQUIRE_MARK_TYPE_SUPPORTED_ON_FS(FAN_MARK_EVICTABLE, MOUNT_PATH);
 	REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(FAN_CLASS_NOTIF|FAN_REPORT_FID,
 						FAN_MARK_FILESYSTEM,
-						FAN_ATTRIB, ".");
+						FAN_ATTRIB, MOUNT_PATH);
 
-	SAFE_FILE_SCANF(CACHE_PRESSURE_FILE, "%d", &old_cache_pressure);
 	/* Set high priority for evicting inodes */
 	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "500");
 }
@@ -244,8 +242,6 @@ static void cleanup(void)
 {
 	if (fd_notify > 0)
 		SAFE_CLOSE(fd_notify);
-
-	SAFE_FILE_PRINTF(CACHE_PRESSURE_FILE, "%d", old_cache_pressure);
 }
 
 static struct tst_test test = {
@@ -256,7 +252,14 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.mntpoint = MOUNT_PATH,
 	/* Shrinkers on other fs do not work reliably enough to guarantee mark eviction on drop_caches */
-	.dev_fs_type = "ext2",
+	.filesystems = (struct tst_fs []){
+		{.type = "ext2"},
+		{}
+	},
+	.save_restore = (const struct tst_path_val[]) {
+		{CACHE_PRESSURE_FILE, NULL, TST_SR_TCONF},
+		{}
+	},
 };
 
 #else

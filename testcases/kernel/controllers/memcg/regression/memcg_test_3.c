@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 FUJITSU LIMITED. All rights reserved.
+ * Copyright (c) Linux Test Project, 2017-2026
  * Author: Guangwen Feng <fenggw-fnst@cn.fujitsu.com>
  */
 
-/*
- * This is a regression test for a crash caused by memcg function
- * reentrant on buggy kernel.  When doing rmdir(), a pending signal can
- * interrupt the execution and lead to cgroup_clear_css_refs()
- * being entered repeatedly, this results in a BUG_ON().
+/*\
+ * Regression test for a crash caused by memcg function reentrant on buggy
+ * kernel.  When doing rmdir(), a pending signal can interrupt the execution and
+ * lead to cgroup_clear_css_refs() being entered repeatedly, this results in a
+ * BUG_ON().
  */
 
 #include <errno.h>
@@ -21,6 +22,7 @@
 
 static volatile int sigcounter;
 static struct tst_cg_group *test_cg;
+static pid_t ppid;
 
 static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 {
@@ -29,8 +31,8 @@ static void sighandler(int sig LTP_ATTRIBUTE_UNUSED)
 
 static void do_child(void)
 {
-	while (1)
-		SAFE_KILL(getppid(), SIGUSR1);
+	while (getppid() == ppid)
+		SAFE_KILL(ppid, SIGUSR1);
 
 	exit(0);
 }
@@ -40,6 +42,7 @@ static void do_test(void)
 	pid_t cpid;
 
 	SAFE_SIGNAL(SIGUSR1, sighandler);
+	ppid = getpid();
 
 	cpid = SAFE_FORK();
 	if (cpid == 0)

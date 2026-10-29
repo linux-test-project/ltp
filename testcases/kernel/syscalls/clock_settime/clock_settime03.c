@@ -104,6 +104,7 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.timeout = 4,
 	.test_all = run,
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,

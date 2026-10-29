@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that getpgid(2) fails with errno ESRCH when
  * pid does not match any process.
  */

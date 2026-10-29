@@ -2,8 +2,9 @@
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
  */
-/*
- * Basic test for the BLKRASET and BLKRAGET ioctls.
+
+/*\
+ * Basic test for :manpage:`ioctl(2)` with BLKRASET and BLKRAGET.
  *
  * Sets device read-ahead, reads it back and compares the values.
  *

@@ -114,7 +114,7 @@ static int philosopher(void *ID)
 	pthread_exit(NULL);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t phi[PH_NUM];
 	int PhID[PH_NUM];

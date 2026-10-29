@@ -20,7 +20,7 @@
 
 #define SHM_NAME "posixtest_38-1"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd = 0, count = 0;
 

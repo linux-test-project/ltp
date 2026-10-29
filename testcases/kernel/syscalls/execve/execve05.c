@@ -1,32 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2018 Linux Test Project
+ * Copyright (c) 2001-2023 Linux Test Project
  * Copyright (c) International Business Machines Corp., 2001
- *
+ * Copyright (c) 2008 Renaud Lottiaux <Renaud.Lottiaux@kerlabs.com>
  * Ported to LTP: Wayne Boyer
- *  21/04/2008 Renaud Lottiaux (Renaud.Lottiaux@kerlabs.com)
  */
 
-/*
- * NAME
- *	execve05.c
- *
- * DESCRIPTION
- *	This testcase tests the basic functionality of the execve(2) system
- *	call.
- *
- * ALGORITHM
- *	This tests the functionality of the execve(2) system call by spawning
- *	a few children, each of which would execute "execve_child" simultaneously,
- *	and finally the parent ensures that they terminated correctly.
- *
- * USAGE
- *	execve05 -i 5 -n 20
+/*\
+ * This tests the functionality of the execve(2) :manpage:`execve(2)` call by spawning
+ * a few children, each of which would execute "execve_child" binary simultaneously,
+ * and finally the parent ensures that they terminated correctly.
  */
 
-#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -73,6 +60,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 3,
 	.test_all = verify_execve,
 	.options = (struct tst_option[]) {
 		{"n:", &opt_nchild, "Numbers of children"},

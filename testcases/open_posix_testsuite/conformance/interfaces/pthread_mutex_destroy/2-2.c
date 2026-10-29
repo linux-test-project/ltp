@@ -96,7 +96,7 @@ static struct _scenar {
 #define NSCENAR (sizeof(scenarii)/sizeof(scenarii[0]))
 
 /* Main function */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	unsigned int i, j;
@@ -220,7 +220,7 @@ int main(void)
 }
 
 #else /* WITHOUT_XOPEN */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	output_init();
 	UNTESTED("This test requires XSI features");

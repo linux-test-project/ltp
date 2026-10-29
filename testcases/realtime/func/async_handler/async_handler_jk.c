@@ -41,8 +41,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 // This is the normal priority for an event handler if not specified.
 #define NORMAL_PRIORITY	43

@@ -193,7 +193,7 @@ static void test_lseek(unsigned int n)
 	offset = (tp->startblock * block_size) + tp->offset;
 	offset = SAFE_LSEEK(fd, offset, tp->whence);
 	if (tp->data) {
-		SAFE_READ(1, fd, buf, tp->count);
+		SAFE_READ(SAFE_READ_ALL, fd, buf, tp->count);
 		rc = strcmp(buf, tp->data);
 	} else {
 		if (offset != SAFE_LSEEK(fd, 0, SEEK_END))

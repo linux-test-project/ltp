@@ -41,7 +41,7 @@
 #define BUFFER 40
 #define MAXMSG 10
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE], msgrcd[BUFFER];
 	const char *msgptr1 = MSG1;

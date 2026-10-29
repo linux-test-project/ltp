@@ -24,7 +24,7 @@
 #define BUF_SIZE	200
 #define DEFAULT_THREADS 5
 
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	sem_t *sem_lock;
 	int shared = 1;

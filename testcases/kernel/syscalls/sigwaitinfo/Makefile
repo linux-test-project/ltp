@@ -3,7 +3,7 @@
 
 top_srcdir ?= ../../../..
 
-LTPLIBS = ltpsigwait
+LTPLIBS = sigwait
 
 include $(top_srcdir)/include/mk/testcases.mk
 

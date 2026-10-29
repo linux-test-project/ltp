@@ -26,7 +26,7 @@
 /* There is no chance that a scheduling policy has such a value */
 #define INVALID_POLICY -27367
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result;
 	struct sched_param param;

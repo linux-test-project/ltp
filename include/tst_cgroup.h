@@ -5,8 +5,6 @@
  * Copyright (c) 2020-2021 SUSE LLC <rpalethorpe@suse.com>
  */
 /*\
- * [Description]
- *
  * The LTP CGroups API tries to present a consistent interface to the
  * many possible CGroup configurations a system could have.
  *
@@ -15,7 +13,7 @@
  * it is not possible unless no CGroups are currently active and
  * almost all of our users will have CGroups active. Even if
  * unmounting the current CGroup hierarchy is a reasonable thing to do
- * to the sytem manager, it is highly unlikely the CGroup hierarchy
+ * to the system manager, it is highly unlikely the CGroup hierarchy
  * will be destroyed. So users would be forced to remove their CGroup
  * configuration and reboot the system.
  *
@@ -104,6 +102,7 @@ struct tst_cg_opts {
 	 * directory as opposed to the default pid of the calling process.
 	 */
 	int test_pid;
+	int needs_nsdelegate;
 };
 
 /* A Control Group in LTP's aggregated hierarchy */
@@ -155,6 +154,10 @@ tst_cg_group_mk(const struct tst_cg_group *const parent,
 
 const char *
 tst_cg_group_name(const struct tst_cg_group *const cg)
+		      __attribute__ ((nonnull, warn_unused_result));
+
+/* This call returns a fd pointing to a v2 directory */
+int tst_cg_group_unified_dir_fd(const struct tst_cg_group *const cg)
 		      __attribute__ ((nonnull, warn_unused_result));
 
 /* Remove a descendant CGroup */
@@ -250,5 +253,9 @@ int safe_cg_occursin(const char *file, const int lineno,
 			 const struct tst_cg_group *const cg,
 			 const char *const file_name,
 			 const char *const needle);
+
+int tst_cg_memory_recursiveprot(struct tst_cg_group *cg);
+
+void tst_check_rt_group_sched_support(void);
 
 #endif /* TST_CGROUP_H */

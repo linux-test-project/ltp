@@ -237,7 +237,7 @@ static void write_to_file(void)
  * What we do here is:
  *
  * * Take nsamples measurements of the timer function, the function
- *   to be sampled is defined in the the actual test.
+ *   to be sampled is defined in the actual test.
  *
  * * We sort the array of samples, then:
  *
@@ -454,7 +454,7 @@ static void parse_timer_opts(void)
 			runtime_us += tcases[i].usec * tcases[i].samples;
 	}
 
-	tst_set_max_runtime((runtime_us + runtime_us/10)/1000000);
+	tst_set_runtime((runtime_us + runtime_us/10)/1000000);
 }
 
 struct tst_test *tst_timer_test_setup(struct tst_test *timer_test)

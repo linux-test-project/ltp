@@ -14,6 +14,10 @@
 # define MAP_SHARED_VALIDATE 0x03
 #endif
 
+#ifndef MAP_TYPE
+# define MAP_TYPE 0x0f
+#endif
+
 #ifndef MAP_HUGETLB
 # define MAP_HUGETLB 0x40000
 #endif
@@ -36,6 +40,14 @@
 
 #ifndef MADV_SOFT_OFFLINE
 # define MADV_SOFT_OFFLINE 101
+#endif
+
+#ifndef MADV_GUARD_INSTALL
+# define MADV_GUARD_INSTALL 102
+#endif
+
+#ifndef MADV_GUARD_REMOVE
+# define MADV_GUARD_REMOVE 103
 #endif
 
 #ifndef MADV_MERGEABLE
@@ -77,6 +89,18 @@
 
 #ifndef MADV_PAGEOUT
 # define MADV_PAGEOUT	21
+#endif
+
+#ifndef MAP_DROPPABLE
+# define MAP_DROPPABLE 0x08
+#endif
+
+#ifndef MAP_32BIT
+# define MAP_32BIT 0x40
+#endif
+
+#ifndef MREMAP_DONTUNMAP
+# define MREMAP_DONTUNMAP 4
 #endif
 
 #ifndef MAP_FIXED_NOREPLACE

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * It tests alignment of fallocate arguments. fallocate will take non-huge
  * page aligned offsets and addresses.  However, operations are only
  * performed on huge pages.  This is different that than fallocate
@@ -33,7 +31,7 @@ static void run_test(void)
 	int err;
 	unsigned long free_initial, free_after, free_after_delete;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
 	free_initial = SAFE_READ_MEMINFO(MEMINFO_HPAGE_FREE);
 

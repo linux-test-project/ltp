@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) Ricardo Salveti de Araujo <rsalvetidev@gmail.com>, 2007
  *

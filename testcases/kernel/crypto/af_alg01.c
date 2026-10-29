@@ -21,6 +21,7 @@ static void test_with_hash_alg(const char *hash_algname)
 {
 	char hmac_algname[64];
 	char key[4096] = { 0 };
+	int ret;
 
 	if (!tst_have_alg("hash", hash_algname))
 		return;
@@ -30,7 +31,9 @@ static void test_with_hash_alg(const char *hash_algname)
 		return;
 
 	sprintf(hmac_algname, "hmac(hmac(%s))", hash_algname);
-	if (tst_try_alg("hash", hmac_algname) != ENOENT) {
+
+	ret = tst_try_alg("hash", hmac_algname);
+	if (ret != ENOENT && ret != EINVAL) {
 		int algfd;
 
 		tst_res(TFAIL, "instantiated nested hmac algorithm ('%s')!",
@@ -74,7 +77,7 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(hash_algs),
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "af3ff8045bbf"},
+		{"linux-git", "af3ff8045bbf3e32f1a448542e73abb4c8ceb6f1"},
 		{"CVE", "2017-17806"},
 		{}
 	}

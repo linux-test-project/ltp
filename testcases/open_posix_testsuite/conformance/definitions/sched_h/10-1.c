@@ -34,7 +34,7 @@ static struct unique {
 	0, 0}
 };
 
-int main()
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct unique *tst;
 	int i, ret = PTS_PASS;

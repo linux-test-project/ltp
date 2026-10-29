@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2016 Linux Test Project.
+ * Copyright (c) Linux Test Project, 2016-2024
  */
 
-/*
- * DESCRIPTION
- *
+/*\
  * Total s390 2^31 addr space is 0x80000000.
  *
- *     0x80000000 - 0x10000000 = 0x70000000
+ * 0x80000000 - 0x10000000 = 0x70000000
  *
  * 0x70000000 is a valid positive intptr_t and adding it to the current offset
  * produces a valid uintptr_t without overflow (since the MSB being set is OK),
@@ -24,12 +22,10 @@
  * in glibc, but it should be the kernel since one could call the syscall
  * directly without using the glibc entry points.
  *
- * The kernel part was fixed on v3.15 by commits:
- *     473a06572fcd (s390/compat: convert system call wrappers to C part 02)
+ * The kernel part was fixed on v3.15 by commit:
+ * 473a06572fcd ("s390/compat: convert system call wrappers to C part 02")
  *
- * Note:
- *     The reproducer should be built(gcc -m31) in 32bit on s390 platform
- *
+ * NOTE: The reproducer should be built in 32bit (gcc -m31) on s390 platform.
  */
 
 #include <stdio.h>
@@ -39,7 +35,6 @@
 
 static void sbrk_test(void)
 {
-#if defined(__s390__) && defined(TST_ABI32)
 	void *ret1, *ret2;
 
 	/* set bkr to 0x10000000 */
@@ -59,15 +54,17 @@ static void sbrk_test(void)
 	}
 
 	tst_res(TPASS, "sbrk verify: %p", ret2);
-#else
-	tst_res(TCONF, "Only works in 32bit on s390 series system");
-#endif
 }
 
 static struct tst_test test = {
 	.test_all = sbrk_test,
+	.supported_archs = (const char *const []) {
+		"s390",
+		NULL
+	},
+	.needs_abi_bits = 32,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "473a06572fcd"},
+		{"linux-git", "473a06572fcd6b2e321d4b82c19ecafe383e8be9"},
 		{}
 	}
 };

@@ -1,6 +1,6 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Copyright (c) Linux Test Project, 2014-2022
+# Copyright (c) Linux Test Project, 2014-2025
 # Author: Cyril Hrubis <chrubis@suse.cz>
 #
 # LTP test library for shell.
@@ -17,6 +17,10 @@ export TST_ITERATIONS=1
 export TST_TMPDIR_RHOST=0
 export TST_LIB_LOADED=1
 
+# see testcases/lib/tst_runas.c
+export TST_USR_UID="${LTP_USR_UID:-65534}"
+export TST_USR_GID="${LTP_USR_GID:-65534}"
+
 . tst_ansi_color.sh
 . tst_security.sh
 
@@ -26,8 +30,9 @@ trap "unset _tst_setup_timer_pid; tst_brk TBROK 'test terminated'" TERM
 
 _tst_do_cleanup()
 {
-	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$TST_NO_CLEANUP" ]; then
+	if [ -n "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" -a -z "$LTP_NO_CLEANUP" ]; then
 		if command -v $TST_CLEANUP >/dev/null 2>/dev/null; then
+			TST_DO_CLEANUP=
 			$TST_CLEANUP
 		else
 			tst_res TWARN "TST_CLEANUP=$TST_CLEANUP declared, but function not defined (or cmd not found)"
@@ -80,7 +85,7 @@ _tst_do_exit()
 	fi
 
 	if [ $TST_BROK -gt 0 -o $TST_FAIL -gt 0 -o $TST_WARN -gt 0 ]; then
-		_tst_check_security_modules
+		[ -z "$TST_SKIP_LSM_WARNINGS" ] && _tst_check_security_modules
 	fi
 
 	cat >&2 << EOF
@@ -126,12 +131,19 @@ tst_brk()
 	local res=$1
 	shift
 
-	if [ "$TST_DO_EXIT" = 1 ]; then
+	# TBROK => TWARN on cleanup or exit
+	if [ "$res" = TBROK ] && [ "$TST_DO_EXIT" = 1 -o -z "$TST_DO_CLEANUP" -a -n "$TST_CLEANUP" ]; then
 		tst_res TWARN "$@"
+		TST_DO_CLEANUP=
 		return
 	fi
 
-	tst_res "$res" "$@"
+	if [ "$res" != TBROK -a "$res" != TCONF ]; then
+		tst_res TBROK "tst_brk can be called only with TBROK or TCONF ($res)"
+	else
+		tst_res "$res" "$@"
+	fi
+
 	_tst_do_exit
 }
 
@@ -139,7 +151,7 @@ ROD_SILENT()
 {
 	local tst_out
 
-	tst_out="$(tst_rod $@ 2>&1)"
+	tst_out=$(tst_rod "$@" 2>&1)
 	if [ $? -ne 0 ]; then
 		echo "$tst_out"
 		tst_brk TBROK "$@ failed"
@@ -254,13 +266,19 @@ TST_RTNL_CHK()
 	local msg1="RTNETLINK answers: Function not implemented"
 	local msg2="RTNETLINK answers: Operation not supported"
 	local msg3="RTNETLINK answers: Protocol not supported"
+	# Since v6.1 the kernel reports an unknown/removed xfrm algorithm via
+	# netlink extack (-ENOSYS + NL_SET_ERR_MSG), which iproute2 prints as
+	# "Error: Requested AUTH algorithm not found."
+	local msg4="Requested .* algorithm not found"
 	local output="$($@ 2>&1 || echo 'LTP_ERR')"
-	local msg
+	local msg match
 
 	echo "$output" | grep -q "LTP_ERR" || return 0
+	output=$(echo "$output" | sed 's/LTP_ERR$//')
 
-	for msg in "$msg1" "$msg2" "$msg3"; do
-		echo "$output" | grep -q "$msg" && tst_brk TCONF "'$@': $msg"
+	for msg in "$msg1" "$msg2" "$msg3" "$msg4"; do
+		match=$(echo "$output" | grep "$msg") && \
+				tst_brk TCONF "'$@': $match"
 	done
 
 	tst_brk TBROK "$@ failed: $output"
@@ -474,15 +492,16 @@ tst_usage()
 
 Environment Variables
 ---------------------
-KCONFIG_PATH         Specify kernel config file
-KCONFIG_SKIP_CHECK   Skip kernel config check if variable set (not set by default)
-LTPROOT              Prefix for installed LTP (default: /opt/ltp)
-LTP_COLORIZE_OUTPUT  Force colorized output behaviour (y/1 always, n/0: never)
-LTP_DEV              Path to the block device to be used (for .needs_device)
-LTP_DEV_FS_TYPE      Filesystem used for testing (default: ext2)
-LTP_SINGLE_FS_TYPE   Testing only - specifies filesystem instead all supported (for TST_ALL_FILESYSTEMS=1)
-LTP_TIMEOUT_MUL      Timeout multiplier (must be a number >=1, ceiled to int)
-TMPDIR               Base directory for template directory (for .needs_tmpdir, default: /tmp)
+KCONFIG_PATH             Specify kernel config file
+KCONFIG_SKIP_CHECK       Skip kernel config check if variable set (not set by default)
+LTPROOT                  Prefix for installed LTP (default: /opt/ltp)
+LTP_COLORIZE_OUTPUT      Force colorized output behaviour (y/1 always, n/0: never)
+LTP_DEV                  Path to the block device to be used (for .needs_device)
+LTP_DEV_FS_TYPE          Filesystem used for testing (default: ext2)
+LTP_SINGLE_FS_TYPE       Specifies filesystem instead all supported (for TST_ALL_FILESYSTEMS=1)
+LTP_FORCE_SINGLE_FS_TYPE Testing only. The same as LTP_SINGLE_FS_TYPE but ignores test skiplist
+LTP_TIMEOUT_MUL          Timeout multiplier (must be a number >=1, ceiled to int)
+TMPDIR                   Base directory for template directory (for .needs_tmpdir, default: /tmp)
 EOF
 }
 
@@ -618,6 +637,7 @@ _tst_init_checkpoints()
 		tst_brk TBROK "tst_getconf PAGESIZE failed"
 	fi
 	ROD_SILENT dd if=/dev/zero of="$LTP_IPC_PATH" bs="$pagesize" count=1
+	ROD_SILENT "printf LTPM | dd of="$LTP_IPC_PATH" bs=1 seek=0 conv=notrunc"
 	ROD_SILENT chmod 600 "$LTP_IPC_PATH"
 	export LTP_IPC_PATH
 }
@@ -662,7 +682,7 @@ tst_run()
 	local ret
 
 	if [ -n "$TST_TEST_PATH" ]; then
-		for _tst_i in $(grep '^[^#]*\bTST_' "$TST_TEST_PATH" | sed "s/.*TST_//; s/$_tst_pattern//"); do
+		for _tst_i in $(grep '^[^#]*\<TST_' "$TST_TEST_PATH" | sed "s/.*TST_//; s/$_tst_pattern//"); do
 			case "$_tst_i" in
 			ALL_FILESYSTEMS|DISABLE_APPARMOR|DISABLE_SELINUX);;
 			SETUP|CLEANUP|TESTFUNC|ID|CNT|MIN_KVER);;
@@ -678,12 +698,13 @@ tst_run()
 			CHECKPOINT_WAIT|CHECKPOINT_WAKE);;
 			CHECKPOINT_WAKE2|CHECKPOINT_WAKE_AND_WAIT);;
 			DEV_EXTRA_OPTS|DEV_FS_OPTS|FORMAT_DEVICE|MOUNT_DEVICE);;
-			SKIP_FILESYSTEMS);;
+			SKIP_FILESYSTEMS|SKIP_IN_LOCKDOWN|SKIP_IN_SECUREBOOT);;
+			DEVICE_SIZE|USR_UID|USR_GID);;
 			*) tst_res TWARN "Reserved variable TST_$_tst_i used!";;
 			esac
 		done
 
-		for _tst_i in $(grep '^[^#]*\b_tst_' "$TST_TEST_PATH" | sed "s/.*_tst_//; s/$_tst_pattern//"); do
+		for _tst_i in $(grep '^[^#]*\<_tst_' "$TST_TEST_PATH" | sed "s/.*_tst_//; s/$_tst_pattern//"); do
 			tst_res TWARN "Private variable or function _tst_$_tst_i used!"
 		done
 	fi
@@ -697,6 +718,14 @@ tst_run()
 	fi
 
 	[ "$TST_NEEDS_ROOT" = 1 ] && tst_require_root
+
+	if [ "$TST_SKIP_IN_SECUREBOOT" = 1 ] && tst_secureboot_enabled; then
+		tst_brk TCONF "SecureBoot enabled, skipping test"
+	fi
+
+	if [ "$TST_SKIP_IN_LOCKDOWN" = 1 ] && tst_lockdown_enabled; then
+		tst_brk TCONF "Kernel is locked down, skipping test"
+	fi
 
 	[ "$TST_DISABLE_APPARMOR" = 1 ] && tst_disable_apparmor
 	[ "$TST_DISABLE_SELINUX" = 1 ] && tst_disable_selinux
@@ -729,11 +758,12 @@ tst_run()
 
 		TST_STARTWD=$(pwd)
 		cd "$TST_TMPDIR"
+		tst_res TINFO "Using $TST_TMPDIR as tmpdir ($(stat -f -c '%T' $TST_TMPDIR) filesystem)"
 	fi
 
 	# needs to be after cd $TST_TMPDIR to keep test_dev.img under $TST_TMPDIR
 	if [ "$TST_NEEDS_DEVICE" = 1 ]; then
-		TST_DEVICE=$(tst_device acquire)
+		TST_DEVICE=$(tst_device acquire $TST_DEVICE_SIZE)
 
 		if [ ! -b "$TST_DEVICE" -o $? -ne 0 ]; then
 			unset TST_DEVICE
@@ -889,6 +919,9 @@ if [ -z "$TST_NO_DEFAULT_RUN" ]; then
 	fi
 
 	TST_ARGS="$@"
+
+	tst_res TINFO "Running: $(basename $0) $TST_ARGS"
+	tst_res TINFO "Tested kernel: $(uname -a)"
 
 	OPTIND=1
 

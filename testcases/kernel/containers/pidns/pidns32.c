@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Clone a process with CLONE_NEWPID flag and check for the maxium amount of
  * nested containers.
  */
@@ -19,14 +17,17 @@
 
 #define MAXNEST 32
 
-static const struct tst_clone_args args = { CLONE_NEWPID, SIGCHLD };
-static int *level;
+static const struct tst_clone_args args = {
+	.flags = CLONE_NEWPID,
+	.exit_signal = SIGCHLD,
+};
+static tst_atomic_t *level;
 
 static pid_t child_func(void)
 {
 	pid_t cpid = 0;
 
-	if (tst_atomic_inc(level) == MAXNEST)
+	if (tst_atomic_return_add(1, level) == MAXNEST)
 		return cpid;
 
 	cpid = SAFE_CLONE(&args);
@@ -57,7 +58,7 @@ static void run(void)
 	if (!child_func())
 		return;
 
-	TST_EXP_EQ_LI(*level, MAXNEST);
+	TST_EXP_EQ_LI(*level-1, MAXNEST);
 }
 
 static struct tst_test test = {
@@ -66,4 +67,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.forks_child = 1,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_PID_NS",
+		NULL,
+	},
 };

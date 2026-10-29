@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
- * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) 2018-2026 Cyril Hrubis <chrubis@suse.cz>
  */
 
 #include <stdlib.h>
@@ -14,6 +14,9 @@
 #include "tst_private.h"
 #include "tst_kconfig.h"
 #include "tst_bool_expr.h"
+#include "tst_safe_stdio.h"
+
+#include "tst_kconfig_checks.h"
 
 static int kconfig_skip_check(void)
 {
@@ -109,6 +112,83 @@ static void close_kconfig(FILE *fp)
 		fclose(fp);
 }
 
+static struct config_runtime_map {
+	const char *config;
+	bool (*runtime_check)(void);
+} config_runtime_maps[] = {
+	{"CONFIG_USER_NS", tst_user_ns_enabled},
+	{"CONFIG_NET_NS", tst_net_ns_enabled},
+	{"CONFIG_PID_NS", tst_pid_ns_enabled},
+	{"CONFIG_MNT_NS", tst_mnt_ns_enabled},
+	{"CONFIG_IPC_NS", tst_ipc_ns_enabled},
+	{}
+};
+
+static void kconfig_runtime_check(struct tst_kconfig_var *var)
+{
+	size_t i;
+
+	for (i = 0; config_runtime_maps[i].config; i++) {
+		if (strcmp(config_runtime_maps[i].config, var->id))
+			continue;
+
+		tst_res(TDEBUG, "Running runtime check for '%s'", var->id);
+
+		if (!config_runtime_maps[i].runtime_check()) {
+			tst_res(TINFO,
+				"%s=%c present but disabled at runtime",
+				var->id, var->choice);
+			var->choice = 'n';
+			return;
+		}
+	}
+}
+
+static struct config_module_map {
+	const char *config;
+	const char *module_name;
+} config_module_maps[] = {
+	{"CONFIG_KVM", "kvm"},
+	{"CONFIG_ZRAM", "zram"},
+	{"CONFIG_SQUASHFS", "squashfs"},
+	{"CONFIG_BLK_DEV_LOOP", "loop"},
+	{"CONFIG_TUN", "tun"},
+	{"CONFIG_BLK_DEV_RAM", "brd"},
+	{"CONFIG_HWPOISON_INJECT", "hwpoison_inject"},
+	{"CONFIG_QFMT_V2", "quota_v2"},
+	{"CONFIG_INPUT_UINPUT", "uinput"},
+	{"CONFIG_DUMMY", "dummy"},
+	{"CONFIG_CAN_VCAN", "vcan"},
+	{"CONFIG_CAN_RAW", "can-raw"},
+	{"CONFIG_CAN_BCM", "can-bcm"},
+	{"CONFIG_IP_SCTP", "sctp"},
+	{"CONFIG_NET_SCH_INGRESS", "sch_ingress"},
+	{"CONFIG_NET_CLS_MATCHALL", "cls_matchall"},
+	{"CONFIG_NET_ACT_PEDIT", "act_pedit"},
+	{"CONFIG_PKCS8_PRIVATE_KEY_PARSER", "pkcs8_key_parser"},
+	{"CONFIG_X509_CERTIFICATE_PARSER", "x509_key_parser"},
+	{}
+};
+
+static void kconfig_module_check(struct tst_kconfig_var *var)
+{
+	size_t i;
+
+	for (i = 0; config_module_maps[i].config; i++) {
+		if (strcmp(config_module_maps[i].config, var->id))
+			continue;
+
+		tst_res(TDEBUG, "Running module check for '%s'", var->id);
+
+		if (tst_check_module_driver(config_module_maps[i].module_name)) {
+			tst_res(TINFO, "%s=%c present but module '%s' not installed",
+					var->id, var->choice, config_module_maps[i].module_name);
+			var->choice = 'n';
+			return;
+		}
+	}
+}
+
 static inline int kconfig_parse_line(const char *line,
                                      struct tst_kconfig_var *vars,
                                      unsigned int vars_len)
@@ -182,9 +262,12 @@ out:
 			switch (val[0]) {
 			case 'y':
 				vars[i].choice = 'y';
+				kconfig_runtime_check(&vars[i]);
 				return 1;
 			case 'm':
 				vars[i].choice = 'm';
+				kconfig_runtime_check(&vars[i]);
+				kconfig_module_check(&vars[i]);
 				return 1;
 			}
 		}
@@ -390,7 +473,7 @@ static const struct tst_kconfig_var *find_var(const struct tst_kconfig_var vars[
 
 /*
  * Fill in the kconfig variables array from the expressions. Also makes sure
- * that each variable is copied to the array exaclty once.
+ * that each variable is copied to the array exactly once.
  */
 static inline unsigned int populate_vars(struct tst_expr *exprs[],
                                          unsigned int expr_cnt,
@@ -564,4 +647,122 @@ char tst_kconfig_get(const char *confname)
 		free(var.val);
 
 	return var.choice;
+}
+
+void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len)
+{
+	char buf[256], line[1024];
+	size_t b_pos = 0,l_pos =0, i;
+	int var_id = -1;
+
+	FILE *f = SAFE_FOPEN("/proc/cmdline", "r");
+
+	if (fgets(line, sizeof(line), f) == NULL) {
+		SAFE_FCLOSE(f);
+		tst_brk(TBROK, "Failed to read /proc/cmdline");
+	}
+
+	for (l_pos = 0; line[l_pos] != '\0'; l_pos++) {
+		char c = line[l_pos];
+
+		switch (c) {
+		case '=':
+			buf[b_pos] = '\0';
+			for (i = 0; i < params_len; i++) {
+				if (strcmp(buf, params[i].key) == 0) {
+					var_id = (int)i;
+					params[i].found = true;
+				}
+			}
+
+			b_pos = 0;
+		break;
+		case ' ':
+		case '\n':
+			buf[b_pos] = '\0';
+			if (var_id >= 0 && var_id < (int)params_len)
+				strcpy(params[var_id].value, buf);
+
+			var_id = -1;
+			b_pos = 0;
+		break;
+		default:
+			if (b_pos + 1 >= sizeof(buf)) {
+				tst_res(TINFO, "WARNING: Buffer overflowed while parsing /proc/cmdline");
+				while (line[l_pos] != '\0' && line[l_pos] != ' ' && line[l_pos] != '\n')
+					l_pos++;
+
+				var_id = -1;
+				b_pos = 0;
+
+				if (line[l_pos] != '\0')
+					l_pos--;
+			} else {
+				buf[b_pos++] = c;
+			}
+		break;
+		}
+	}
+
+	for (i = 0; i < params_len; i++) {
+		if (params[i].found)
+			tst_res(TINFO, "%s is found in /proc/cmdline", params[i].key);
+		else
+			tst_res(TINFO, "%s is not found in /proc/cmdline", params[i].key);
+	}
+
+	SAFE_FCLOSE(f);
+}
+
+/*
+ * List of kernel config options that may degrade performance when enabled.
+ */
+static struct tst_kconfig_var slow_kconfigs[] = {
+	TST_KCONFIG_INIT("CONFIG_PROVE_LOCKING"),
+	TST_KCONFIG_INIT("CONFIG_LOCKDEP"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_SPINLOCK"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_RT_MUTEXES"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_MUTEXES"),
+	TST_KCONFIG_INIT("CONFIG_KASAN"),
+	TST_KCONFIG_INIT("CONFIG_SLUB_RCU_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_TRACE_IRQFLAGS"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_NET"),
+	TST_KCONFIG_INIT("CONFIG_EXT4_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_QUOTA_DEBUG"),
+	TST_KCONFIG_INIT("CONFIG_FAULT_INJECTION"),
+	TST_KCONFIG_INIT("CONFIG_DEBUG_OBJECTS")
+};
+
+static bool slow_kconfig_cached;
+static bool slow_kconfig_result;
+
+int tst_has_slow_kconfig(void)
+{
+	unsigned int i;
+	char path_buf[1024];
+
+	if (slow_kconfig_cached)
+		return slow_kconfig_result;
+
+	slow_kconfig_cached = 1;
+
+	if (!kconfig_path(path_buf, sizeof(path_buf))) {
+		slow_kconfig_result = 0;
+		return 0;
+	}
+
+	tst_kconfig_read(slow_kconfigs, ARRAY_SIZE(slow_kconfigs));
+
+	for (i = 0; i < ARRAY_SIZE(slow_kconfigs); i++) {
+		if (slow_kconfigs[i].choice == 'y') {
+			tst_res(TINFO,
+				"%s kernel option detected which might slow the execution",
+				slow_kconfigs[i].id);
+			slow_kconfig_result = 1;
+			return 1;
+		}
+	}
+
+	slow_kconfig_result = 0;
+	return 0;
 }

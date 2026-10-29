@@ -69,7 +69,10 @@ typedef struct {
 static struct {
 	pthread_mutex_t mtx;
 	pthread_cond_t cnd;
-} data;
+} data = {
+	PTHREAD_MUTEX_INITIALIZER,
+	PTHREAD_COND_INITIALIZER
+};
 
 /* the following function keeps on sending the signal to the process */
 static void *sendsig(void *arg)
@@ -228,7 +231,7 @@ static void *worker(void *arg)
 }
 
 /* Main function */
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 	pthread_t th_waiter, th_worker, th_sig1, th_sig2;

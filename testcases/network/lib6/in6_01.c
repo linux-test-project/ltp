@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that in6 and sockaddr fields are present.
  */
 

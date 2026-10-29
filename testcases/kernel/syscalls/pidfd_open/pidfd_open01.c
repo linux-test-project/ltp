@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic pidfd_open() test:
  *
  * - Fetch the PID of the current process and try to get its file descriptor.

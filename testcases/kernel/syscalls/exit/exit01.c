@@ -52,7 +52,7 @@ int main(int ac, char **av)
 		sig = 0;
 		exno = 1;
 
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 
 		switch (pid) {
 		case 0:

@@ -33,7 +33,6 @@
 #include "tst_test.h"
 #include "lapi/mmap.h"
 
-#define CORE_PATTERN "/proc/sys/kernel/core_pattern"
 #define CORE_FILTER "/proc/self/coredump_filter"
 #define YCOUNT 0x500L
 #define FMEMSIZE (YCOUNT + 0x2L)
@@ -71,7 +70,7 @@ static void setup(void)
 	SAFE_GETCWD(cwd, sizeof(cwd));
 	snprintf(tmpcpattern, sizeof(tmpcpattern), "%s/dump-%%p", cwd);
 	tst_res(TINFO, "Temporary core pattern is '%s'", tmpcpattern);
-	SAFE_FILE_PRINTF(CORE_PATTERN, "%s", tmpcpattern);
+	SAFE_FILE_PRINTF(PATH_KERN_CORE_PATTERN, "%s", tmpcpattern);
 
 	fmem = SAFE_MMAP(NULL,
 			 FMEMSIZE,
@@ -114,7 +113,7 @@ static int find_sequence(int pid)
 
 	dfd = SAFE_OPEN(dumpname, O_RDONLY);
 
-	read = SAFE_READ(0, dfd, &rbuf, sizeof(rbuf));
+	read = SAFE_READ(SAFE_READ_ANY, dfd, &rbuf, sizeof(rbuf));
 	while (read) {
 		switch (rbuf[pos]) {
 		case 'x':
@@ -141,7 +140,8 @@ static int find_sequence(int pid)
 			expectc = 'x';
 		}
 		if (++pos >= read) {
-			read = SAFE_READ(0, dfd, &rbuf, sizeof(rbuf));
+			read = SAFE_READ(SAFE_READ_ANY, dfd, &rbuf,
+					 sizeof(rbuf));
 			pos = 0;
 		}
 	}
@@ -212,7 +212,7 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{CORE_PATTERN, NULL, TST_SR_TCONF},
+		{PATH_KERN_CORE_PATTERN, NULL, TST_SR_TCONF},
 		{}
 	},
 };

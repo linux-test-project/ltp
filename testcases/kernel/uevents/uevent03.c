@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2019-2023
  */
 
-/*
+/*\
  * Very simple uevent netlink socket test.
  *
  * We fork a child that listens for a kernel events while parents creates and
@@ -17,7 +18,7 @@
 #include <sys/sysmacros.h>
 #include <linux/uinput.h>
 #include "tst_test.h"
-#include "tst_uinput.h"
+#include "tse_uinput.h"
 #include "uevent.h"
 
 static int mouse_fd;
@@ -25,6 +26,9 @@ static int mouse_fd;
 static void create_uinput_mouse(void)
 {
 	mouse_fd = open_uinput();
+	if (mouse_fd == -1)
+		tst_brk(TCONF, "Virtual device is not available");
+
 	setup_mouse_events(mouse_fd);
 	create_input_device(mouse_fd);
 }
@@ -205,7 +209,6 @@ static void verify_uevent(void)
 	snprintf(dev_name1, sizeof(dev_name1),
 		"DEVNAME=input/%s", handler1);
 
-
 	snprintf(add_msg_event2, sizeof(add_msg_event2),
 		"add@%s/%s", sysname, handler2);
 
@@ -234,9 +237,8 @@ static void verify_uevent(void)
 static struct tst_test test = {
 	.test_all = verify_uevent,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
-	.needs_drivers = (const char *const[]) {
-		"uinput",
+	.needs_kconfigs = (const char *const[]) {
+		"CONFIG_INPUT_UINPUT",
 		NULL
 	},
 	.needs_root = 1,

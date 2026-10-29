@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for epoll_wait:
  *
  * - epoll_wait fails with EBADF if epfd is not a valid file descriptor.

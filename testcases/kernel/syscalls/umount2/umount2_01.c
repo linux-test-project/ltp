@@ -25,7 +25,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/mount.h"
 
 static void setup(void);
@@ -67,7 +67,7 @@ static void setup(void)
 {
 	tst_require_root();
 
-	tst_sig(NOFORK, DEF_HANDLER, NULL);
+	tst_sig(FORK, DEF_HANDLER, NULL);
 
 	tst_tmpdir();
 
@@ -128,7 +128,7 @@ static void umount2_verify(void)
 
 	memset(buf, 0, sizeof(buf));
 
-	SAFE_READ(cleanup, 1, fd, buf, strlen(str));
+	SAFE_READ(cleanup, SAFE_READ_ALL, fd, buf, strlen(str));
 
 	if (strcmp(str, buf)) {
 		tst_resm(TFAIL, "umount2(2) MNT_DETACH flag "

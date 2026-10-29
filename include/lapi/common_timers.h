@@ -7,6 +7,7 @@
 #ifndef LAPI_COMMON_TIMERS_H__
 #define LAPI_COMMON_TIMERS_H__
 
+#include <linux/version.h>
 #include "config.h"
 #include "lapi/syscalls.h"
 #include "lapi/posix_clocks.h"
@@ -29,6 +30,8 @@ static const clock_t clock_list[] = {
 #define CLOCKS_DEFINED (sizeof(clock_list) / sizeof(*clock_list))
 /* MAX_CLOCKS is the maximum number of clock sources supported by kernel */
 #define MAX_CLOCKS 16
+
+#define MAX_AUX_CLOCKS 8
 
 #define CLOCK_TO_STR(def_name)	\
 	case def_name:		\

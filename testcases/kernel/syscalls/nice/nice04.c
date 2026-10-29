@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, nice(2) fails when, a non-root user attempts to increase
  * the priority of a process by specifying a negative increment value.
  */

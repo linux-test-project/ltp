@@ -23,7 +23,7 @@
 #include "tst_test.h"
 #include "lapi/keyctl.h"
 
-struct tcase {
+static struct tcase {
 	const char *type;
 	size_t plen;
 } tcases[] = {
@@ -85,7 +85,7 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_add_key,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5649645d725c"},
+		{"linux-git", "5649645d725c73df4302428ee4e02c869248b4c5"},
 		{"CVE", "2017-15274"},
 		{}
 	}

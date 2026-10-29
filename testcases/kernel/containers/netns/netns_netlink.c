@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2014 Red Hat, Inc.
  * Copyright (c) 2021 Petr Vorel <pvorel@suse.cz>
  */
 
 /*\
- * [Description]
- *
  * Tests a netlink interface inside a new network namespace.
  *
  * - Unshares a network namespace (so network related actions

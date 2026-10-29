@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check wait4(INT_MIN, ...) is not allowed. The pid is negated before
  * searching for a group with that pid. Negating INT_MIN is not
  * defined so UBSAN will be triggered if enabled. Also see kill13.
@@ -36,7 +34,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "dd83c161fbcc"},
+		{"linux-git", "dd83c161fbcc5d8be637ab159c0de015cbff5ba4"},
 		{}
 	}
 };

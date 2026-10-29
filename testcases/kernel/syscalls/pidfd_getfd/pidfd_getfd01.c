@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic pidfd_getfd() test:
  *
  * - the close-on-exec flag is set on the file descriptor returned by
@@ -55,7 +53,7 @@ static void run(void)
 	TST_PROCESS_STATE_WAIT(pid, 'S', 0);
 
 	pidfd = SAFE_PIDFD_OPEN(pid, 0);
-	SAFE_READ(1, fds[0], &targetfd, sizeof(targetfd));
+	SAFE_READ(SAFE_READ_ALL, fds[0], &targetfd, sizeof(targetfd));
 	TST_EXP_FD_SILENT(pidfd_getfd(pidfd, targetfd, 0),
 		"pidfd_getfd(%d, %d , 0)", pidfd, targetfd);
 

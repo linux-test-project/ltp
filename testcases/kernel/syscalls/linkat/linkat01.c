@@ -57,7 +57,7 @@
 #include <limits.h>
 #include "test.h"
 #include "lapi/syscalls.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifndef AT_FDCWD
 #define AT_FDCWD -100
@@ -249,7 +249,8 @@ static void mylinkat_test(struct test_struct *desc)
 
 			fd = SAFE_OPEN(cleanup, desc->referencefn2,
 				       O_RDONLY);
-			SAFE_READ(cleanup, 1, fd, &vnum, sizeof(vnum));
+			SAFE_READ(cleanup, SAFE_READ_ALL, fd, &vnum,
+				  sizeof(vnum));
 			SAFE_CLOSE(cleanup, fd);
 
 			if (tnum == vnum)

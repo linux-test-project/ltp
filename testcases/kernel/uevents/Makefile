@@ -2,7 +2,7 @@
 
 top_srcdir			?= ../../..
 
-LTPLIBS = ltpuinput
+LTPLIBS = uinput
 
 uevent03: LDLIBS += -lltpuinput
 

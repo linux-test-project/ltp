@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2015 Cedric Hnyda <chnyda@suse.com>
+ * Copyright (c) Linux Test Project, 2015-2024
  */
 
- /* Description:
- *   Verify that:
- *		1) kcmp fails with bad pid
- *		2) kcmp fails with invalid flag
- *		3) kcmp fails with invalid flag
- *		4) kcmp fails with invalid flag
- *		5) kcmp fails with invalid flag
- *		6) kcmp fails with invalid fd
+/*\
+ * Verify that, kcmp() returns -1 and sets errno to
+ *
+ * 1. ESRCH if pid does not exist
+ * 2. EINVAL if type is invalid (KCMP_TYPES + 1)
+ * 3. EINVAL if type is invalid (-1)
+ * 4. EINVAL if type is invalid (INT_MIN)
+ * 5. EINVAL if type is invalid (INT_MAX)
+ * 6. EBADF if file descriptor is invalid
  */
 
 #define _GNU_SOURCE
@@ -33,20 +35,22 @@ static int fd_fake = -1;
 #include <sys/wait.h>
 #include <limits.h>
 
+#define TYPE_DESC(x) .type = x, .desc = #x
 static struct test_case {
 	int *pid1;
 	int *pid2;
 	int type;
+	char *desc;
 	int *fd1;
 	int *fd2;
 	int exp_errno;
 } test_cases[] = {
-	{&pid1, &pid_unused, KCMP_FILE, &fd1, &fd2, ESRCH},
-	{&pid1, &pid1, KCMP_TYPES + 1, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, -1, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, INT_MIN, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, INT_MAX, &fd1, &fd2, EINVAL},
-	{&pid1, &pid1, KCMP_FILE, &fd1, &fd_fake, EBADF}
+	{&pid1, &pid_unused, TYPE_DESC(KCMP_FILE), &fd1, &fd2, ESRCH},
+	{&pid1, &pid1, TYPE_DESC(KCMP_TYPES + 1), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(-1), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(INT_MIN), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(INT_MAX), &fd1, &fd2, EINVAL},
+	{&pid1, &pid1, TYPE_DESC(KCMP_FILE), &fd1, &fd_fake, EBADF}
 };
 
 static void setup(void)
@@ -69,24 +73,11 @@ static void cleanup(void)
 
 static void verify_kcmp(unsigned int n)
 {
-	struct test_case *test = &test_cases[n];
+	struct test_case *tc = &test_cases[n];
 
-	TEST(kcmp(*(test->pid1), *(test->pid2), test->type,
-		  *(test->fd1), *(test->fd2)));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "kcmp() succeeded unexpectedly");
-		return;
-	}
-
-	if (test->exp_errno == TST_ERR) {
-		tst_res(TPASS | TTERRNO, "kcmp() returned the expected value");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO,
-		"kcmp() got unexpected return value: expected: %d - %s",
-			test->exp_errno, tst_strerrno(test->exp_errno));
+	TST_EXP_FAIL(kcmp(*(tc->pid1), *(tc->pid2), tc->type,
+		  *(tc->fd1), *(tc->fd2)), tc->exp_errno, "kcmp(%d,%d,%s,%d,%d)",
+				 *tc->pid1, *tc->pid2, tc->desc, *tc->fd1, *tc->fd2);
 }
 
 static struct tst_test test = {

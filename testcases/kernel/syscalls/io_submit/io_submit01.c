@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test io_submit() invoked via libaio:
  *
  * - io_submit fails and returns -EINVAL if ctx is invalid.

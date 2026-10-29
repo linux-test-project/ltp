@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
  *
@@ -29,10 +29,11 @@
 #include "tst_timer.h"
 
 static struct tst_its new_set, old_set;
-static struct tst_its *pnew_set = &new_set, *pold_set = &old_set, *null_set = NULL;
+static struct tst_its *pnew_set = &new_set, *pold_set = &old_set, *null_set;
 static void *faulty_set;
 static kernel_timer_t timer;
 static kernel_timer_t timer_inval = (kernel_timer_t)-1;
+static volatile int caught_sig;
 
 /* separate description-array to (hopefully) improve readability */
 static const char * const descriptions[] = {
@@ -69,10 +70,16 @@ static struct time64_variants variants[] = {
 #endif
 };
 
+static void sighandler(int sig)
+{
+	caught_sig = sig;
+}
+
 static void setup(void)
 {
 	tst_res(TINFO, "Testing variant: %s", variants[tst_variant].desc);
 	faulty_set = tst_get_bad_addr(NULL);
+	signal(SIGALRM, sighandler);
 }
 
 static void run(unsigned int n)
@@ -86,6 +93,8 @@ static void run(unsigned int n)
 
 	for (i = 0; i < CLOCKS_DEFINED; ++i) {
 		clock_t clock = clock_list[i];
+
+		caught_sig = 0;
 
 		/* Init temporary timer */
 		TEST(tst_syscall(__NR_timer_create, clock, NULL, &timer));
@@ -131,6 +140,12 @@ static void run(unsigned int n)
 		TEST(tst_syscall(__NR_timer_delete, timer));
 		if (TST_RET != 0)
 			tst_res(TFAIL | TTERRNO, "timer_delete() failed!");
+
+		if (caught_sig) {
+			tst_res(TFAIL,
+				"Caught unexpected signal %s while testing %s",
+				tst_strsig(caught_sig), get_clock_str(clock));
+		}
 	}
 }
 
@@ -141,7 +156,7 @@ static struct tst_test test = {
 	.test_variants = ARRAY_SIZE(variants),
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "f18ddc13af98"},
+		{"linux-git", "f18ddc13af981ce3c7b7f26925f099e7c6929aba"},
 		{}
 	}
 };

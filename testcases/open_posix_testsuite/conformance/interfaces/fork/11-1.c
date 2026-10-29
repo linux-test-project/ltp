@@ -60,7 +60,7 @@ static int child(int fd)
 	return PTS_FAIL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char path_template[] = "/tmp/fork-11-1-XXXXXX";
 	int fd, child_stat, result = PTS_UNRESOLVED;

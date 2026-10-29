@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic clone() test.
  *
  * Use clone() to create a child process, and wait for the child process to exit,

@@ -7,7 +7,7 @@
 #ifndef KSM_HELPER_H
 #define KSM_HELPER_H
 
-#define PATH_KSM	"/sys/kernel/mm/ksm/"
+#include "tst_path_defs.h"
 
 void wait_ksmd_full_scan(void);
 

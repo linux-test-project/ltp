@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Copy file by using an async I/O state machine.
  *
  * - Start read request
@@ -303,8 +301,8 @@ static void run(void)
 	reads = howmany(filesize, buffsize);
 
 	for (i = 0; i < reads; i++) {
-		r = SAFE_READ(0, srcfd, srcbuff, buffsize);
-		SAFE_READ(0, dstfd, dstbuff, buffsize);
+		r = SAFE_READ(SAFE_READ_ANY, srcfd, srcbuff, buffsize);
+		SAFE_READ(SAFE_READ_ANY, dstfd, dstbuff, buffsize);
 		if (memcmp(srcbuff, dstbuff, r)) {
 			tst_res(TFAIL, "Files are not identical");
 			return;
@@ -322,7 +320,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
-	.max_runtime = 1800,
+	.runtime = 1800,
 	.needs_root = 1,
 	.options = (struct tst_option[]) {
 		{"b:", &str_aio_blksize, "Size of writing blocks (default 1K)"},

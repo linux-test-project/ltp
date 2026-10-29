@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test PR_SET_CHILD_SUBREAPER and PR_GET_CHILD_SUBREAPER of prctl(2).
  *
  * - If PR_SET_CHILD_SUBREAPER marks a process as a child subreaper, it

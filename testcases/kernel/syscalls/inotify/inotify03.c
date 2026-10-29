@@ -2,13 +2,10 @@
 /*
  * Copyright (c) 2008 Parallels.  All Rights Reserved.
  * Author: Andrew Vagin <avagin@gmail.com>
- *
- * DESCRIPTION
- *	Check that inotify get IN_UNMOUNT event and
- *	don't block the umount command.
- *
- * ALGORITHM
- *	Execute sequence file's operation and check return events
+ */
+
+/*\
+ * Check that inotify get IN_UNMOUNT event and don't block the umount command.
  */
 
 #include "config.h"
@@ -77,11 +74,7 @@ void verify_inotify(void)
 	}
 	mount_flag = 0;
 
-	len = read(fd_notify, event_buf, EVENT_BUF_LEN);
-	if (len < 0) {
-		tst_brk(TBROK | TERRNO,
-			"read(%d, buf, %zu) failed", fd_notify, EVENT_BUF_LEN);
-	}
+	len = SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf, EVENT_BUF_LEN);
 
 	/* check events */
 	test_num = 0;
@@ -128,8 +121,6 @@ void verify_inotify(void)
 
 static void setup(void)
 {
-	int ret;
-
 	SAFE_MKDIR(mntpoint, DIR_MODE);
 
 	SAFE_MOUNT(tst_device->dev, mntpoint, tst_device->fs_type, 0, NULL);
@@ -138,11 +129,7 @@ static void setup(void)
 	sprintf(fname, "%s/tfile_%d", mntpoint, getpid());
 	fd = SAFE_OPEN(fname, O_RDWR | O_CREAT, 0700);
 
-	ret = write(fd, fname, 1);
-	if (ret == -1) {
-		tst_brk(TBROK | TERRNO,
-			 "write(%d, %s, 1) failed", fd, fname);
-	}
+	SAFE_WRITE(SAFE_WRITE_ALL, fd, fname, 1);
 
 	/* close the file we have open */
 	SAFE_CLOSE(fd);
@@ -167,6 +154,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_root = 1,
 	.format_device = 1,
 	.setup = setup,

@@ -23,7 +23,7 @@ static char *logon_buf, *logon_buf1;
 static char *big_key_buf, *big_key_buf1;
 static unsigned int logon_nsup, big_key_nsup;
 
-struct tcase {
+static struct tcase {
 	const char *type;
 	const char *desc;
 	char **buf;

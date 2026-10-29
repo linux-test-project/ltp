@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test setresuid() when executed by root.
  */
 

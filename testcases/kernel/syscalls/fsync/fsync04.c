@@ -53,6 +53,7 @@ static void verify_fsync(void)
 }
 
 static struct tst_test test = {
+	.timeout = 17,
 	.needs_root = 1,
 	.mount_device = 1,
 	.all_filesystems = 1,

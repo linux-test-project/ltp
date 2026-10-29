@@ -32,7 +32,7 @@ static void alarm_handler();
 
 static pthread_t a;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 

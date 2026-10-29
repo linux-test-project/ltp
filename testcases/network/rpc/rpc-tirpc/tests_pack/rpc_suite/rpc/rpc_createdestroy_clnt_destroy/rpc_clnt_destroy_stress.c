@@ -56,6 +56,11 @@ int main(int argn, char *argc[])
 	//First of all, create a client
 	for (i = 0; i < nbCall; i++) {
 		clnt = clnt_create(argc[1], progNum, VERSNUM, proto);
+		if (clnt == NULL) {
+			clnt_pcreateerror("err");
+			printf("%d\n", rpc_createerr.cf_stat);
+			return 1;
+		}
 		clnt_destroy(clnt);
 		nbOk++;
 	}

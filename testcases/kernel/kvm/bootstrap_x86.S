@@ -11,6 +11,9 @@
 
 .set MSR_VM_HSAVE_PA, 0xc0010117
 
+.set VMX_VMCS_HOST_RSP, 0x6c14
+.set VMX_VMCS_HOST_RIP, 0x6c16
+
 /*
  * This section will be allocated at address 0x1000 and
  * jumped to from the reset stub provided by kvm_run.
@@ -215,6 +218,8 @@ kvm_read_sregs:
 	movw %ax, 8(%edi)
 	mov %ss, %ax
 	movw %ax, 10(%edi)
+	str %ax
+	movw %ax, 12(%edi)
 	pop %edi
 	ret
 
@@ -359,6 +364,34 @@ kvm_svm_guest_entry:
 1:	hlt
 	jmp 1b
 
+/* vcpu structure address must be in %rdi */
+.macro load_vcpu_regs
+	movl 0x04(%edi), %eax
+	movl 0x0c(%edi), %ebx
+	movl 0x14(%edi), %ecx
+	movl 0x1c(%edi), %edx
+	/* save %edi last */
+	movl 0x2c(%edi), %esi
+	movl 0x34(%edi), %ebp
+	/* skip %esp */
+	movl 0x24(%edi), %edi
+.endm
+
+/* vcpu structure address must be on top of the stack */
+.macro save_vcpu_regs
+	push %edi
+	movl 4(%esp), %edi
+	movl %eax, 0x04(%edi)
+	movl %ebx, 0x0c(%edi)
+	movl %ecx, 0x14(%edi)
+	movl %edx, 0x1c(%edi)
+	pop %eax
+	movl %eax, 0x24(%edi)
+	movl %esi, 0x2c(%edi)
+	movl %ebp, 0x34(%edi)
+	/* skip %esp */
+.endm
+
 .global kvm_svm_vmrun
 kvm_svm_vmrun:
 	push %edi
@@ -375,17 +408,11 @@ kvm_svm_vmrun:
 	vmsave
 	push %eax
 
-	/* Load guest registers */
 	push %edi
-	movl (%edi), %eax
-	/* %eax is loaded by vmrun from VMCB */
-	movl 0x0c(%edi), %ebx
-	movl 0x14(%edi), %ecx
-	movl 0x1c(%edi), %edx
-	movl 0x2c(%edi), %esi
-	movl 0x34(%edi), %ebp
-	/* %esp is loaded by vmrun from VMCB */
-	movl 0x24(%edi), %edi
+	load_vcpu_regs
+	/* %eax = vcpu->vmcb; */
+	movl (%esp), %eax
+	movl (%eax), %eax
 
 	vmload
 	vmrun
@@ -393,8 +420,9 @@ kvm_svm_vmrun:
 
 	/* Clear guest register buffer */
 	push %edi
+	push %eax
 	push %ecx
-	movl 8(%esp), %edi
+	movl 12(%esp), %edi
 	addl $4, %edi
 	xorl %eax, %eax
 	mov $32, %ecx
@@ -402,17 +430,13 @@ kvm_svm_vmrun:
 	cld
 	rep stosl
 	popfl
-
-	/* Save guest registers */
 	pop %ecx
 	pop %eax
 	pop %edi
-	movl %ebx, 0x0c(%edi)
-	movl %ecx, 0x14(%edi)
-	movl %edx, 0x1c(%edi)
-	movl %eax, 0x24(%edi)
-	movl %esi, 0x2c(%edi)
-	movl %ebp, 0x34(%edi)
+
+	save_vcpu_regs
+	pop %edi
+
 	/* Copy %eax and %esp from VMCB */
 	movl (%edi), %esi
 	movl 0x5f8(%esi), %eax
@@ -430,6 +454,67 @@ kvm_svm_vmrun:
 	pop %edi
 	ret
 
+.global kvm_vmx_vmlaunch
+kvm_vmx_vmlaunch:
+	push %edi
+	mov 8(%esp), %edi
+	push %ebx
+	push %esi
+	push %ebp
+	push %edi
+
+	mov $VMX_VMCS_HOST_RSP, %eax
+	vmwrite %esp, %eax
+	jna vmx_vmwrite_error
+	mov $VMX_VMCS_HOST_RIP, %eax
+	lea vmx_vm_exit, %ebx
+	vmwrite %ebx, %eax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmlaunch
+	jmp vmx_vm_exit
+
+.global kvm_vmx_vmresume
+kvm_vmx_vmresume:
+	push %edi
+	mov 8(%esp), %edi
+	push %ebx
+	push %esi
+	push %ebp
+	push %edi
+
+	mov $VMX_VMCS_HOST_RSP, %eax
+	vmwrite %esp, %eax
+	jna vmx_vmwrite_error
+	mov $VMX_VMCS_HOST_RIP, %eax
+	lea vmx_vm_exit, %ebx
+	vmwrite %ebx, %eax
+	jna vmx_vmwrite_error
+
+	load_vcpu_regs
+	vmresume
+
+vmx_vm_exit:
+	jna vmx_vmentry_error
+	save_vcpu_regs
+	xorl %eax, %eax
+
+vmx_vm_ret:
+	pop %edi
+	pop %ebp
+	pop %esi
+	pop %ebx
+	pop %edi
+	ret
+
+vmx_vmwrite_error:
+	movl $2, %eax
+	jmp vmx_vm_ret
+
+vmx_vmentry_error:
+	movl $1, %eax
+	jmp vmx_vm_ret
 
 .section .bss.pgtables, "aw", @nobits
 .global kvm_pagetable

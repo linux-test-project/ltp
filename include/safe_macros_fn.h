@@ -36,6 +36,18 @@ enum safe_write_opts {
 	SAFE_WRITE_RETRY = 2,
 };
 
+/* supported values for safe_read() len_strict parameter */
+enum safe_read_opts {
+	/* no length strictness, short reads are ok */
+	SAFE_READ_ANY = 0,
+
+	/* strict length, short reads trigger TBROK */
+	SAFE_READ_ALL = 1,
+
+	/* converts EAGAIN to read that returns 0 */
+	SAFE_READ_ANY_EAGAIN = 2,
+};
+
 char* safe_basename(const char *file, const int lineno,
                     void (*cleanup_fn)(void), char *path);
 
@@ -80,8 +92,8 @@ int safe_pipe(const char *file, const int lineno,
               void (*cleanup_fn)(void), int fildes[2]);
 
 ssize_t safe_read(const char *file, const int lineno,
-                  void (*cleanup_fn)(void), char len_strict, int fildes,
-                  void *buf, size_t nbyte);
+                  void (*cleanup_fn)(void), enum safe_read_opts len_strict,
+                  int fildes, void *buf, size_t nbyte);
 
 int safe_setegid(const char *file, const int lineno,
                  void (*cleanup_fn)(void), gid_t egid);
@@ -151,6 +163,9 @@ int safe_chown(const char *file, const int lineno, void (cleanup_fn)(void),
 int safe_fchown(const char *file, const int lineno, void (cleanup_fn)(void),
                 int fd, uid_t owner, gid_t group);
 
+int safe_lchown(const char *file, const int lineno, void (*cleanup_fn)(void),
+		const char *path, uid_t owner, gid_t group);
+
 pid_t safe_wait(const char *file, const int lineno, void (cleanup_fn)(void),
                 int *status);
 
@@ -172,7 +187,7 @@ int safe_rename(const char *file, const int lineno, void (*cleanup_fn)(void),
 int safe_mount(const char *file, const int lineno, void (*cleanup_fn)(void),
 	       const char *source, const char *target,
 	       const char *filesystemtype, unsigned long mountflags,
-	       const void *data);
+	       const void *data, int *is_fuse, unsigned int check_support);
 
 int safe_umount(const char *file, const int lineno, void (*cleanup_fn)(void),
 		const char *target);

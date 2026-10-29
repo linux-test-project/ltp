@@ -3,17 +3,14 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * CVE-2016-8655
  *
  * Check for race condition between packet_set_ring() and tp_version. On some
- * kernels, this may lead to use-after-free. Kernel crash fixed in:
+ * kernels, this may lead to use-after-free.
  *
- *  commit 84ac7260236a49c79eede91617700174c2c19b0c
- *  Author: Philip Pettersson <philip.pettersson@gmail.com>
- *  Date:   Wed Nov 30 14:55:36 2016 -0800
- *
- *  packet: fix race condition in packet_set_ring
+ * Kernel crash fixed in 4.9
+ * 84ac7260236a ("packet: fix race condition in packet_set_ring")
  */
 
 #include <unistd.h>
@@ -111,7 +108,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 270,
+	.min_runtime = 270,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.needs_kconfigs = (const char *[]) {
 		"CONFIG_USER_NS=y",
@@ -119,11 +116,11 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "84ac7260236a"},
+		{"linux-git", "84ac7260236a49c79eede91617700174c2c19b0c"},
 		{"CVE", "2016-8655"},
 		{}
 	}

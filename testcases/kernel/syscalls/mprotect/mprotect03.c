@@ -46,7 +46,7 @@
 #include <sys/wait.h>
 #include "test.h"
 
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #ifndef PAGESIZE
 #define PAGESIZE 4096
@@ -95,7 +95,7 @@ int main(int ac, char **av)
 		TEST(mprotect(addr, strlen(buf), PROT_READ));
 
 		if (TEST_RETURN != -1) {
-			if ((pid = FORK_OR_VFORK()) == -1) {
+			if ((pid = tst_fork()) == -1) {
 				tst_brkm(TBROK, cleanup, "fork failed");
 			}
 

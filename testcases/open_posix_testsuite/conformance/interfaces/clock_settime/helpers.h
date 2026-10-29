@@ -12,6 +12,10 @@
  * in certain tests, they make use of some libraries already included
  * by those tests.
  */
+
+#ifndef CLOCK_SETTIME_HELPERS_H
+#define CLOCK_SETTIME_HELPERS_H
+
 static int getBeforeTime(struct timespec *tpget)
 {
 	if (clock_gettime(CLOCK_REALTIME, tpget) != 0) {
@@ -32,3 +36,4 @@ static int setBackTime(struct timespec tpset)
 	return PTS_PASS;
 }
 
+#endif /* CLOCK_SETTIME_HELPERS_H */

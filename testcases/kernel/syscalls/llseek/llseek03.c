@@ -11,11 +11,11 @@
  *   1. llseek() succeeds to set file position in the middle of the data. The
  *      file offset is checked by reading from a file and comparing the data.
  *
- *   2. llseek() succeeds to set file postion to the end of the data, reading
- *      this postion returns 0.
+ *   2. llseek() succeeds to set file position to the end of the data, reading
+ *      this position returns 0.
  *
  *   3. llseek() succeeds to set file position after the end of the data,
- *      reading from this postion returns 0 as well.
+ *      reading from this position returns 0 as well.
  */
 #define _GNU_SOURCE
 
@@ -80,7 +80,7 @@ static void verify_lseek(unsigned int n)
 
 	fd = SAFE_OPEN(TEST_FILE, O_RDONLY);
 
-	SAFE_READ(1, fd, read_buf, 4);
+	SAFE_READ(SAFE_READ_ALL, fd, read_buf, 4);
 
 	TEST(lseek(fd, tc->off, tc->whence));
 
@@ -98,7 +98,7 @@ static void verify_lseek(unsigned int n)
 
         memset(read_buf, 0, sizeof(read_buf));
 
-        ret = SAFE_READ(0, fd, read_buf, tc->read);
+	ret = SAFE_READ(SAFE_READ_ANY, fd, read_buf, tc->read);
 
 	if (!tc->read) {
 		if (ret != 0)

@@ -4,8 +4,8 @@
  * Ported to LTP: Wayne Boyer
  */
 
-/*
- * Testcase to check that creat(2) system call returns EMFILE.
+/*\
+ * Check that :manpage:`creat(2)` system call returns EMFILE.
  */
 
 #include <stdio.h>
@@ -74,6 +74,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.test_all = verify_creat,
 	.needs_tmpdir = 1,
 	.setup = setup,

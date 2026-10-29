@@ -55,7 +55,7 @@ void cleanup();
 
 pthread_mutex_t req;
 pthread_mutex_t ack;
-pthread_mutex_t wait;
+pthread_mutex_t waitx;
 pthread_cond_t parent;
 pthread_cond_t child;
 int idle_count = 0;
@@ -173,9 +173,9 @@ void *run(void *arg)
 		call_mutex_lock(&req, buf, sizeof(buf));
 		call_mutex_unlock(&ack, buf, sizeof(buf));
 
-		call_mutex_lock(&wait, buf, sizeof(buf));
+		call_mutex_lock(&waitx, buf, sizeof(buf));
 		call_cond_signal(&parent, buf, sizeof(buf));
-		call_mutex_unlock(&wait, buf, sizeof(buf));
+		call_mutex_unlock(&waitx, buf, sizeof(buf));
 
 		call_cond_wait(&child, &req, buf, sizeof(buf));
 		call_mutex_unlock(&req, buf, sizeof(buf));
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
 
 	call_mutex_init(&req, buf, sizeof(buf));
 	call_mutex_init(&ack, buf, sizeof(buf));
-	call_mutex_init(&wait, buf, sizeof(buf));
+	call_mutex_init(&waitx, buf, sizeof(buf));
 	call_cond_init(&parent, buf, sizeof(buf));
 	call_cond_init(&child, buf, sizeof(buf));
 
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
 		idle_count = 0;
 		call_mutex_unlock(&ack, buf, sizeof(buf));
 
-		do_timedwait(&parent, &wait, buf, sizeof(buf), i);
+		do_timedwait(&parent, &waitx, buf, sizeof(buf), i);
 
 		call_mutex_lock(&req, buf, sizeof(buf));
 		call_cond_signal(&child, buf, sizeof(buf));

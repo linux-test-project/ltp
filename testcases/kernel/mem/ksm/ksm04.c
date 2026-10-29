@@ -1,34 +1,17 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2010-2017  Red Hat, Inc.
+ */
+
+/*\
+ * [Prerequisites]
  *
- * This program is free software;  you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * ksm and ksmtuned daemons need to be disabled. Otherwise, it could
+ * distrub the testing as they also change some ksm tunables depends
+ * on current workloads.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY;  without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- * the GNU General Public License for more details.
+ * [Algorithm]
  *
- * Kernel Samepage Merging (KSM) for Memory Resource Controller and NUMA
- *
- * Basic tests were to start several programs with same and different
- * memory contents and ensure only to merge the ones with the same
- * contents. When changed the content of one of merged pages in a
- * process and to the mode "unmerging", it should discard all merged
- * pages there. Also tested it is possible to disable KSM. There are
- * also command-line options to specify the memory allocation size, and
- * number of processes have same memory contents so it is possible to
- * test more advanced things like KSM + OOM etc.
- *
- * Prerequisites:
- *
- * 1) ksm and ksmtuned daemons need to be disabled. Otherwise, it could
- *    distrub the testing as they also change some ksm tunables depends
- *    on current workloads.
- *
- * The test steps are:
  * - Check ksm feature and backup current run setting.
  * - Change run setting to 1 - merging.
  * - 3 memory allocation programs have the memory contents that 2 of
@@ -53,7 +36,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "mem.h"
+#include "tst_test.h"
 #include "ksm_common.h"
 
 #ifdef HAVE_NUMA_V2
@@ -78,7 +61,7 @@ static void verify_ksm(void)
 	}
 	create_same_memory(size, num, unit);
 
-	write_cpusets(tst_cg, node);
+	write_node_cpusets(tst_cg, node);
 	create_same_memory(size, num, unit);
 }
 
@@ -89,7 +72,7 @@ static void setup(void)
 	SAFE_CG_PRINTF(tst_cg, "cgroup.procs", "%d", getpid());
 
 	if (opt_sizestr && size > DEFAULT_MEMSIZE)
-		tst_set_max_runtime(32 * (size / DEFAULT_MEMSIZE));
+		tst_set_timeout(32 * (size / DEFAULT_MEMSIZE));
 }
 
 static struct tst_test test = {
@@ -103,12 +86,14 @@ static struct tst_test test = {
 	},
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/sys/kernel/mm/ksm/run", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/sleep_millisecs", NULL, TST_SR_TBROK},
-		{"/sys/kernel/mm/ksm/max_page_sharing", NULL,
+		{PATH_MM_KSM_RUN, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_SLEEP_MILLISECS, NULL, TST_SR_TBROK},
+		{PATH_MM_KSM_MAX_PAGE_SHARING, NULL,
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
-		{"/sys/kernel/mm/ksm/merge_across_nodes", "1",
+		{PATH_MM_KSM_MERGE_ACROSS_NODES, "1",
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
+		{PATH_MM_KSM_SMART_SCAN, "0",
+			TST_SR_SKIP_MISSING | TST_SR_TBROK_RO},
 		{}
 	},
 	.needs_kconfigs = (const char *const[]){
@@ -116,7 +101,7 @@ static struct tst_test test = {
 		NULL
 	},
 	.test_all = verify_ksm,
-	.max_runtime = 32,
+	.timeout = 32,
 	.needs_cgroup_ctrls = (const char *const []){
 		"memory", "cpuset", NULL
 	},

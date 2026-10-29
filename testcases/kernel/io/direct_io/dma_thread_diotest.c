@@ -103,7 +103,7 @@
 #include <sys/mount.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define FILESIZE	(12*1024*1024)
 #define READSIZE	(1024*1024)
@@ -389,8 +389,7 @@ static void setup(void)
 
 	/*
 	 * verify whether the current directory has enough free space,
-	 * if it is not satisfied, we will use the LTP_BIG_DEV, which
-	 * will be exported by runltp with "-z" option.
+	 * if it is not satisfied, we will use the LTP_BIG_DEV.
 	 */
 	if (!directflag || !tst_fs_has_free(NULL, ".", 1300, TST_MB)) {
 		device = getenv("LTP_BIG_DEV");

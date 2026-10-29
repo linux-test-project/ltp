@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename() fails with EEXIST or ENOTEMPTY when
  * newpath is a non-empty directory.
  */

@@ -1,56 +1,60 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2016 Linux Test Project
+ * Copyright (c) 2025 Ricardo B. Marlière <rbm@suse.com>
  */
-#include <errno.h>
-#include <signal.h>
-#include <stdlib.h>
+
+/*\
+ * Verify that, pause() returns -1 and sets errno to EINTR after receipt of a
+ * signal which is caught by the calling process.
+ */
+
 #include "tst_test.h"
 
-static void sig_handler(int sig LTP_ATTRIBUTE_UNUSED)
+static void sig_handler(int signal LTP_ATTRIBUTE_UNUSED)
 {
 }
 
-static void do_child(void)
+static void do_child(int signal)
 {
-	SAFE_SIGNAL(SIGINT, sig_handler);
-
+	SAFE_SIGNAL(signal, sig_handler);
 	TST_CHECKPOINT_WAKE(0);
-
-	TEST(pause());
-	if (TST_RET != -1)
-		tst_res(TFAIL, "pause() succeeded unexpectedly");
-	else if (TST_ERR == EINTR)
-		tst_res(TPASS, "pause() interrupted with EINTR");
-	else
-		tst_res(TFAIL | TTERRNO, "pause() unexpected errno");
-
-	TST_CHECKPOINT_WAKE(0);
-	exit(0);
+	TST_EXP_FAIL(pause(), EINTR);
+	tst_res(TPASS, "Process resumed from pause()");
 }
 
-static void do_test(void)
+static void run(int signal)
 {
-	int pid, status;
+	int pid;
 
 	pid = SAFE_FORK();
-	if (pid == 0)
-		do_child();
+	if (!pid) {
+		do_child(signal);
+		exit(0);
+	}
 
 	TST_CHECKPOINT_WAIT(0);
 	TST_PROCESS_STATE_WAIT(pid, 'S', 0);
-	kill(pid, SIGINT);
+	SAFE_KILL(pid, signal);
+}
 
-	/*
-	 * TST_CHECKPOINT_WAIT has built-in timeout, if pause() doesn't return,
-	 * this checkpoint call will reliably end the test.
-	 */
-	TST_CHECKPOINT_WAIT(0);
-	SAFE_WAIT(&status);
+static void run_all(void)
+{
+	run(SIGHUP);
+	run(SIGINT);
+	run(SIGQUIT);
+	run(SIGILL);
+	run(SIGTRAP);
+	run(SIGABRT);
+	run(SIGFPE);
+	run(SIGSEGV);
+	run(SIGPIPE);
+	run(SIGALRM);
+	run(SIGTERM);
 }
 
 static struct tst_test test = {
 	.forks_child = 1,
 	.needs_checkpoints = 1,
-	.test_all = do_test,
+	.test_all = run_all,
 };

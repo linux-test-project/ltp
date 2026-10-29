@@ -1,0 +1,661 @@
+# Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
+
+import os
+import re
+import json
+import socket
+import urllib.request
+import sphinx
+
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+
+project = 'Linux Test Project'
+copyright = '2024, Linux Test Project'
+author = 'Linux Test Project'
+release = '1.0'
+ltp_repo = 'https://github.com/linux-test-project/ltp'
+ltp_repo_base_url = f"{ltp_repo}/tree/master"
+cve_url = "https://www.cve.org/CVERecord?id="
+
+def _get_min_kernel_version():
+    header_path = os.path.join(os.path.dirname(__file__), '../include/tst_kvercmp.h')
+    with open(header_path, 'r', encoding='utf-8') as f:
+        match = re.search(r'#define\s+TST_MIN_KVER\s+"([^"]+)"', f.read())
+        if match:
+            return match.group(1)
+    raise RuntimeError(f"Could not find TST_MIN_KVER in {header_path}")
+
+min_kernel_version = _get_min_kernel_version()
+
+rst_prolog = f"""
+.. |min_kernel_version| replace:: **{min_kernel_version}**
+.. |min_kernel_version_plain| replace:: {min_kernel_version}
+"""
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = [
+    'linuxdoc.rstKernelDoc',
+    'sphinxcontrib.spelling',
+    'sphinx.ext.autosectionlabel',
+    'sphinx.ext.extlinks',
+]
+
+# Configure autosectionlabel to prefix labels with document name
+# This prevents duplicate labels when same test name appears in multiple files
+autosectionlabel_prefix_document = True
+# Only create labels for sections with unique names
+autosectionlabel_maxdepth = 2
+
+# Suppress duplicate label warnings for kernel-doc generated content
+suppress_warnings = ['autosectionlabel.*']
+
+exclude_patterns = ["html*", '_static*', '.venv*']
+extlinks = {
+    'repo': (f'{ltp_repo}/%s', '%s'),
+    'master': (f'{ltp_repo}/blob/master/%s', '%s'),
+    'shell_lib': (f'{ltp_repo}/blob/master/testcases/lib/%s', '%s'),
+    # TODO: allow 2nd parameter to show page description instead of plain URL
+    'kernel_doc': ('https://docs.kernel.org/%s.html', 'https://docs.kernel.org/%s.html'),
+    'kernel_tree': ('https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/%s', '%s'),
+    'kselftest': ('https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/testing/selftests/%s', '%s (kselftest)'),
+}
+
+# Link to man pages
+manpages_url = 'https://man7.org/linux/man-pages/man{section}/{page}.{section}.html'
+
+spelling_lang = "en_US"
+spelling_warning = True
+spelling_exclude_patterns = ['users/supported_syscalls.rst']
+spelling_word_list_filename = "spelling_wordlist"
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = 'sphinx_rtd_theme'
+html_static_path = ['_static']
+
+
+def generate_supported_syscalls(_):
+    """
+    Generate supported syscalls documentation. We fetch the syscalls list
+    from the kernel sources, then we compare it with testcases/kernel/syscalls
+    folder and generate a file that is included in the supported syscalls
+    documentation section.
+    """
+    output = '_static/syscalls.rst'
+
+    # sometimes checking testcases/kernel/syscalls file names are not enough,
+    # because in some cases (i.e. io_ring) syscalls are tested, but they are
+    # part of a more complex scenario. In the following list, we define syscalls
+    # which we know they are 100% tested already.
+    ltp_syscalls_path = "testcases/kernel/syscalls"
+    white_list = {
+        'bpf': f'{ltp_syscalls_path}/bpf',
+        'epoll_pwait2': f'{ltp_syscalls_path}/epoll_pwait',
+        'fadvise64': f'{ltp_syscalls_path}/fadvise',
+        'fanotify_init': f'{ltp_syscalls_path}/fanotify',
+        'fanotify_mark': f'{ltp_syscalls_path}/fanotify',
+        'file_getattr': f'{ltp_syscalls_path}/file_attr',
+        'file_setattr': f'{ltp_syscalls_path}/file_attr',
+        'futex': f'{ltp_syscalls_path}/futex',
+        'getdents64': f'{ltp_syscalls_path}/getdents',
+        'inotify_add_watch': f'{ltp_syscalls_path}/inotify',
+        'inotify_init': f'{ltp_syscalls_path}/inotify',
+        'inotify_rm_watch': f'{ltp_syscalls_path}/inotify',
+        'io_uring_enter': f'{ltp_syscalls_path}/io_uring',
+        'io_uring_register': f'{ltp_syscalls_path}/io_uring',
+        'io_uring_setup': f'{ltp_syscalls_path}/io_uring',
+        'landlock_add_rule': f'{ltp_syscalls_path}/landlock',
+        'landlock_create_ruleset': f'{ltp_syscalls_path}/landlock',
+        'landlock_restrict_self': f'{ltp_syscalls_path}/landlock',
+        'lsetxattr': f'{ltp_syscalls_path}/lgetxattr',
+        'newfstatat': f'{ltp_syscalls_path}/fstatat',
+        'open_tree_attr': f'{ltp_syscalls_path}/mount_setattr',
+        'pkey_alloc': f'{ltp_syscalls_path}/pkeys',
+        'pkey_free': f'{ltp_syscalls_path}/pkeys',
+        'pkey_mprotect': f'{ltp_syscalls_path}/pkeys',
+        'prlimit64': f'{ltp_syscalls_path}/getrlimit',
+        'pread64': f'{ltp_syscalls_path}/pread',
+        'pselect6': f'{ltp_syscalls_path}/pselect',
+        'pwrite64': f'{ltp_syscalls_path}/pwrite',
+        'quotactl_fd': f'{ltp_syscalls_path}/quotactl',
+        'rt_sigpending': f'{ltp_syscalls_path}/sigpending',
+        'semtimedop': f'{ltp_syscalls_path}/ipc/semop',
+        'sethostname': f'{ltp_syscalls_path}/sethostname'
+    }
+
+    # populate with not implemented, reserved, unmaintained syscalls defined
+    # inside the syscalls file
+    black_list = [
+        '_newselect',
+        '_sysctl',
+        'afs_syscall',
+        'cachectl',
+        'create_module',
+        'get_kernel_syms',
+        'getmsg',
+        'getpmsg',
+        'mq_getsetattr',
+        'nfsservctl',
+        'putmsg',
+        'putpmsg',
+        'query_module',
+        'reserved177',
+        'reserved193',
+        'restart_syscall',
+        'rseq',
+        'sysmips',
+        'vserver',
+    ]
+
+    # fetch syscalls file
+    syscalls_url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/mips/kernel/syscalls"
+    error = False
+    try:
+        socket.setdefaulttimeout(3)
+
+        # kernel.org doesn't always allow to download syscalls file, so we need
+        # to emulate a different client in order to download it. Browser
+        # emulation might fail due to captcha request and for this reason we
+        # use the 'curl' command instead
+        req = urllib.request.Request(
+            f"{syscalls_url}/syscall_n64.tbl",
+            headers={'User-Agent': 'curl/8.6.0'})
+
+        with urllib.request.urlopen(req) as response:
+            with open("syscalls.tbl", 'wb') as out_file:
+                out_file.write(response.read())
+    except urllib.error.URLError as err:
+        error = True
+        logger = sphinx.util.logging.getLogger(__name__)
+        msg = f"Can't download syscall_n64.tbl from kernel sources ({err})"
+        logger.warning(msg)
+
+        with open(output, 'w+', encoding='utf-8') as stats:
+            stats.write(f".. warning::\n\n    {msg}")
+
+    if error:
+        return
+
+    text = [
+        'Syscalls\n',
+        '--------\n\n',
+    ]
+
+    # collect all available kernel syscalls
+    regexp = re.compile(r'\d+\s+n64\s+(?P<syscall>\w+)\s+\w+')
+    ker_syscalls = []
+    with open("syscalls.tbl", 'r', encoding='utf-8') as data:
+        for line in data:
+            match = regexp.search(line)
+            if not match:
+                continue
+
+            ker_syscalls.append(match.group('syscall'))
+
+    # collect all LTP tested syscalls
+    name_patterns = [
+        re.compile(r'(?P<name>[a-zA-Z_]+[^_])\d{2}\.c'),
+        re.compile(r'(?P<name>[a-zA-Z_]+[1-9])_\d{2}\.c'),
+    ]
+    ltp_syscalls = {}
+    for dirpath, _, files in os.walk(f'../{ltp_syscalls_path}'):
+        for myfile in files:
+            match = None
+            for pattern in name_patterns:
+                match = pattern.search(myfile)
+                if match:
+                    break
+
+            if not match:
+                continue
+
+            # we need to use relative path from the project root
+            path = dirpath.replace('../', '')
+            name = match.group('name')
+
+            ltp_syscalls[name] = f'{ltp_repo_base_url}/{path}'
+
+    # compare kernel syscalls with LTP tested syscalls
+    syscalls = {}
+    for kersc in ker_syscalls:
+        if kersc in black_list:
+            continue
+
+        if kersc not in syscalls:
+            if kersc in white_list:
+                syscalls[kersc] = f'{ltp_repo_base_url}/{white_list[kersc]}'
+                continue
+
+            syscalls[kersc] = None
+
+        for ltpsc, ltpsp in ltp_syscalls.items():
+            if ltpsc == kersc:
+                syscalls[kersc] = ltpsp
+
+    # generate the statistics file
+    tested_syscalls = [key for key, val in syscalls.items() if val is not None]
+    text.append('syscalls which are tested under '
+                ':master:`testcases/kernel/syscalls`:\n\n')
+    text.append(f'* kernel syscalls: {len(ker_syscalls)}\n')
+    text.append(f'* tested syscalls: {len(tested_syscalls)}\n\n')
+
+    # create tested/untested syscalls table
+    index_tested = 0
+    table_tested = [
+        'Tested syscalls\n',
+        '~~~~~~~~~~~~~~~\n\n',
+        '.. list-table::\n',
+        '    :header-rows: 0\n\n',
+    ]
+
+    index_untest = 0
+    table_untest = [
+        'Untested syscalls\n',
+        '~~~~~~~~~~~~~~~~~\n\n',
+        '.. list-table::\n',
+        '    :header-rows: 0\n\n',
+    ]
+
+    max_columns = 3
+
+    for sysname, path in syscalls.items():
+        if path is not None:
+            if (index_tested % max_columns) == 0:
+                table_tested.append(f'    * - `{sysname} <{path}>`_\n')
+            else:
+                table_tested.append(f'      - `{sysname} <{path}>`_\n')
+
+            index_tested += 1
+        else:
+            if (index_untest % max_columns) == 0:
+                table_untest.append(f'    * - {sysname}\n')
+            else:
+                table_untest.append(f'      - {sysname}\n')
+
+            index_untest += 1
+
+    left = index_tested % max_columns
+    if left > 0:
+        for _ in range(0, max_columns - left):
+            table_tested.append('      -\n')
+
+    left = index_untest % max_columns
+    if left > 0:
+        for _ in range(0, max_columns - left):
+            table_untest.append('      -\n')
+
+    text.extend(table_tested)
+    text.append('\n')
+    text.extend(table_untest)
+
+    # write the file
+    with open(output, 'w+', encoding='utf-8') as stats:
+        stats.writelines(text)
+
+
+def _generate_tags_table(tags):
+    """
+    Generate the tags table from tags hash.
+    """
+    supported_url_ref = {
+        "linux-git": "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=",
+        "linux-stable-git": "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=",
+        "glibc-git": "https://sourceware.org/git/?p=glibc.git;a=commit;h=",
+        "musl-git": "https://git.musl-libc.org/cgit/musl/commit/?id=",
+        "CVE": cve_url + 'CVE-',
+    }
+
+    table = [
+        '.. list-table::',
+        '   :header-rows: 1',
+        '',
+        '   * - Tag',
+        '     - Info',
+    ]
+
+    for tag in tags:
+        tag_key = tag[0]
+        tag_val = tag[1]
+
+        tag_url = supported_url_ref.get(tag_key, None)
+        if tag_url:
+            tag_val = f'`{tag_val} <{tag_url}{tag_val}>`_'
+
+        table.extend([
+            f'   * - :c:struct:`{tag_key} <tst_tag>`',
+            f'     - {tag_val}',
+        ])
+
+    return table
+
+
+def _generate_options_table(options):
+    """
+    Generate the options table from the options hash.
+    """
+    table = [
+        '.. list-table::',
+        '   :header-rows: 1',
+        '',
+        '   * - Option',
+        '     - Description',
+    ]
+
+    for opt in options:
+        if not isinstance(opt, list):
+            table.clear()
+            break
+
+        key = opt[0]
+        val = opt[2]
+
+        if key.endswith(':'):
+            key = key[:-1] if key.endswith(':') else key
+
+        key = f'-{key}'
+
+        table.extend([
+            f'   * - {key}',
+            f'     - {val}',
+        ])
+
+    return table
+
+
+def _generate_table_cell(key, values):
+    """
+    Generate a cell which can be multiline if value is a list.
+    """
+    cell = []
+    key = f' :c:struct:`{key} <tst_test>`'
+
+    if len(values) > 1:
+        cell.extend([
+            f'   * - {key}',
+            f'     - | {values[0]}',
+        ])
+
+        for item in values[1:]:
+            cell.append(f'       | {item}')
+    else:
+        cell.extend([
+            f'   * - {key}',
+            f'     - {values[0]}',
+        ])
+
+    return cell
+
+
+def _generate_setup_table(keys):
+    """
+    Generate the table with test setup configuration.
+    """
+    exclude = [
+        # following keys are already handled
+        'options',
+        'runtime',
+        'timeout',
+        'fname',
+        'doc',
+        # following keys don't need to be shown
+        'child_needs_reinit',
+        'needs_checkpoints',
+        'forks_child',
+        'tags',
+        'groups',
+    ]
+    my_keys = {k: v for k, v in keys.items() if k not in exclude}
+    if len(my_keys) == 0:
+        return []
+
+    table = [
+        '.. list-table::',
+        '   :header-rows: 1',
+        '',
+        '   * - Key',
+        '     - Value',
+    ]
+
+    values = []
+
+    for key, value in my_keys.items():
+        if key in exclude:
+            continue
+
+        values.clear()
+
+        if key == 'ulimit':
+            for item in value:
+                values.append(f'{item[0]} : {item[1]}')
+        elif key == 'hugepages':
+            if len(value) == 1:
+                values.append(f'{value[0]}')
+            else:
+                values.append(f'{value[0]}, {value[1]}')
+        elif key == 'filesystems':
+            for params in value:
+                for pkey, pval in params.items():
+                    if pkey == "type":
+                        values.append(f"- {pval}")
+                    else:
+                        values.append(f" {pkey}: {pval}")
+        elif key == "save_restore":
+            for item in value:
+                values.append(item[0])
+        else:
+            if isinstance(value, list):
+                values.extend(value)
+            else:
+                values.append(value)
+
+        if values:
+            table.extend(_generate_table_cell(key, values))
+
+    return table
+
+
+def generate_test_catalog(_):
+    """
+    Generate the test catalog from ltp.json metadata file.
+    """
+    output = '_static/tests.rst'
+    metadata_file = '../metadata/ltp.json'
+    text = [
+        '.. warning::',
+        '    The following catalog has been generated using LTP metadata',
+        '    which is including only tests using ',
+        '    :doc:`../developers/api_c_tests` and ',
+        '    :doc:`../developers/api_shell_tests`.',
+        ''
+    ]
+
+    metadata = None
+    with open(metadata_file, 'r', encoding='utf-8') as data:
+        metadata = json.load(data)
+
+    timeout_def = metadata['defaults']['timeout']
+    regexp = re.compile(r'^\[([A-Za-z][\w\W]+)\]')
+
+    for test_name, conf in sorted(metadata['tests'].items()):
+        text.extend([
+            f'{test_name}',
+            len(test_name) * '-'
+        ])
+
+        # source url location
+        test_fname = conf.get('fname', None)
+        if test_fname:
+            text.extend([
+                '',
+                f"`source <{ltp_repo_base_url}/{test_fname}>`__",
+                ''
+            ])
+
+        # groups information
+        groups = conf.get('groups', None)
+        if groups:
+            text.extend([
+                '',
+                f"**Groups**: {', '.join(groups)}",
+                ''
+            ])
+
+        # test description
+        desc = conf.get('doc', None)
+        if desc:
+            desc_text = []
+            for line in desc:
+                line = regexp.sub(r'**\1**', line)
+                desc_text.append(line)
+
+            text.extend([
+                '\n'.join(desc_text),
+            ])
+
+        # timeout information
+        timeout = conf.get('timeout', None)
+        if timeout:
+            text.extend([
+                '',
+                f'Test timeout is {timeout} seconds.',
+            ])
+        else:
+            text.extend([
+                '',
+                f'Test timeout defaults is {timeout_def} seconds.',
+            ])
+
+        # runtime information
+        runtime = conf.get('runtime', None)
+        if runtime:
+            text.extend([
+                f'Maximum runtime is {runtime} seconds.',
+                ''
+            ])
+        else:
+            text.append('')
+
+        # options information
+        opts = conf.get('options', None)
+        if opts:
+            text.append('')
+            text.extend(_generate_options_table(opts))
+            text.append('')
+
+        # tags information
+        tags = conf.get('tags', None)
+        if tags:
+            text.append('')
+            text.extend(_generate_tags_table(tags))
+            text.append('')
+
+        # parse struct tst_test content
+        text.append('')
+        text.extend(_generate_setup_table(conf))
+        text.append('')
+
+        # small separator between tests
+        text.extend([
+            '',
+            '.. raw:: html',
+            '',
+            '    <hr>',
+            '',
+        ])
+
+    with open(output, 'w+', encoding='utf-8') as new_tests:
+        new_tests.write('\n'.join(text))
+
+def generate_cve_catalog(_):
+    """
+    Generate CVE catalog in a single file by extracting CVE tags from
+    metadata/ltp.json. This creates a single _static/cve.rst file with
+    all CVE information and links to test sources.
+    """
+    output = '_static/cve.rst'
+    metadata_file = '../metadata/ltp.json'
+
+    # Load metadata
+    metadata = None
+    try:
+        with open(metadata_file, 'r', encoding='utf-8') as data:
+            metadata = json.load(data)
+    except FileNotFoundError:
+        logger = sphinx.util.logging.getLogger(__name__)
+        msg = f"Can't find metadata file ({metadata_file})"
+        logger.warning(msg)
+        return
+
+    # Extract CVE information from test tags
+    cve_data = {}
+    tests = metadata.get('tests', {})
+
+    for test_name, test_info in tests.items():
+        tags = test_info.get('tags', [])
+        for tag in tags:
+            if len(tag) >= 2 and tag[0] == 'CVE':
+                cve_id = tag[1].upper()
+                # Normalize CVE ID format: ensure it starts with "CVE-"
+                if not cve_id.startswith('CVE-'):
+                    cve_id = 'CVE-' + cve_id
+                if cve_id not in cve_data:
+                    cve_data[cve_id] = []
+                cve_data[cve_id].append(test_name)
+
+    # Generate single CVE catalog file
+    total_cves = len(cve_data)
+    text = [
+        '.. note::',
+        '    The following CVE catalog has been generated from test',
+        '    metadata and includes all CVE reproducers in LTP.',
+        '',
+        f'LTP includes reproducers for {total_cves} known CVEs.',
+        '',
+        '.. list-table::',
+        '   :header-rows: 1',
+        '   :widths: 40 60',
+        '',
+        '   * - CVE ID',
+        '     - Test Name(s)',
+    ]
+
+    # Add CVEs in descending order (newest first)
+    for cve_id in sorted(cve_data.keys(), reverse=True):
+        test_names = cve_data[cve_id]
+
+        # Create cross-references for all tests
+        test_links = []
+        for test_name in sorted(test_names):
+            test_anchor = f"users/test_catalog:{test_name}"
+            test_link = f":ref:`{test_name} <{test_anchor}>`"
+            test_links.append(test_link)
+
+        # Join multiple tests with commas
+        tests_str = ', '.join(test_links)
+
+        cve_link = f'`{cve_id} <{cve_url}{cve_id}>`_'
+
+        text.extend([
+            f'   * - {cve_link}',
+            f'     - {tests_str}',
+        ])
+
+    with open(output, 'w+', encoding='utf-8') as cve_catalog:
+        cve_catalog.write('\n'.join(text))
+
+def setup(app):
+    """
+    Setup the current documentation, using self generated data and graphics
+    customizations.
+    """
+    app.add_css_file('custom.css')
+    app.connect('builder-inited', generate_supported_syscalls)
+    app.connect('builder-inited', generate_cve_catalog)
+    app.connect('builder-inited', generate_test_catalog)

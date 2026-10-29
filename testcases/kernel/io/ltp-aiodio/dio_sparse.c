@@ -11,8 +11,6 @@
  */
 
 /*\
- * [Description]
- *
  * Create a sparse file using O_DIRECT while other processes are doing
  * buffered reads and check if the buffer reads always see zero.
  */
@@ -135,5 +133,5 @@ static struct tst_test test = {
 		"tmpfs",
 		NULL
 	},
-	.max_runtime = 1800,
+	.runtime = 1800,
 };

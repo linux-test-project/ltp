@@ -1,15 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2018-2024
  */
 
-/*
+/*\
  * Regression test for two related bugs:
  *
- * (1) CVE-2017-15299, fixed by commit 60ff5b2f547a ("KEYS: don't let add_key()
- *     update an uninstantiated key")
- * (2) CVE-2017-15951, fixed by commit 363b02dab09b ("KEYS: Fix race between
- *     updating and finding a negative key")
+ * 1. CVE-2017-15299, fixed by commit 60ff5b2f547a ("KEYS: don't let add_key()
+ *    update an uninstantiated key")
+ * 2. CVE-2017-15951, fixed by commit 363b02dab09b ("KEYS: Fix race between
+ *    updating and finding a negative key")
  *
  * We test for the bugs together because the reproduction steps are essentially
  * the same: repeatedly try to add/update a key with add_key() while requesting
@@ -212,16 +213,16 @@ static struct tst_test test = {
 	.test = do_test,
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.forks_child = 1,
-	.max_runtime = 20,
+	.runtime = 20,
 	.options = (struct tst_option[]) {
 		{"b:", &opt_bug,  "Bug to test for (cve-2017-15299 or cve-2017-15951; default is both)"},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-15299"},
-		{"linux-git", "60ff5b2f547a"},
+		{"linux-git", "60ff5b2f547af3828aebafd54daded44cfb0807a"},
 		{"CVE", "2017-15951"},
-		{"linux-git", "363b02dab09b"},
+		{"linux-git", "363b02dab09b3226f3bd1420dad9c72b79a42a76"},
 		{},
 	}
 };

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for the sched_get_priority_min(2) system call.
  *
  * Obtain different minimum priority for different schedulling policies and

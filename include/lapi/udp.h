@@ -15,4 +15,16 @@
 # define UDPLITE_RECV_CSCOV   11 /* receiver partial coverage (threshold ) */
 #endif
 
+#ifndef UDP_ENCAP
+# define UDP_ENCAP 100
+#endif
+
+#ifndef UDP_ENCAP_ESPINUDP
+# define UDP_ENCAP_ESPINUDP 2
+#endif
+
+#ifndef TCP_ENCAP_ESPINTCP
+# define TCP_ENCAP_ESPINTCP 7
+#endif
+
 #endif	/* LAPI_UDP_H__ */

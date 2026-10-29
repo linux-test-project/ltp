@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, pipe(2) syscall fails with errno EMFILE when
  * limit on the number of open file descriptors has been reached.
  */

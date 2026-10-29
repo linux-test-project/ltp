@@ -15,18 +15,20 @@
 #include <sys/wait.h>
 #include <stdlib.h>
 #include "posixtest.h"
+#include "clock.h"
 
 #define SLEEPSEC 5
 
 #define CHILDPASS 0		//if interrupted, child will return 0
 #define CHILDFAIL 1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid, slepts;
 	struct timespec tsbefore, tsafter;
+	clockid_t test_clock = pts_get_clock();
 
-	if (clock_gettime(CLOCK_REALTIME, &tsbefore) != 0) {
+	if (clock_gettime(test_clock, &tsbefore) != 0) {
 		perror("clock_gettime() did not return success\n");
 		return PTS_UNRESOLVED;
 	}
@@ -74,7 +76,7 @@ int main(void)
 			return PTS_FAIL;
 		}
 
-		if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
+		if (clock_gettime(test_clock, &tsafter) == -1) {
 			perror("Error in clock_gettime()\n");
 			return PTS_UNRESOLVED;
 		}

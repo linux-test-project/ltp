@@ -4,12 +4,12 @@
  * Copyright (c) Linux Test Project, 2017-2019
  * Author: Rusty Russell <rusty@rustcorp.com.au>
  * Ported to LTP: subrata <subrata@linux.vnet.ibm.com>
+ * Test ioriginally written for kernel 2.6.27.
  */
 
-/*
- * This program tests whether all the valid IFF flags are
- * returned properly by implementation of TUNGETFEATURES ioctl
- * on kernel 2.6.27
+/*\
+ * Test whether all the valid IFF flags are returned properly by implementation
+ * of TUNGETFEATURES ioctl.
  */
 
 #include <sys/types.h>
@@ -44,6 +44,10 @@
 #define IFF_NO_CARRIER	0x0040
 #endif
 
+#ifndef IFF_BACKPRESSURE
+#define IFF_BACKPRESSURE	0x0080
+#endif
+
 static struct {
 	unsigned int flag;
 	const char *name;
@@ -56,7 +60,8 @@ static struct {
 	{IFF_MULTI_QUEUE, "MULTI_QUEUE"},
 	{IFF_NAPI, "IFF_NAPI"},
 	{IFF_NAPI_FRAGS, "IFF_NAPI_FRAGS"},
-	{IFF_NO_CARRIER, "IFF_NO_CARRIER"}
+	{IFF_NO_CARRIER, "IFF_NO_CARRIER"},
+	{IFF_BACKPRESSURE, "IFF_BACKPRESSURE"}
 };
 
 static void verify_features(void)

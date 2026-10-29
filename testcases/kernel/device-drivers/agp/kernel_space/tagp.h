@@ -63,7 +63,7 @@
 #define TEST_GENERIC_MASK_MEMORY		_IO(MAG_NUM, 21)
 
 /* memory between the kernel and user space is
- seperated, so that if a structure is needed
+ separated, so that if a structure is needed
  to be passed between kernel and user space
  a call must be made to copy_to_user or copy
  from user. Use this structure to streamline

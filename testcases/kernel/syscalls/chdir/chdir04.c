@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to test whether chdir(2) sets errno correctly.
  */
 

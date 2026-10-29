@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic finit_module() failure tests.
  *
  * [Algorithm]
@@ -14,6 +12,7 @@
  */
 
 #include <linux/capability.h>
+#include <stdlib.h>
 #include <errno.h>
 #include "lapi/init_module.h"
 #include "tst_module.h"
@@ -25,7 +24,7 @@
 static char *mod_path;
 
 static int fd, fd_zero, fd_invalid = -1, fd_dir;
-static int kernel_lockdown, secure_boot;
+static int kernel_lockdown, secure_boot, sig_enforce;
 
 static struct tst_cap cap_req = TST_CAP(TST_CAP_REQ, CAP_SYS_MODULE);
 static struct tst_cap cap_drop = TST_CAP(TST_CAP_DROP, CAP_SYS_MODULE);
@@ -59,21 +58,16 @@ static void dir_setup(struct tcase *tc)
 }
 
 static struct tcase tcases[] = {
-	{"invalid-fd", &fd_invalid, "", O_RDONLY | O_CLOEXEC, 0, 0, 0, 0,
-		bad_fd_setup},
+	{"invalid-fd", &fd_invalid, "", O_RDONLY | O_CLOEXEC, 0, 0, 0, 0, bad_fd_setup},
 	{"zero-fd", &fd_zero, "", O_RDONLY | O_CLOEXEC, 0, 0, EINVAL, 0, NULL},
 	{"null-param", &fd, NULL, O_RDONLY | O_CLOEXEC, 0, 0, EFAULT, 1, NULL},
-	{"invalid-param", &fd, "status=invalid", O_RDONLY | O_CLOEXEC, 0, 0,
-		EINVAL, 1, NULL},
-	{"invalid-flags", &fd, "", O_RDONLY | O_CLOEXEC, -1, 0, EINVAL, 0,
-		NULL},
+	{"invalid-param", &fd, "status=invalid", O_RDONLY | O_CLOEXEC, 0, 0, EINVAL, 1, NULL},
+	{"invalid-flags", &fd, "", O_RDONLY | O_CLOEXEC, -1, 0, EINVAL, 0, NULL},
 	{"no-perm", &fd, "", O_RDONLY | O_CLOEXEC, 0, 1, EPERM, 0, NULL},
-	{"module-exists", &fd, "", O_RDONLY | O_CLOEXEC, 0, 0, EEXIST, 1,
-		NULL},
-	{"file-not-readable", &fd, "", O_WRONLY | O_CLOEXEC, 0, 0, EBADF, 0,
-		NULL},
-	{"file-readwrite", &fd, "", O_RDWR | O_CLOEXEC, 0, 0, ETXTBSY, 0,
-		NULL},
+	{"module-exists", &fd, "", O_RDONLY | O_CLOEXEC, 0, 0, EEXIST, 1, NULL},
+	{"module-unsigned", &fd, "", O_RDONLY | O_CLOEXEC, 0, 0, EKEYREJECTED, 1, NULL},
+	{"file-not-readable", &fd, "", O_WRONLY | O_CLOEXEC, 0, 0, EBADF, 0, NULL},
+	{"file-readwrite", &fd, "", O_RDWR | O_CLOEXEC, 0, 0, ETXTBSY, 0, NULL},
 	{"directory", &fd_dir, "", O_RDONLY | O_CLOEXEC, 0, 0, 0, 0, dir_setup},
 };
 
@@ -81,10 +75,13 @@ static void setup(void)
 {
 	unsigned long int i;
 
+	if (tst_module_signature_enforced())
+		sig_enforce = 1;
+
 	tst_module_exists(MODULE_NAME, &mod_path);
 
-	kernel_lockdown = tst_lockdown_enabled();
-	secure_boot = tst_secureboot_enabled();
+	kernel_lockdown = tst_lockdown_enabled() > 0;
+	secure_boot = tst_secureboot_enabled() > 0;
 
 	SAFE_MKDIR(TEST_DIR, 0700);
 	fd_dir = SAFE_OPEN(TEST_DIR, O_DIRECTORY);
@@ -106,6 +103,16 @@ static void run(unsigned int n)
 
 	if (tc->skip_in_lockdown && (kernel_lockdown || secure_boot)) {
 		tst_res(TCONF, "Cannot load unsigned modules, skipping %s", tc->name);
+		return;
+	}
+
+	if ((sig_enforce == 1) && (tc->exp_errno != EKEYREJECTED)) {
+		tst_res(TCONF, "module signature is enforced, skipping %s", tc->name);
+		return;
+	}
+
+	if ((sig_enforce != 1) && (tc->exp_errno == EKEYREJECTED)) {
+		tst_res(TCONF, "module signature is not enforced, skipping %s", tc->name);
 		return;
 	}
 
@@ -135,8 +142,8 @@ static void run(unsigned int n)
 
 static struct tst_test test = {
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "032146cda855"},
-		{"linux-git", "39d637af5aa7"},
+		{"linux-git", "032146cda85566abcd1c4884d9d23e4e30a07e9a"},
+		{"linux-git", "39d637af5aa7577f655c58b9e55587566c63a0af"},
 		{}
 	},
 	.test = run,

@@ -4,19 +4,14 @@
  * Author: Xiao Yang <yangx.jy@cn.fujitsu.com>
  */
 
-/*
+/*\
  * This is a regression test for the race between getting an existing
  * xattr and setting/removing a large xattr.  This bug leads to that
  * getxattr() fails to get an existing xattr and returns ENOATTR in xfs
  * filesystem.
  *
- * Thie bug has been fixed in:
- *
- * commit 5a93790d4e2df73e30c965ec6e49be82fc3ccfce
- * Author: Brian Foster <bfoster@redhat.com>
- * Date:   Wed Jan 25 07:53:43 2017 -0800
- *
- * xfs: remove racy hasattr check from attr ops
+ * This bug has been fixed in:
+ * 5a93790d4e2d ("xfs: remove racy hasattr check from attr ops")
  */
 
 #include "config.h"
@@ -108,13 +103,16 @@ static void setup(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.mount_device = 1,
-	.dev_fs_type = "xfs",
+	.filesystems = (struct tst_fs []){
+		{.type = "xfs"},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.forks_child = 1,
 	.test_all = verify_getxattr,
 	.setup = setup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5a93790d4e2d"},
+		{"linux-git", "5a93790d4e2df73e30c965ec6e49be82fc3ccfce"},
 		{}
 	}
 };

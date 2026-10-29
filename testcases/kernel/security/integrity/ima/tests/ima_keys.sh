@@ -1,48 +1,36 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (c) 2020 Microsoft Corporation
-# Copyright (c) 2020-2021 Petr Vorel <pvorel@suse.cz>
+# Copyright (c) 2020-2025 Petr Vorel <pvorel@suse.cz>
 # Author: Lachlan Sneff <t-josne@linux.microsoft.com>
 #
 # Verify that keys are measured correctly based on policy.
+# Test requires example IMA policy loadable with LTP_IMA_LOAD_POLICY=1.
 
 TST_NEEDS_CMDS="cmp cut grep sed"
 TST_CNT=2
 TST_SETUP=setup
 TST_CLEANUP=cleanup
+TST_MIN_KVER="5.6"
 
-FUNC_KEYCHECK='func=KEY_CHECK'
-REQUIRED_POLICY="^measure.*$FUNC_KEYCHECK"
+REQUIRED_POLICY_CONTENT='keycheck.policy'
 
 setup()
 {
-	require_ima_policy_content "$REQUIRED_POLICY" '-E' > $TST_TMPDIR/policy.txt
-	require_valid_policy_template
+	local line
+
+	require_policy_readable
+
+	while read line; do
+		if echo $line | grep -q 'template=' && ! echo $line | grep -q 'template=ima-buf'; then
+			tst_brk TCONF "only template=ima-buf can be specified for KEY_CHECK"
+		fi
+	done < $IMA_POLICY
 }
 
 cleanup()
 {
 	tst_is_num $KEYRING_ID && keyctl clear $KEYRING_ID
-}
-
-require_valid_policy_template()
-{
-	while read line; do
-	if echo $line | grep -q 'template=' && ! echo $line | grep -q 'template=ima-buf'; then
-		tst_brk TCONF "only template=ima-buf can be specified for KEY_CHECK"
-	fi
-	done < $TST_TMPDIR/policy.txt
-}
-
-check_keys_policy()
-{
-	local pattern="$1"
-
-	if ! grep -E "$pattern" $TST_TMPDIR/policy.txt; then
-		tst_res TCONF "IMA policy must specify $pattern, $FUNC_KEYCHECK"
-		return 1
-	fi
-	return 0
 }
 
 # Based on https://lkml.org/lkml/2019/12/13/564.
@@ -51,12 +39,13 @@ test1()
 {
 	local keycheck_lines i keyrings templates
 	local pattern='keyrings=[^[:space:]]+'
-	local test_file="file.txt" tmp_file="file2.txt"
+	local test_file="file.txt"
 
 	tst_res TINFO "verify key measurement for keyrings and templates specified in IMA policy"
 
-	check_keys_policy "$pattern" > $tmp_file || return
-	keycheck_lines=$(cat $tmp_file)
+	keycheck_lines=$(grep -E "$pattern" $IMA_POLICY)
+	tst_res TINFO "keycheck_lines: '$keycheck_lines'"
+
 	keyrings=$(for i in $keycheck_lines; do echo "$i" | grep "keyrings" | \
 		sed "s/\./\\\./g" | cut -d'=' -f2; done | sed ':a;N;$!ba;s/\n/|/g')
 	if [ -z "$keyrings" ]; then
@@ -86,7 +75,7 @@ test1()
 		fi
 
 		if [ "$digest" != "$expected_digest" ]; then
-			tst_res TFAIL "incorrect digest was found for $keyring keyring"
+			tst_res $IMA_FAIL "incorrect digest was found for $keyring keyring"
 			return
 		fi
 	done
@@ -104,12 +93,9 @@ test2()
 
 	local cert_file="$TST_DATAROOT/x509_ima.der"
 	local keyring_name="key_import_test"
-	local pattern="keyrings=[^[:space:]]*$keyring_name"
 	local temp_file="file.txt"
 
 	tst_res TINFO "verify measurement of certificate imported into a keyring"
-
-	check_keys_policy "$pattern" >/dev/null || return
 
 	KEYRING_ID=$(keyctl newring $keyring_name @s) || \
 		tst_brk TBROK "unable to create a new keyring"
@@ -125,19 +111,19 @@ test2()
 		tst_hexdump -d > $temp_file
 
 	if [ ! -s $temp_file ]; then
-		tst_res TFAIL "keyring $keyring_name not found in $ASCII_MEASUREMENTS"
+		tst_res $IMA_FAIL "keyring $keyring_name not found in $ASCII_MEASUREMENTS"
 		return
 	fi
 
 	if ! openssl x509 -in $temp_file -inform der > /dev/null; then
-		tst_res TFAIL "logged certificate is not a valid x509 certificate"
+		tst_res $IMA_FAIL "logged certificate is not a valid x509 certificate"
 		return
 	fi
 
 	if cmp -s $temp_file $cert_file; then
 		tst_res TPASS "logged certificate matches the original"
 	else
-		tst_res TFAIL "logged certificate does not match original"
+		tst_res $IMA_FAIL "logged certificate does not match original"
 	fi
 }
 

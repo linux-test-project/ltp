@@ -23,7 +23,7 @@ static void handler()
 	printf("Do nothing useful\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	stack_t alternate_s, current_s;

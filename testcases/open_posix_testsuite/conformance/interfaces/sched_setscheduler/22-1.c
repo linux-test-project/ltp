@@ -28,7 +28,7 @@ static void *runner(void *arg)
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int new_policy, policy, result;
 	struct sched_param param;

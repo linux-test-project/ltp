@@ -7,24 +7,15 @@ include $(top_srcdir)/include/mk/env_pre.mk
 include $(top_srcdir)/include/mk/functions.mk
 
 MAKE_TARGETS		:= ltp.json
-HOST_MAKE_TARGETS	:= metaparse
+HOST_MAKE_TARGETS	:= metaparse metaparse-sh
 INSTALL_DIR		= metadata
 
 .PHONY: ltp.json
 
-ltp.json: metaparse
+ltp.json: metaparse metaparse-sh
 	$(abs_srcdir)/parse.sh > ltp.json
-ifeq ($(WITH_METADATA),yes)
-	mkdir -p $(abs_top_builddir)/docparse
-	$(MAKE) -C $(abs_top_builddir)/docparse/ -f $(abs_top_srcdir)/docparse/Makefile
-endif
 
-ifeq ($(WITH_METADATA),yes)
-install:
-	$(MAKE) -C $(abs_top_builddir)/docparse/ -f $(abs_top_srcdir)/docparse/Makefile install
-endif
-
-test:
-	$(MAKE) -C $(abs_srcdir)/tests/ test
+test: metaparse metaparse-sh
+	METAPARSEDIR=$$METAPARSEDIR $(MAKE) -C tests/ test
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

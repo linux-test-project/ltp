@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether the access mode are the same for both file descriptors.
  *
  * Create file with mode, dup2, [change mode], check mode

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests basic error handling of the quotactl syscall without visible quota files
  * (use quotactl and quotactl_fd syscall):
  *
@@ -170,20 +168,25 @@ static void cleanup(void)
 static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
-	.needs_drivers = (const char *const []) {
-		"quota_v2",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_QFMT_V2",
 		NULL
 	},
 	.tcnt = ARRAY_SIZE(tcases),
 	.test = verify_quotactl,
-	.dev_fs_opts = (const char *const[]){"-O quota", NULL},
-	.dev_fs_type = "ext4",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "ext4",
+			.mkfs_opts = (const char *const[]){"-O quota", NULL},
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.needs_root = 1,
 	.test_variants = QUOTACTL_SYSCALL_VARIANTS,
-	.needs_cmds = (const char *[]) {
-		"mkfs.ext4 >= 1.43.0",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "mkfs.ext4 >= 1.43.0"},
+		{}
 	}
 };

@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 /*
- *  Copyright (c) International Business Machines  Corp., 2002
+ * Copyright (c) International Business Machines  Corp., 2002
+ * Copyright (c) Linux Test Project, 2003-2023
+ * 12/03/2002	Port to LTP     robbiew@us.ibm.com
+ * 06/30/2001	Port to Linux	nsharoff@us.ibm.com
  */
 
-/* 12/03/2002	Port to LTP     robbiew@us.ibm.com */
-/* 06/30/2001	Port to Linux	nsharoff@us.ibm.com */
-
 /*\
- * [DOCUMENTATION]
  * Verify that acct() returns proper errno on failure.
  */
 
@@ -24,8 +23,7 @@
 
 #include "tst_test.h"
 
-#define DIR_MODE	(S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP| \
-			 S_IXGRP|S_IROTH|S_IXOTH)
+#define DIR_MODE	0755
 #define FILE_EISDIR		"."
 #define FILE_EACCESS		"/dev/null"
 #define FILE_ENOENT		"/tmp/does/not/exist"
@@ -33,6 +31,7 @@
 #define FILE_TMPFILE		"./tmpfile"
 #define FILE_ELOOP		"test_file_eloop1"
 #define FILE_EROFS		"ro_mntpoint/file"
+#define FILE_EFAULT		"invalid/file/name"
 
 static struct passwd *ltpuser;
 
@@ -45,6 +44,7 @@ static char *file_eloop;
 static char *file_enametoolong;
 static char *file_erofs;
 static char *file_null;
+static char *file_efault;
 
 static void setup_euid(void)
 {
@@ -56,12 +56,22 @@ static void cleanup_euid(void)
 	SAFE_SETEUID(0);
 }
 
+static void setup_emem(void)
+{
+	file_efault = SAFE_MMAP(NULL, 1, PROT_NONE,
+			MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+}
+static void cleanup_emem(void)
+{
+	SAFE_MUNMAP(file_efault, 1);
+}
+
 static struct test_case {
 	char **filename;
 	char *desc;
 	int exp_errno;
-	void (*setupfunc) ();
-	void (*cleanfunc) ();
+	void (*setupfunc)();
+	void (*cleanfunc)();
 } tcases[] = {
 	{&file_eisdir,  FILE_EISDIR,  EISDIR,  NULL,   NULL},
 	{&file_eaccess, FILE_EACCESS, EACCES,  NULL,   NULL},
@@ -72,6 +82,7 @@ static struct test_case {
 	{&file_eloop,   FILE_ELOOP,   ELOOP,        NULL, NULL},
 	{&file_enametoolong, "aaaa...", ENAMETOOLONG, NULL, NULL},
 	{&file_erofs,   FILE_EROFS,   EROFS,        NULL, NULL},
+	{&file_efault,	"Invalid address",  EFAULT,  setup_emem, cleanup_emem},
 };
 
 static void setup(void)
@@ -79,8 +90,6 @@ static void setup(void)
 	int fd;
 
 	TEST(acct(NULL));
-	if (TST_RET == -1 && TST_ERR == ENOSYS)
-		tst_brk(TCONF, "acct() system call isn't configured in kernel");
 
 	ltpuser = SAFE_GETPWNAM("nobody");
 
@@ -112,7 +121,7 @@ static void verify_acct(unsigned int nr)
 		tcase->setupfunc();
 
 	TST_EXP_FAIL(acct(*tcase->filename), tcase->exp_errno,
-	             "acct(%s)", tcase->desc);
+		"acct(%s)", tcase->desc);
 
 	if (tcase->cleanfunc)
 		tcase->cleanfunc();
@@ -135,5 +144,9 @@ static struct tst_test test = {
 		{&file_enametoolong, .size = PATH_MAX+2},
 		{&file_erofs, .str = FILE_EROFS},
 		{}
+	},
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_BSD_PROCESS_ACCT=y",
+		NULL,
 	}
 };

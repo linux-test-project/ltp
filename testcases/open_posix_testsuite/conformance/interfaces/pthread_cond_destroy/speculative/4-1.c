@@ -66,7 +66,7 @@ static void *watchdog(void *arg)
 	return arg;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t low_id, watchdog_thread;
 	int rc = 0;

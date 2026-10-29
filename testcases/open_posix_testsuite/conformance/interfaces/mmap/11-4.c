@@ -49,7 +49,7 @@
 
 #define TYPE_TMPFS_MAGIC	0x01021994
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	long page_size;

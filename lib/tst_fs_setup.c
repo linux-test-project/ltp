@@ -11,9 +11,10 @@
 #define TST_FS_SETUP_OVERLAYFS_MSG "overlayfs is not configured in this kernel"
 #define TST_FS_SETUP_OVERLAYFS_CONFIG "lowerdir="OVL_LOWER",upperdir="OVL_UPPER",workdir="OVL_WORK
 
-void create_overlay_dirs(void)
+void tst_create_overlay_dirs(void)
 {
 	DIR *dir = opendir(OVL_LOWER);
+
 	if (dir == NULL) {
 		SAFE_MKDIR(OVL_LOWER, 0755);
 		SAFE_MKDIR(OVL_UPPER, 0755);
@@ -24,25 +25,25 @@ void create_overlay_dirs(void)
 	closedir(dir);
 }
 
-int mount_overlay(const char *file, const int lineno, int skip)
+int tst_mount_overlay(const char *file, const int lineno, int strict)
 {
 	int ret;
 
-	create_overlay_dirs();
+	tst_create_overlay_dirs();
 	ret = mount("overlay", OVL_MNT, "overlay", 0,
 				TST_FS_SETUP_OVERLAYFS_CONFIG);
 	if (ret == 0)
 		return 0;
 
 	if (errno == ENODEV) {
-		if (skip) {
+		if (strict) {
 			tst_brk_(file, lineno, TCONF,
 				TST_FS_SETUP_OVERLAYFS_MSG);
 		} else {
 			tst_res_(file, lineno, TINFO,
 				TST_FS_SETUP_OVERLAYFS_MSG);
 		}
-	} else {
+	} else if (strict) {
 		tst_brk_(file, lineno, TBROK | TERRNO,
 			"overlayfs mount failed");
 	}

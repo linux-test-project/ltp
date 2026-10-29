@@ -40,7 +40,7 @@ static void sighdl(int sig PTS_ATTRIBUTE_UNUSED)
 	return;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char semname[28];
 	int val;

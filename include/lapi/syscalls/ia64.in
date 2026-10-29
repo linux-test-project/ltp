@@ -343,4 +343,12 @@ pidfd_getfd 1462
 faccessat2 1463
 epoll_pwait2 1465
 quotactl_fd 1467
+landlock_create_ruleset 1468
+landlock_add_rule 1469
+landlock_restrict_self 1470
 futex_waitv 1473
+cachestat 1475
+fchmodat2 1476
+mseal 1486
+statmount 1481
+listmount 1482

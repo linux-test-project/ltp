@@ -23,10 +23,12 @@
 #define FUNCTION "sem_unlink"
 #define ERROR_PREFIX "unexpected error: " FUNCTION " " TEST ": "
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	char semname[28];
+
+	sprintf(semname, "/" FUNCTION "_" TEST "_%d", getpid());
 
 	sem_unlink(semname);
 

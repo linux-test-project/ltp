@@ -39,11 +39,9 @@ char fullpath[PATH_MAX];
 int FLAG;
 volatile int timer_expired = 0;
 int retval;
-unsigned int num_line;
 unsigned int current_shares;
 unsigned int total_shares;
 unsigned int *shares_pointer;
-char target[LINE_MAX];
 struct dirent *dir_pointer;
 
 /*
@@ -133,6 +131,9 @@ int read_file(char *filepath, int action, unsigned int *value)
 	int num_line = 0;
 	FILE *fp;
 	int tmp;
+	size_t len;
+	char *target = NULL;
+
 	switch (action) {
 	case GET_SHARES:
 		tmp = read_shares_file(filepath);
@@ -147,8 +148,9 @@ int read_file(char *filepath, int action, unsigned int *value)
 			error_function("Could not open file", filepath);
 			return -1;
 		}
-		while (fgets(target, LINE_MAX, fp) != NULL)
+		while (getline(&target, &len, fp) != -1)
 			num_line++;
+		free(target);
 		*value = (unsigned int)num_line;
 		if (fclose(fp)) {
 			error_function("Could not close file", filepath);

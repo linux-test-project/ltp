@@ -43,7 +43,7 @@ static int parent_process(char *mqname, int read_pipe, int write_pipe, pid_t chi
 static int child_process(char *mqname, int read_pipe, int write_pipe);
 static int send_receive(int read_pipe, int write_pipe, char send, char *reply);
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[50];
 	pid_t pid;

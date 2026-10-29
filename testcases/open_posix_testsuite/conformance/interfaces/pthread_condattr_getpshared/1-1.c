@@ -24,7 +24,7 @@
 
 #define NUM_OF_CONDATTR 10
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	/* Make sure there is process-shared capability. */

@@ -23,7 +23,7 @@
 #define BUF_SIZE 8
 #define SHM_NAME "posixtest_3-1"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int fd;
 	char *buf;

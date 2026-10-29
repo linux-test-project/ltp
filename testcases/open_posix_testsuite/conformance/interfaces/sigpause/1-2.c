@@ -9,10 +9,10 @@
  until it receives a signal.
 
  Steps:
- 1. From the main() function, create a new thread. Give the new thread a
+ 1. From the test_main() function, create a new thread. Give the new thread a
     a second to set up for receiving a signal, and to suspend itself using
     sigpause().
- 2. For about ten seconds, keep checking from main() that the "returned"
+ 2. For about ten seconds, keep checking from test_main() that the "returned"
     variable hasn't been set yet. If it has, that means that sigpause
     returned even before a signal was sent to it, thus FAIL the test.
  3. After the ten seconds, send the new thread a signal using pthread_kill,
@@ -50,7 +50,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	int i;

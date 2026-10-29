@@ -49,10 +49,6 @@
 char *TCID = "setsid01";
 int TST_TOTAL = 1;
 
-#ifdef UCLINUX
-static char *argv0;
-#endif
-
 void do_child_1(void);
 void do_child_2(void);
 void setup(void);
@@ -68,12 +64,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	argv0 = av[0];
-
-	maybe_run_child(&do_child_1, "n", 1);
-	maybe_run_child(&do_child_2, "n", 2);
-#endif
 
 	/*
 	 * perform global setup for the test
@@ -90,22 +80,15 @@ int main(int ac, char **av)
 		 * and then it attached itself to another process
 		 * group and tries to setsid
 		 */
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 
 		if (pid == 0) {
-			if ((pid = FORK_OR_VFORK()) == -1) {
+			if ((pid = tst_fork()) == -1) {
 				tst_resm(TFAIL, "Fork failed");
 
 			}
 			if (pid == 0) {
-#ifdef UCLINUX
-				if (self_exec(argv0, "n", 1) < 0) {
-					tst_resm(TFAIL, "self_exec failed");
-
-				}
-#else
 				do_child_1();
-#endif
 			} else {
 				if (setpgid(0, 0) < 0) {
 					tst_resm(TFAIL,
@@ -161,17 +144,11 @@ void do_child_1(void)
 		exno = 1;
 	}
 
-	if ((pid = FORK_OR_VFORK()) == -1) {
+	if ((pid = tst_fork()) == -1) {
 		tst_brkm(TFAIL, NULL, "Fork failed");
 	}
 	if (pid == 0) {
-#ifdef UCLINUX
-		if (self_exec(argv0, "n", 2) < 0) {
-			tst_brkm(TFAIL, NULL, "self_exec failed");
-		}
-#else
 		do_child_2();
-#endif
 	} else {
 		retval = setpgid(0, getppid());
 		if (retval < 0) {

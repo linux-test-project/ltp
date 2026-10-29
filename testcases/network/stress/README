@@ -1,56 +1,7 @@
-
-NOTE:
-
-Physical Topology
-=================
-
-These tests require two machines. And each machine needs to have 2 or more
-interfaces. These tests assume that they run on the following topology.
-
-                              Control Link
-                +------------------------------------+
-                |                                    |
-        +-------+-------+                    +-------+-------+
-        |               +---- Test Link 0 ---+               |
-        |  Local Host   +          :         +  Remote Host  |
-        |               +---- Test Link n ---+               |
-        +---------------+                    +---------------+
-
-Control Link is used by the local host to control the remote host.
-`control' means, for example, changing the setting of the interfaces that are
-connected to the test links. The setting of the interfaces connected to the
-control link is never changed.
-
-Test Links are the place where the stress tests run. For example, test packets
-flow those links. The number of test links must be at least 1. The setting of
-the interfaces connected to the test links would be changed by the tests.
-Therefore, each test link should not belong to any external network. It is
-recommended to connect each pair of interfaces with the ether cross cables.
-
-Currently, different NIC testcases for ICMP/UDP/TCP/Multicast require plural
-test links.  Other testcases uses only 1 test link. (Test Link 0)
-
-
-
-Installation
-============
-
-Like the other network tests, the remote host must have the LTP installed
-in the same exact location as the local host have. Please refer the `Detailed
-Installation 5.' section in INSTALL.
-
-
-
 Execution
 =========
 
-To run the network stress testcases, use network.sh script, located in
-testscripts directory. For documentation about using network.sh see INSTALL
-and testcases/network/README.md
-
-Some stress tests originally designed to be tested with rsh for accessing
-remote host are now using ssh using the current user. Old behavior (using rsh
-can be achieved with setting LTP_RSH variable).
+To run the network stress testcases see testcases/network/README.md.
 
 The behaviour of network stress tests is configurable with environment
 variables (See `Environment Variable' section).
@@ -61,8 +12,8 @@ Attention for HTTP/FTP stress tests
 
 When you run http or ftp stress tests, you have to start http or ftp server
 before running the tests.
-About ssh and dns tests, you don't need to run the ssh or dns server.  Each
-test runs named or sshd automatically.
+About ssh tests, you don't need to run the ssh server.  Each test runs sshd
+automatically.
 
 Those tests requires that the remote host has `curl' command in order to
 upload/download files to/from the local host.
@@ -75,11 +26,13 @@ specify the environment variable (See `Environment Variable' section).
 Environment Variable
 ====================
 
+For general shell network test variables see testcases/network/README.md.
+All variables have meaningful defaults values.
+
 The nestwork stress testcases require the following environment variables:
 
-  RHOST
-  LHOST_HWADDRS
-  RHOST_HWADDRS
+  LHOST_HWADDRS     (for broken IP stress test)
+  RHOST_HWADDRS     (for broken IP stress test)
   HTTP_DOWNLOAD_DIR	(for http stress test)
   FTP_DOWNLOAD_DIR	(for ftp stress test)
   FTP_UPLOAD_DIR	(for ftp stress test)
@@ -88,12 +41,10 @@ The nestwork stress testcases require the following environment variables:
 You are able to configure the behavior of the testcases with the following
 environment variables:
 
-  LTP_RSH
   NS_DURATION		(for the continual test)
   NS_TIMES		(for the repetition test)
   CONNECTION_TOTAL	(for creating a large number of connection test)
   IP_TOTAL		(for adding large number of IP address test)
-  IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
   ROUTE_TOTAL		(for adding large number of route test)
   MTU_CHANGE_TIMES	(for changing mtu test)
   IF_UPDOWN_TIMES	(for interface up/down test)
@@ -108,9 +59,6 @@ In these value, NS_DURATION is important if you'd like to reduce the test time.
 
 Required environment variables
 ------------------------------
-
- o RHOST
-   The host name of the remote host to access it via the control link.
 
  o LHOST_HWADDRS
    The blank-separated hardware address list of the interfaces which are
@@ -144,11 +92,6 @@ Required environment variables
 Optional environment variables
 ------------------------------
 
- o LTP_RSH
-   The name of the remote shell command, namely ssh (the default) or rsh.
-   In ether case, the remote host must accept the login from the local host
-   without password.
-
  o NS_DURATION (for the continual test)
    The duration of the continual test. The time unit is `second'.
    This variable affects all icmp/tcp/udp tests. The number of the testcase
@@ -159,7 +102,7 @@ Optional environment variables
  o NS_TIMES (for the repetition test)
    The number of repetition times for the repetition tests.
    This value affects IP adress add/del testcase, IP address change testcase
-   route add/del testcase and dns query tests.
+   route add/del testcase.
 
  o CONNECTION_TOTAL (for creating a large number of connection test)
    The total number of connection when the testcase requires plural connection.
@@ -169,11 +112,6 @@ Optional environment variables
  o IP_TOTAL		(for adding large number of IP address test)
    The total number of IP address to add an interface.
    This value affect interface tests to add large number of IP address.
-
- o IP_TOTAL_FOR_TCPIP	(for multi IP address/alias test in icmp/udp/tcp)
-   The total number of IP address to add an interface for TCP/IP testcases.
-   This value affects udp/tcp multi-connection to the different IP
-   address/alias testcases.
 
  o ROUTE_TOTAL		(for adding large number of route test)
    The total number of route to add an interface.

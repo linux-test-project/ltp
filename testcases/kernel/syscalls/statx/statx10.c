@@ -5,13 +5,12 @@
  */
 
 /*\
- * [Description]
+ * Test :manpage:`statx(2)` for ``STATX_DIOALIGN`` mask on ext4 and xfs
+ * filesystem.
  *
- * It is a basic test for STATX_DIOALIGN mask on ext4 and xfs filesystem.
+ * ``STATX_DIOALIGN``:  Want stx_dio_mem_align and stx_dio_offset_align value
  *
- * - STATX_DIOALIGN   Want stx_dio_mem_align and stx_dio_offset_align value
- *
- * Check these two values are nonzero under dio situation when STATX_DIOALIGN
+ * Check these two values are nonzero under dio situation when ``STATX_DIOALIGN``
  * in the request mask.
  *
  * On ext4, files that use certain filesystem features (data journaling,
@@ -21,7 +20,7 @@
  * default mount option. Otherwise, use loop device to simuate it. So it can
  * avoid these above situations and don't fall back to buffered I/O.
  *
- * Minimum Linux version required is v6.1.
+ * ``STATX_DIOALIGN`` support was added in kernel 6.1.
  */
 
 #define _GNU_SOURCE
@@ -67,9 +66,6 @@ static void setup(void)
 {
 	int fd = -1;
 
-	if (strcmp(tst_device->fs_type, "xfs") && strcmp(tst_device->fs_type, "ext4"))
-		tst_brk(TCONF, "This test only supports ext4 and xfs");
-
 	SAFE_FILE_PRINTF(TESTFILE, "AAAA");
 	fd = open(TESTFILE, O_RDWR | O_DIRECT);
 	if (fd == -1) {
@@ -78,7 +74,7 @@ static void setup(void)
 				"The regular file is not on a filesystem that support DIO");
 		else
 			tst_brk(TBROK | TERRNO,
-				"The regular file is open with O_RDWR | O_DIRECT failed");
+				"The regular file failed to open() with O_RDWR | O_DIRECT");
 	}
 	SAFE_CLOSE(fd);
 }
@@ -89,5 +85,9 @@ static struct tst_test test = {
 	.needs_root = 1,
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
-	.all_filesystems = 1,
+	.filesystems = (struct tst_fs []) {
+		{.type = "ext4"},
+		{.type = "xfs"},
+		{}
+	},
 };

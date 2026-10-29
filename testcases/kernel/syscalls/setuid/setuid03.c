@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test will switch to nobody user for correct error code collection.
  * Verify setuid returns errno EPERM when it switches to root_user.
  */

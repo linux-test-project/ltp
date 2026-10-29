@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2018 Google, Inc.
+ * Copyright (c) Linux Test Project, 2018-2024
  */
 
-/*
+/*\
  * Regression test for commit 4dca6ea1d943 ("KEYS: add missing permission check
  * for request_key() destination"), or CVE-2017-17807.  This bug allowed adding
  * a key to a keyring given only Search permission to that keyring, rather than
@@ -74,7 +75,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-17807"},
-		{"linux-git", "4dca6ea1d943"},
+		{"linux-git", "4dca6ea1d9432052afb06baf2e3ae78188a4410b"},
 		{}
 	}
 };

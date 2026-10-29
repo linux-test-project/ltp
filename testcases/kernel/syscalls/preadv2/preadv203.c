@@ -45,7 +45,7 @@
 
 #include "tst_test.h"
 #include "tst_safe_pthread.h"
-#include "lapi/preadv2.h"
+#include "lapi/uio.h"
 
 #define CHUNK_SZ 4123
 #define CHUNKS 60
@@ -58,7 +58,7 @@ static volatile int stop;
 
 static void drop_caches(void)
 {
-	SAFE_FILE_PRINTF("/proc/sys/vm/drop_caches", "3");
+	SAFE_FILE_PRINTF(PATH_VM_DROP_CACHES, "3");
 }
 
 /*
@@ -278,6 +278,6 @@ static struct tst_test test = {
 	.mntpoint = MNTPOINT,
 	.mount_device = 1,
 	.all_filesystems = 1,
-	.max_runtime = 60,
+	.min_runtime = 60,
 	.needs_root = 1,
 };

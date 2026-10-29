@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2003.  All Rights Reserved.
  *
@@ -58,7 +58,7 @@ static struct tst_test test = {
 	.test_all = run,
 	.needs_root = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "f18ddc13af98"},
+		{"linux-git", "f18ddc13af981ce3c7b7f26925f099e7c6929aba"},
 		{}
 	}
 };

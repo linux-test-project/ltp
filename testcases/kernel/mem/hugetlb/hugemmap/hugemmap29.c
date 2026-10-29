@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * The test do mmap() with shared mapping and write. It matches the data
  * with private mmap() and then change it with other data. It checks
  * shared mapping data if data is not contaiminated by private mapping.
@@ -29,7 +27,7 @@ static void run_test(void)
 	unsigned int *pl, *ql;
 	unsigned long i;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_SHARED,
 		 fd, 0);
 

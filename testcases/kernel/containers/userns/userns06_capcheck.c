@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 		tst_brk(TBROK, "userns06_capcheck <privileged|unprivileged>");
 
-	SAFE_FILE_SCANF("/proc/sys/kernel/cap_last_cap", "%d", &last_cap);
+	SAFE_FILE_SCANF(PATH_KERN_CAP_LAST_CAP, "%d", &last_cap);
 
 	if (strcmp("privileged", argv[1]))
 		expected_cap_flag = 0;

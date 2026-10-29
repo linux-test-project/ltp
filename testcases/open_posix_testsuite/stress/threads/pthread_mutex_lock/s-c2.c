@@ -220,7 +220,7 @@ static void *threaded(void *arg)
 /*****
  * Level 0 - main function
  */
-int main(int argc, char *argv[])
+int test_main(int argc, char **argv)
 {
 	int ret;
 	int i;

@@ -3,14 +3,19 @@
  * Copyright (c) International Business Machines Corp., 2001
  * Author: Wayne Boyer
  * Copyright (c) 2018 Cyril Hrubis <chrubis@suse.cz>
- */
-/*
- * Test that fchmod() fails and sets the proper errno values.
+ * Copyright (c) Linux Test Project, 2001-2025
  */
 
-#ifndef _GNU_SOURCE
-# define _GNU_SOURCE
-#endif
+/*\
+ * Verify that :manpage:`fchmod(2)` fails and sets the proper errno values:
+ *
+ * - EPERM -- the effective UID does not match the owner of the file, and the process is not privileged
+ * - EBADF -- file descriptor was closed
+ * - EROFS -- file descriptor opened as a read-only
+ */
+
+#define _GNU_SOURCE
+
 #include <errno.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -36,22 +41,7 @@ static void verify_fchmod(unsigned int i)
 {
 	struct tcase *tc = &tcases[i];
 
-	TEST(fchmod(*tc->fd, tc->mode));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "fchmod() passed unexpectedly (%li)",
-			TST_RET);
-		return;
-	}
-
-	if (TST_ERR == tcases[i].exp_errno) {
-		tst_res(TPASS | TTERRNO, "fchmod() failed expectedly");
-		return;
-	}
-
-	tst_res(TFAIL | TTERRNO,
-		"fchmod() failed unexpectedly, expected %i - %s",
-		TST_ERR, tst_strerrno(TST_ERR));
+	TST_EXP_FAIL(fchmod(*tc->fd, tc->mode), tc->exp_errno);
 }
 
 static void setup(void)

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Testcase to check the mprotect(2) system call split and merge.
  *
  * https://bugzilla.kernel.org/show_bug.cgi?id=217061
@@ -63,7 +61,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_tmpdir  = 1,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "2fcd07b7ccd5"},
+		{"linux-git", "2fcd07b7ccd5fd10b2120d298363e4e6c53ccf9c"},
 		{}
 	},
 };

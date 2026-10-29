@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that clock_nanosleep() adds correctly an offset with absolute timeout
  * and CLOCK_MONOTONIC inside of a timer namespace.
  *

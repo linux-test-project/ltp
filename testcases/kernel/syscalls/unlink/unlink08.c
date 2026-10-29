@@ -5,9 +5,7 @@
  */
 
 /*\
- * [Description]
- *
- * Verify that unlink(2) fails with
+ * Verify that :manpage:`unlink(2)`: fails with:
  *
  * - EACCES when no write access to the directory containing pathname
  * - EACCES when one of the directories in pathname did not allow search

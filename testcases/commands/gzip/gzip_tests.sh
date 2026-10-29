@@ -82,7 +82,8 @@ test1()
 	gzip -r tst_gzip.tmp > tst_gzip.err 2>&1
 	if [ $? -ne 0 ]; then
 		cat tst_gzip.err
-		tst_brk TFAIL "Test #1: gzip -r failed"
+		tst_res TFAIL "Test #1: gzip -r failed"
+		return
 	fi
 
 	tst_res TINFO "Test #1: creating output file"

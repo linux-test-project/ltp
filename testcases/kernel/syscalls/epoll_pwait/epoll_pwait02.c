@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for epoll_pwait and epoll_pwait2. Checks if data avaiable in a
  * file descriptor are reported correctly in the syscall return value.
  */
@@ -21,7 +19,7 @@ static struct epoll_event e;
 
 static void run(void)
 {
-	TEST(do_epoll_pwait(efd, &e, 1, -1, NULL));
+	TEST(do_epoll_pwait(efd, &e, 1, NULL, NULL));
 
 	if (TST_RET == 1) {
 		tst_res(TPASS, "do_epoll_pwait() succeeded");

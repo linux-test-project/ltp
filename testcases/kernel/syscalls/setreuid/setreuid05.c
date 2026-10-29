@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the setreuid() feature, verifying the role of the saved-set-uid
  * and setreuid's effect on it.
  */

@@ -4,21 +4,14 @@
  */
 
 /*\
- * [Description]
- *
  * Page fault occurs in spite that madvise(WILLNEED) system call is called
  * to prefetch the page. This issue is reproduced by running a program
  * which sequentially accesses to a shared memory and calls madvise(WILLNEED)
  * to the next page on a page fault.
  *
  * This bug is present in all RHEL7 versions. It looks like this was fixed in
- * mainline kernel > v3.15 by the following patch:
- *
- *  commit 55231e5c898c5c03c14194001e349f40f59bd300
- *  Author: Johannes Weiner <hannes@cmpxchg.org>
- *  Date:   Thu May 22 11:54:17 2014 -0700
- *
- *     mm: madvise: fix MADV_WILLNEED on shmem swapouts
+ * kernel v3.15 by
+ * 55231e5c898c5 ("mm: madvise: fix MADV_WILLNEED on shmem swapouts")
  *
  * Two checks are performed, the first looks at how SwapCache
  * changes during madvise. When the pages are dirtied, about half
@@ -37,16 +30,15 @@
  * our process.
  *
  * It also can reproduce the MADV_WILLNEED preformance problem.
- * It was introduced since 5.9 kernel with the following commit
- *   e6e88712e43b ("mm: optimise madvise WILLNEED")
- * and fixed since 5.10-rc5 kernel with the following commit
- *   66383800df9c ("mm: fix madvise WILLNEED performance problem").
+ * It was introduced in kernel 5.9 in
+ * e6e88712e43b ("mm: optimise madvise WILLNEED")
+ * and fixed since 5.10-rc5 kernel in
+ * 66383800df9c ("mm: fix madvise WILLNEED performance problem").
  */
 
 #include <errno.h>
 #include <stdio.h>
 #include <sys/mount.h>
-#include <sys/sysinfo.h>
 #include "tst_test.h"
 
 #define CHUNK_SZ (400*1024*1024L)
@@ -55,7 +47,7 @@
 #define PASS_THRESHOLD (CHUNK_SZ / 4)
 #define PASS_THRESHOLD_KB (PASS_THRESHOLD / 1024)
 
-static const char drop_caches_fname[] = "/proc/sys/vm/drop_caches";
+static const char drop_caches_fname[] = PATH_VM_DROP_CACHES;
 static int pg_sz, stat_refresh_sup;
 
 static long init_swap, init_swap_cached, init_cached;
@@ -97,23 +89,11 @@ static void meminfo_diag(const char *point)
 
 static void setup(void)
 {
-	struct sysinfo sys_buf_start;
-
 	pg_sz = getpagesize();
 
 	tst_res(TINFO, "dropping caches");
 	sync();
 	SAFE_FILE_PRINTF(drop_caches_fname, "3");
-
-	sysinfo(&sys_buf_start);
-	if (sys_buf_start.freeram < 2 * CHUNK_SZ) {
-		tst_brk(TCONF, "System RAM is too small (%li bytes needed)",
-			2 * CHUNK_SZ);
-	}
-	if (sys_buf_start.freeswap < 2 * CHUNK_SZ) {
-		tst_brk(TCONF, "System swap is too small (%li bytes needed)",
-			2 * CHUNK_SZ);
-	}
 
 	check_path("/proc/self/oom_score_adj");
 	SAFE_FILE_PRINTF("/proc/self/oom_score_adj", "%d", -1000);
@@ -242,17 +222,20 @@ static struct tst_test test = {
 	.setup = setup,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
+	.timeout = 60,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/sys/vm/swappiness", NULL,
 			TST_SR_SKIP_MISSING | TST_SR_TCONF_RO},
 		{}
 	},
+	.min_mem_avail = 2 * CHUNK_SZ / TST_MB,
+	.min_swap_avail = 2 * CHUNK_SZ / TST_MB,
 	.needs_cgroup_ctrls = (const char *const []){ "memory", NULL },
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "55231e5c898c"},
-		{"linux-git", "8de15e920dc8"},
-		{"linux-git", "66383800df9c"},
+		{"linux-git", "55231e5c898c5c03c14194001e349f40f59bd300"},
+		{"linux-git", "8de15e920dc85d1705ab9c202c95d56845bc2d48"},
+		{"linux-git", "66383800df9cbdbf3b0c34d5a51bf35bcdb72fd2"},
 		{}
 	}
 };

@@ -8,7 +8,7 @@
  *
  * The test performs several ioctl() parallel with readv() on the same
  * file descriptor to /dev/snd/timer. A buggy kernel will leak memory
- * to the process, which may contain information from the the kernel or
+ * to the process, which may contain information from the kernel or
  * any other process on the system.
  *
  * The issue was fixed with
@@ -136,10 +136,11 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
-	.max_runtime = 150,
+	.runtime = 150,
+	.min_runtime = 2,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "d11662f4f798"},
-		{"linux-git", "ba3021b2c79b"},
+		{"linux-git", "d11662f4f798b50d8c8743f433842c3e40fe3378"},
+		{"linux-git", "ba3021b2c79b2fa9114f92790a99deb27a65b728"},
 		{"CVE", "2017-1000380"},
 		{}
 	}

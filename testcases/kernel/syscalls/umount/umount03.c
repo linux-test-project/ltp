@@ -1,17 +1,17 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
+ * Copyright (c) Linux Test Project, 2002-2023
  * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- * Verify that umount(2) returns -1 and sets errno to  EPERM if the user
+ */
+
+/*\
+ * Verify that :manpage:`umount(2)` returns -1 and sets errno to EPERM if the user
  * is not the super-user.
  */
 
-#include <errno.h>
 #include <pwd.h>
 #include <sys/mount.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include "tst_test.h"
 
 #define MNTPOINT	"mntpoint"
@@ -20,19 +20,7 @@ static int mount_flag;
 
 static void verify_umount(void)
 {
-	TEST(umount(MNTPOINT));
-
-	if (TST_RET != -1) {
-		tst_res(TFAIL, "umount() succeeds unexpectedly");
-		return;
-	}
-
-	if (TST_ERR != EPERM) {
-		tst_res(TFAIL | TTERRNO, "umount() should fail with EPERM");
-		return;
-	}
-
-	tst_res(TPASS | TTERRNO, "umount() fails as expected");
+	TST_EXP_FAIL(umount(MNTPOINT), EPERM);
 }
 
 static void setup(void)

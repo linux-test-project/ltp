@@ -144,7 +144,7 @@ static void verify_max_bytes(void)
 static void verify_max_keys(void)
 {
 	int i, used_key, max_key;
-	char desc[10];
+	char desc[15];
 
 	tst_res(TINFO, "test max keys under unprivileged user");
 	parse_proc_key_users(&used_key, &max_key, NULL, NULL);
@@ -203,8 +203,6 @@ static void do_test(unsigned int n)
 
 	tst_reap_children();
 	useri++;
-
-	return;
 }
 
 static void cleanup(void)
@@ -214,6 +212,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 2,
 	.test = do_test,
 	.tcnt = 2,
 	.needs_root = 1,
@@ -232,15 +231,15 @@ static struct tst_test test = {
 		{&user_buf, .size = 64},
 		{}
 	},
-	.needs_cmds = (const char *const []) {
-		"useradd",
-		"userdel",
-		"groupdel",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "useradd"},
+		{.cmd = "userdel"},
+		{.cmd = "groupdel"},
+		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a08bf91ce28"},
-		{"linux-git", "2e356101e72"},
+		{"linux-git", "a08bf91ce28ed3ae7b6fef35d843fef8dc8c2cd9"},
+		{"linux-git", "2e356101e72ab1361821b3af024d64877d9a798d"},
 		{}
 	}
 };

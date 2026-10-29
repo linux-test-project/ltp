@@ -2,8 +2,10 @@
 /*
  * Copyright (c) 2020 FUJITSU LIMITED. All rights reserved.
  * Author: Yang Xu <xuyang2018.jy@cn.jujitsu.com>
- *
- * Basic test for the BLKRRPART ioctl, it is the same as blockdev
+ */
+
+/*\
+ * Basic test for :manpage:`ioctl(2)` with BLKRRPART, it is the same as blockdev
  * --rereadpt command.
  */
 
@@ -21,15 +23,6 @@
 static char dev_path[1024];
 static int dev_num, attach_flag, dev_fd;
 static char loop_partpath[1026], sys_loop_partpath[1026];
-
-static void change_partition(const char *const cmd[])
-{
-	int ret;
-
-	ret = tst_cmd(cmd, NULL, NULL, TST_CMD_PASS_RETVAL);
-	if (ret)
-		tst_brk(TBROK, "parted return %i", ret);
-}
 
 static void check_partition(int part_num, bool value)
 {
@@ -62,14 +55,14 @@ static void verify_ioctl(void)
 					      "mklabel", "msdos", "mkpart",
 					      "primary", "ext4", "1M", "10M",
 					      NULL};
-	const char *const cmd_parted_new[] = {"parted", "-s", "test.img",
+	const char *const cmd_parted_new[] = {"parted", "-s", dev_path,
 					      "mklabel", "msdos", "mkpart",
 					      "primary", "ext4", "1M", "10M",
 					      "mkpart", "primary", "ext4",
 					      "10M", "20M", NULL};
 	struct loop_info loopinfo = {0};
 
-	change_partition(cmd_parted_old);
+	SAFE_CMD(cmd_parted_old, NULL, NULL);
 	tst_attach_device(dev_path, "test.img");
 	attach_flag = 1;
 
@@ -78,12 +71,13 @@ static void verify_ioctl(void)
 	check_partition(1, true);
 	check_partition(2, false);
 
-	change_partition(cmd_parted_new);
+	SAFE_CMD(cmd_parted_new, NULL, NULL);
 	TST_RETRY_FUNC(ioctl(dev_fd, BLKRRPART, 0), TST_RETVAL_EQ0);
 	check_partition(1, true);
 	check_partition(2, true);
 
-	tst_detach_device_by_fd(dev_path, dev_fd);
+	tst_detach_device_by_fd(dev_path, &dev_fd);
+	dev_fd = SAFE_OPEN(dev_path, O_RDWR);
 	attach_flag = 0;
 }
 
@@ -105,17 +99,18 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_all = verify_ioctl,
 	.needs_root = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	},
-	.needs_cmds = (const char *const []) {
-		"parted",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "parted"},
+		{}
 	},
 	.needs_tmpdir = 1,
 };

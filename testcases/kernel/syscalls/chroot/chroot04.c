@@ -7,8 +7,6 @@
   */
 
 /*\
- * [Description]
- *
  * Testcase to check that chroot sets errno to EACCES.
  *
  * As a non-root user attempt to perform chroot() to a directory that the user

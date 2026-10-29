@@ -34,7 +34,7 @@
 #define NAMESIZE 50
 #define BUFFER 40
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[NAMESIZE], msgrv1[BUFFER], msgrv2[BUFFER];
 	const char *msgptr1 = "test message1";

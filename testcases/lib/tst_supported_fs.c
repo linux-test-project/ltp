@@ -14,6 +14,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_fs.h"
+#include "tst_private.h"
 
 #define err_exit(...) ({ \
 	fprintf(stderr, __VA_ARGS__); \

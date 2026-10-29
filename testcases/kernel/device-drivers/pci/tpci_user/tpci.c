@@ -27,8 +27,9 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
-#include "old_module.h"
+#include "tso_safe_macros.h"
+#include "tso_module.h"
+#include "tst_security.h"
 
 #include "../tpci_kernel/tpci.h"
 
@@ -50,8 +51,10 @@ static void cleanup(void)
 void setup(void)
 {
 	tst_require_root();
-
 	tst_sig(FORK, DEF_HANDLER, cleanup);
+	tst_requires_module_signature_disabled();
+	if (tst_lockdown_enabled() > 0 || tst_secureboot_enabled() > 0)
+		tst_brkm(TCONF, NULL, "Cannot load unsigned modules in Lockdown/Secure Boot");
 }
 
 static void run_pci_testcases(int bus, int slot)

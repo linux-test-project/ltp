@@ -43,7 +43,7 @@ static void *a_thread_func()
 	pthread_exit(NULL);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	/* Initialize a mutex attributes object */

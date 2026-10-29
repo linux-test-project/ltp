@@ -333,7 +333,7 @@ static void main_loop()
 	output("Test finished after %lu usec.\n", usec - usec_start);
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	output_init();
 	scenar_init();

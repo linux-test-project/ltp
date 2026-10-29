@@ -1,0 +1,145 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2025 SUSE LLC
+ * Author: Christian Amann <camann@suse.com>
+ * Author: Ricardo Branco <rbranco@suse.com>
+ */
+
+/*\
+ * Force a pagefault event and handle it using :manpage:`userfaultfd(2)`
+ * from a different thread using /dev/userfaultfd instead of syscall,
+ * using USERFAULTFD_IOC_NEW ioctl to create the uffd & UFFDIO_COPY.
+ */
+
+#include "config.h"
+#include <poll.h>
+#include <unistd.h>
+#include "tst_test.h"
+#include "tst_safe_macros.h"
+#include "tst_safe_pthread.h"
+#include "lapi/userfaultfd.h"
+
+static long page_size;
+static char *page;
+static void *copy_page;
+static int uffd = -1;
+
+static void setup(void)
+{
+	if (access("/dev/userfaultfd", F_OK) != 0) {
+		int res = (tst_kvercmp(6, 1, 0) < 0) ? TCONF : TBROK;
+
+		tst_brk(res, "/dev/userfaultfd not found");
+	}
+}
+
+static int open_userfaultfd(int flags)
+{
+	int fd, fd2;
+
+	fd = SAFE_OPEN("/dev/userfaultfd", O_RDWR);
+
+	fd2 = SAFE_IOCTL(fd, USERFAULTFD_IOC_NEW, flags);
+
+	SAFE_CLOSE(fd);
+
+	return fd2;
+}
+
+static void set_pages(void)
+{
+	page_size = SAFE_SYSCONF(_SC_PAGE_SIZE);
+	page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	copy_page = SAFE_MMAP(NULL, page_size, PROT_READ | PROT_WRITE,
+			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+
+static void reset_pages(void)
+{
+	if (page) {
+		SAFE_MUNMAP(page, page_size);
+		page = NULL;
+	}
+	if (copy_page) {
+		SAFE_MUNMAP(copy_page, page_size);
+		copy_page = NULL;
+	}
+	if (uffd != -1)
+		SAFE_CLOSE(uffd);
+}
+
+static void *handle_thread(void *arg LTP_ATTRIBUTE_UNUSED)
+{
+	static struct uffd_msg msg;
+	struct uffdio_copy uffdio_copy = {};
+
+	struct pollfd pollfd;
+	int nready;
+
+	pollfd.fd = uffd;
+	pollfd.events = POLLIN;
+	nready = poll(&pollfd, 1, -1);
+	if (nready == -1)
+		tst_brk(TBROK | TERRNO, "Error on poll");
+
+	SAFE_READ(SAFE_READ_ALL, uffd, &msg, sizeof(msg));
+
+	if (msg.event != UFFD_EVENT_PAGEFAULT)
+		tst_brk(TFAIL, "Received unexpected UFFD_EVENT %d", msg.event);
+
+	memset(copy_page, 'X', page_size);
+
+	uffdio_copy.src = (unsigned long) copy_page;
+
+	uffdio_copy.dst = (unsigned long) msg.arg.pagefault.address
+			& ~((unsigned long)page_size - 1);
+	uffdio_copy.len = page_size;
+	SAFE_IOCTL(uffd, UFFDIO_COPY, &uffdio_copy);
+
+	SAFE_CLOSE(uffd);
+	return NULL;
+}
+
+static void run(void)
+{
+	pthread_t thr;
+	struct uffdio_api uffdio_api = {};
+	struct uffdio_register uffdio_register;
+
+	set_pages();
+
+	uffd = open_userfaultfd(O_CLOEXEC | O_NONBLOCK);
+
+	uffdio_api.api = UFFD_API;
+	SAFE_IOCTL(uffd, UFFDIO_API, &uffdio_api);
+
+	uffdio_register.range.start = (unsigned long) page;
+	uffdio_register.range.len = page_size;
+	uffdio_register.mode = UFFDIO_REGISTER_MODE_MISSING;
+
+	SAFE_IOCTL(uffd, UFFDIO_REGISTER, &uffdio_register);
+
+	SAFE_PTHREAD_CREATE(&thr, NULL, (void *) handle_thread, NULL);
+
+	char c = page[0xf];
+
+	if (c == 'X')
+		tst_res(TPASS, "Pagefault handled via /dev/userfaultfd");
+	else
+		tst_res(TFAIL, "Pagefault not handled via /dev/userfaultfd");
+
+	SAFE_PTHREAD_JOIN(thr, NULL);
+	reset_pages();
+}
+
+static struct tst_test test = {
+	.needs_root = 1,
+	.setup = setup,
+	.test_all = run,
+	.needs_kconfigs = (const char *[]) {
+		"CONFIG_USERFAULTFD=y",
+		NULL
+	},
+	.cleanup = reset_pages,
+};

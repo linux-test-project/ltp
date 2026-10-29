@@ -12,7 +12,6 @@ TST_NEEDS_TMPDIR=1
 TST_SETUP=do_setup
 TST_CLEANUP=do_clean
 TST_TESTFUNC=do_test
-TST_MIN_KVER="2.6.26"
 
 do_setup()
 {
@@ -67,7 +66,8 @@ do_test()
 	newblocks=$(get_blocks)
 
 	if [ $blocks -eq $newblocks ]; then
-	   tst_brk TFAIL "usage did not change after remount"
+	   tst_res TFAIL "usage did not change after remount"
+	   return
 	fi
 
 	tst_res TPASS "quota on remount passed"

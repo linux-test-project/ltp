@@ -33,7 +33,7 @@
 #include <string.h>
 #include <signal.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 #include "lapi/syscalls.h"
 
 #define TEST_CASES 5

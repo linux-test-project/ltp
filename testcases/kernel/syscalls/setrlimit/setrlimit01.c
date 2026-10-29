@@ -33,10 +33,11 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "setrlimit01";
 int TST_TOTAL = 1;
@@ -134,7 +135,7 @@ static void test2(void)
 	 * output will be saved to the logfile (instead of stdout)
 	 * when the testcase (parent) is run from the driver.
 	 */
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "fork() failed");
 
@@ -218,7 +219,7 @@ static void test3(void)
 	}
 
 	for (i = 0; i < 20; i++) {
-		pid = FORK_OR_VFORK();
+		pid = tst_fork();
 		if (pid == -1) {
 			if (errno != EAGAIN) {
 				tst_resm(TWARN, "Expected EAGAIN got %d",
@@ -251,13 +252,12 @@ static void test4(void)
 		return;
 	}
 
-	pid = FORK_OR_VFORK();
+	pid = tst_fork();
 	if (pid == -1)
 		tst_brkm(TBROK, cleanup, "fork() failed");
 
 	if (pid == 0) {		/* child */
-		char *testbuf = NULL;
-		strcpy(testbuf, "abcd");
+		raise(SIGSEGV);
 		exit(0);
 	}
 	wait(&status);

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This Test perform mmap, munmap and write operation on hugetlb file
  * based mapping. Mapping can be shared or private. and it checks for
  * Hugetlb counter (Total, Free, Reserve, Surplus) in /proc/meminfo and
@@ -15,6 +13,10 @@
  */
 
 #define _GNU_SOURCE
+#include <errno.h>
+#include <linux/mempolicy.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/mount.h>
@@ -23,16 +25,20 @@
 #include <sys/types.h>
 
 #include "hugetlb.h"
+#include "lapi/mmap.h"
+#include "lapi/syscalls.h"
 
 #define MNTPOINT "hugetlbfs/"
+#define ULONG_BITS (sizeof(unsigned long) * CHAR_BIT)
 
 static long hpage_size;
 static int private_resv;
+static char *private_noreserve_opt;
 
 #define NR_SLOTS	2
 #define SL_SETUP	0
 #define SL_TEST		1
-static int map_fd[NR_SLOTS];
+static int map_fd[NR_SLOTS] = { -1, -1 };
 static char *map_addr[NR_SLOTS];
 static unsigned long map_size[NR_SLOTS];
 static unsigned int touched[NR_SLOTS];
@@ -50,6 +56,146 @@ static void read_meminfo_huge(long *total, long *free, long *resv, long *surp)
 	*surp = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SURP);
 }
 
+static int node_isset(unsigned long node, const unsigned long *nodemask)
+{
+	return !!(nodemask[node / ULONG_BITS] & (1UL << (node % ULONG_BITS)));
+}
+
+static void node_set(unsigned long node, unsigned long *nodemask)
+{
+	nodemask[node / ULONG_BITS] |= 1UL << (node % ULONG_BITS);
+}
+
+static int nodemasks_intersect(const unsigned long *left,
+			       const unsigned long *right, unsigned long maxnode)
+{
+	unsigned long node;
+
+	for (node = 0; node < maxnode; node++) {
+		if (node_isset(node, left) && node_isset(node, right))
+			return 1;
+	}
+
+	return 0;
+}
+
+static void resolve_relative_nodemask(unsigned long *nodemask,
+				      const unsigned long *allowed,
+				      unsigned long maxnode)
+{
+	unsigned long *folded;
+	unsigned long node, rank = 0, nr_allowed = 0;
+
+	for (node = 0; node < maxnode; node++)
+		nr_allowed += node_isset(node, allowed);
+	if (!nr_allowed)
+		return;
+
+	/* Match the kernel's nodes_fold() followed by nodes_onto(). */
+	folded = SAFE_CALLOC(maxnode / ULONG_BITS, sizeof(*folded));
+	for (node = 0; node < maxnode; node++) {
+		if (node_isset(node, nodemask))
+			node_set(node % nr_allowed, folded);
+	}
+
+	memset(nodemask, 0, maxnode / CHAR_BIT);
+	for (node = 0; node < maxnode; node++) {
+		if (!node_isset(node, allowed))
+			continue;
+		if (node_isset(rank++, folded))
+			node_set(node, nodemask);
+	}
+	free(folded);
+}
+
+static unsigned long surplus_pages_needed(int hpages, unsigned long allowed_free)
+{
+	unsigned long global_shortfall = 0;
+	unsigned long allowed_shortfall = 0;
+
+	if (hpages + prev_resv > prev_free)
+		global_shortfall = hpages - prev_free + prev_resv;
+
+	if ((unsigned long)hpages > allowed_free)
+		allowed_shortfall = hpages - allowed_free;
+
+	return MAX(global_shortfall, allowed_shortfall);
+}
+
+static int mapping_creates_reservation(int flags)
+{
+	return (flags & MAP_SHARED) || private_resv;
+}
+
+/* Exercise fault-time allocation for unreserved private mappings. */
+static int private_mmap_flags(int flags)
+{
+	if (private_noreserve_opt &&
+	    (flags & MAP_TYPE) == MAP_PRIVATE)
+		return flags | MAP_NORESERVE;
+
+	return flags;
+}
+
+static unsigned long read_allowed_free_hugepages(void)
+{
+	char path[PATH_MAX];
+	size_t mask_size = getpagesize();
+	unsigned long allowed_free = 0;
+	unsigned long maxnode = mask_size * CHAR_BIT;
+	unsigned long *policy_nodemask;
+	unsigned long *cpuset_nodemask;
+	unsigned long node, node_free;
+	int mode, mode_flags, use_bind;
+
+	policy_nodemask = SAFE_CALLOC(1, mask_size);
+	cpuset_nodemask = SAFE_CALLOC(1, mask_size);
+
+	if (syscall(__NR_get_mempolicy, &mode, policy_nodemask,
+		    maxnode, NULL, 0)) {
+		if (errno == ENOSYS) {
+			allowed_free = prev_free;
+			goto out;
+		}
+		tst_brk(TBROK | TERRNO, "get_mempolicy() failed");
+	}
+
+	if (syscall(__NR_get_mempolicy, NULL, cpuset_nodemask,
+		    maxnode, NULL, MPOL_F_MEMS_ALLOWED))
+		tst_brk(TBROK | TERRNO,
+			"get_mempolicy(MPOL_F_MEMS_ALLOWED) failed");
+
+	mode_flags = mode & MPOL_MODE_FLAGS;
+	mode &= ~MPOL_MODE_FLAGS;
+	if (mode == MPOL_BIND && (mode_flags & MPOL_F_RELATIVE_NODES))
+		resolve_relative_nodemask(policy_nodemask, cpuset_nodemask, maxnode);
+
+	/* Hugetlb ignores a bind policy that no longer overlaps the cpuset. */
+	use_bind = mode == MPOL_BIND &&
+		nodemasks_intersect(policy_nodemask, cpuset_nodemask, maxnode);
+	for (node = 0; node < maxnode; node++) {
+		if (!node_isset(node, cpuset_nodemask))
+			continue;
+		if (use_bind && !node_isset(node, policy_nodemask))
+			continue;
+
+		snprintf(path, sizeof(path),
+			 "/sys/devices/system/node/node%lu/hugepages/"
+			 "hugepages-%ldkB/free_hugepages",
+			 node, hpage_size / 1024);
+		if (access(path, R_OK))
+			continue;
+
+		SAFE_FILE_SCANF(path, "%lu", &node_free);
+		allowed_free += node_free;
+	}
+
+out:
+	free(policy_nodemask);
+	free(cpuset_nodemask);
+	return allowed_free;
+}
+
 static int kernel_has_private_reservations(void)
 {
 	int fd;
@@ -58,9 +204,10 @@ static int kernel_has_private_reservations(void)
 	void *p;
 
 	read_meminfo_huge(&t, &f, &r, &s);
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 
-	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
+	p = SAFE_MMAP(NULL, hpage_size, PROT_READ|PROT_WRITE,
+		      private_mmap_flags(MAP_PRIVATE), fd, 0);
 
 	read_meminfo_huge(&nt, &nf, &nr, &ns);
 
@@ -136,7 +283,7 @@ static int set_nr_hugepages_(long count, char *desc, int line)
 	long min_size;
 	long et, ef, er, es;
 
-	SAFE_FILE_PRINTF(PATH_NR_HPAGES, "%lu", count);
+	SAFE_FILE_PRINTF(PATH_VM_NR_HPAGES, "%lu", count);
 
 	/* The code below is based on set_max_huge_pages in mm/hugetlb.c */
 	es = prev_surp;
@@ -180,12 +327,17 @@ out:
 
 static int map_(int s, int hpages, int flags, char *desc, int line)
 {
+	unsigned long allowed_free = 0;
 	long et, ef, er, es;
+	int creates_reservation = mapping_creates_reservation(flags);
 
-	map_fd[s] = tst_creat_unlinked(MNTPOINT, 0);
+	map_fd[s] = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	map_size[s] = hpages * hpage_size;
-	map_addr[s] = SAFE_MMAP(NULL, map_size[s], PROT_READ|PROT_WRITE, flags,
-				map_fd[s], 0);
+	if (creates_reservation)
+		allowed_free = read_allowed_free_hugepages();
+	map_addr[s] = SAFE_MMAP(NULL, map_size[s], PROT_READ|PROT_WRITE,
+			private_mmap_flags(flags),
+			map_fd[s], 0);
 	touched[s] = 0;
 
 	et = prev_total;
@@ -203,11 +355,9 @@ static int map_(int s, int hpages, int flags, char *desc, int line)
 	 * mappings behave like MAP_SHARED at mmap time.  Otherwise,
 	 * no counter updates will occur.
 	 */
-	if ((flags & MAP_SHARED) || private_resv) {
-		unsigned long shortfall = 0;
+	if (creates_reservation) {
+		unsigned long shortfall = surplus_pages_needed(hpages, allowed_free);
 
-		if (hpages + prev_resv > prev_free)
-			shortfall = hpages - prev_free + prev_resv;
 		et += shortfall;
 		ef += shortfall;
 		er += hpages;
@@ -252,7 +402,7 @@ static int unmap_(int s, int hpages, int flags, char *desc, int line)
 	 * reservation.  If those pages were not touched, then they will
 	 * not have been freed by the code above.  Free them here.
 	 */
-	if ((flags & MAP_SHARED) || private_resv) {
+	if (mapping_creates_reservation(flags)) {
 		int unused_surplus = MIN(hpages - touched[s], es);
 
 		et -= unused_surplus;
@@ -267,9 +417,15 @@ static int unmap_(int s, int hpages, int flags, char *desc, int line)
 
 static int touch_(int s, int hpages, int flags, char *desc, int line)
 {
+	unsigned long allowed_free = 0;
 	long et, ef, er, es;
+	int creates_reservation = mapping_creates_reservation(flags);
 	int nr;
 	char *c;
+
+	/* An unreserved private mapping allocates hugepages on fault. */
+	if (!creates_reservation)
+		allowed_free = read_allowed_free_hugepages();
 
 	for (c = map_addr[s], nr = hpages;
 			hpages && c < map_addr[s] + map_size[s];
@@ -292,19 +448,18 @@ static int touch_(int s, int hpages, int flags, char *desc, int line)
 	 * which could elevate total, free, and surplus counts.  resv is
 	 * unchanged but free must be decreased.
 	 */
-	if (flags & MAP_SHARED || private_resv) {
+	if (creates_reservation) {
 		et = prev_total;
 		ef = prev_free - hpages;
 		er = prev_resv - hpages;
 		es = prev_surp;
 	} else {
-		if (hpages + prev_resv > prev_free)
-			et = prev_total + (hpages - prev_free + prev_resv);
-		else
-			et = prev_total;
+		unsigned long shortfall = surplus_pages_needed(hpages, allowed_free);
+
+		et = prev_total + shortfall;
 		er = prev_resv;
-		es = prev_surp + et - prev_total;
-		ef = prev_free - hpages + et - prev_total;
+		es = prev_surp + shortfall;
+		ef = prev_free - hpages + shortfall;
 	}
 	return verify_counters(line, desc, et, ef, er, es);
 }
@@ -378,7 +533,7 @@ static void per_iteration_cleanup(void)
 	for (nr = 0; nr < NR_SLOTS; nr++) {
 		if (map_addr[nr])
 			SAFE_MUNMAP(map_addr[nr], map_size[nr]);
-		if (map_fd[nr] > 0)
+		if (map_fd[nr] != -1)
 			SAFE_CLOSE(map_fd[nr]);
 	}
 }
@@ -435,8 +590,10 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	SAFE_FILE_PRINTF(PATH_OC_HPAGES, "%lu", tst_hugepages);
+	SAFE_FILE_PRINTF(PATH_VM_OVERCOMMIT_HPAGES, "%lu", tst_hugepages);
 	private_resv = kernel_has_private_reservations();
+	tst_res(TDEBUG, "MAP_PRIVATE mmap() %s a hugetlb reservation",
+		private_resv ? "creates" : "does not create");
 }
 
 static void cleanup(void)
@@ -446,11 +603,16 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.needs_root = 1,
+	.options = (struct tst_option[]) {
+		{"n", &private_noreserve_opt,
+		 "Map private VMAs with MAP_NORESERVE"},
+		{}
+	},
 	.mntpoint = MNTPOINT,
 	.needs_hugetlbfs = 1,
 	.save_restore = (const struct tst_path_val[]) {
-		{PATH_OC_HPAGES, NULL},
-		{PATH_NR_HPAGES, NULL},
+		{PATH_VM_OVERCOMMIT_HPAGES, NULL, TST_SR_TCONF},
+		{PATH_VM_NR_HPAGES, NULL, TST_SR_TCONF},
 		{}
 	},
 	.setup = setup,

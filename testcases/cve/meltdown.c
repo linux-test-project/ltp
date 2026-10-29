@@ -3,6 +3,12 @@
  * Copyright (c) 2018 Pavel Boldin <pboldin@cloudlinux.com>
  */
 
+/*\
+ * Test for CVE-2017-5754 (Meltdown).
+ *
+ * https://meltdownattack.com/
+ */
+
 #include "config.h"
 #include "tst_test.h"
 
@@ -39,7 +45,7 @@ clflush_target(void)
 extern char failshere[];
 extern char stopspeculate[];
 
-static void __attribute__((noinline))
+static void LTP_ATTRIBUTE_NOINLINE
 speculate(unsigned long addr, char bit)
 {
 	register char mybit asm ("cl") = bit;
@@ -281,7 +287,7 @@ find_kernel_symbol(const char *name)
 
 	if (uname(&utsname) < 0)
 		tst_brk(TBROK | TERRNO, "uname");
-	sprintf(systemmap, "/boot/System.map-%s", utsname.release);
+	snprintf(systemmap, sizeof(systemmap), "/boot/System.map-%s", utsname.release);
 	addr = find_symbol_in_file(systemmap, name);
 	return addr;
 }

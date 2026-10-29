@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Google, Inc.
+ * Copyright (c) Linux Test Project, 2017-2024
  */
 
-/*
+/*\
  * Regression test for commit c9f838d104fe ("KEYS: fix
  * keyctl_set_reqkey_keyring() to not leak thread keyrings"), a.k.a.
  * CVE-2017-7472.  This bug could be used to exhaust kernel memory, though it
@@ -45,7 +46,7 @@ static struct tst_test test = {
 	.test_all = do_test,
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2017-7472"},
-		{"linux-git", "c9f838d104fe"},
+		{"linux-git", "c9f838d104fed6f2f61d68164712e3204bf5271b"},
 		{}
 	}
 };

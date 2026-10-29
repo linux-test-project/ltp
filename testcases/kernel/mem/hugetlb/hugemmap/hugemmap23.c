@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 /*
  * Copyright (C) 2005-2006 IBM Corporation.
+ * Copyright (c) Linux Test Project, 2023
  * Author: David Gibson & Adam Litke
  */
 
 /*\
- * [Description]
- *
  * This test uses mprotect to change protection of hugepage mapping and
  * perform read/write operation. It checks if the operation results in
  * expected behaviour as per the protection.
  */
+
 #include <setjmp.h>
 #include "hugetlb.h"
 
 #define MNTPOINT "hugetlbfs/"
 #define RANDOM_CONSTANT 0x1234ABCD
+#define FLAGS_DESC(x) x, #x
 
 static int fd = -1;
 static sigjmp_buf sig_escape;
@@ -32,23 +33,12 @@ static struct tcase {
 	int prot2;
 	char *prot2_str;
 } tcases[] = {
-	{"R->RW", 1, PROT_READ, "PROT_READ",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
-
-	{"RW->R", 1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"R->RW 1/2", 2, PROT_READ, "PROT_READ",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
-
-	{"RW->R 1/2", 2, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"NONE->R", 1, PROT_NONE, "PROT_NONE",
-		1, PROT_READ, "PROT_READ"},
-
-	{"NONE->RW", 1, PROT_NONE, "PROT_NONE",
-		1, PROT_READ|PROT_WRITE, "PROT_READ|PROT_WRITE"},
+	{"R->RW", 1, FLAGS_DESC(PROT_READ), 1, FLAGS_DESC(PROT_READ|PROT_WRITE)},
+	{"RW->R", 1, FLAGS_DESC(PROT_READ | PROT_WRITE), 1, FLAGS_DESC(PROT_READ)},
+	{"R->RW 1/2", 2, FLAGS_DESC(PROT_READ), 1, FLAGS_DESC(PROT_READ | PROT_WRITE)},
+	{"RW->R 1/2", 2, FLAGS_DESC(PROT_READ | PROT_WRITE), 1, FLAGS_DESC(PROT_READ)},
+	{"NONE->R", 1, FLAGS_DESC(PROT_NONE), 1, FLAGS_DESC(PROT_READ)},
+	{"NONE->RW", 1, FLAGS_DESC(PROT_NONE), 1, FLAGS_DESC(PROT_READ | PROT_WRITE)},
 };
 
 static void sig_handler(int signum, siginfo_t *si, void *uc)
@@ -205,7 +195,7 @@ static void setup(void)
 	hpage_size = tst_get_hugepage_size();
 	SAFE_SIGACTION(SIGSEGV, &sa, NULL);
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	addr = SAFE_MMAP(NULL, 2*hpage_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	memset(addr, 0, hpage_size);
 	SAFE_MUNMAP(addr, hpage_size);

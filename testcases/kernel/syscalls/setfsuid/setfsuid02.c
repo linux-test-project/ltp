@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setfsuid() syscall fails if an invalid fsuid is given.
  */
 

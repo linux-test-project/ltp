@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that root user can change the real and effective uid to an
  * unprivileged user.
  */

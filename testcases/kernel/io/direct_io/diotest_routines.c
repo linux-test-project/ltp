@@ -47,7 +47,7 @@
 
 #include "diotest_routines.h"
 
-/* **** Routines for buffer actions, comparisions **** */
+/* **** Routines for buffer actions, comparisons **** */
 
 /*
  * fillbuf: Fill buffer of given size with given character value
@@ -55,11 +55,7 @@
 */
 void fillbuf(char *buf, int count, char value)
 {
-	while (count > 0) {
-		strncpy(buf, &value, 1);
-		buf++;
-		count = count - 1;
-	}
+	memset(buf, value, count);
 }
 
 void vfillbuf(struct iovec *iv, int vcnt, char value)

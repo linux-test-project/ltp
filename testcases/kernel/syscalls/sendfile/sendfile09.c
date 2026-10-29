@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) International Business Machines  Corp., 2014
+ * Copyright (c) Linux Test Project, 2013-2023
  */
 
 /*\
- * [Description]
- *
  * Testcase copied from sendfile02.c to test the basic functionality of
  * the sendfile() system call on large file. There is a kernel bug which
  * introduced by commit 8f9c0119d7ba9 and fixed by commit 5d73320a96fcc.
@@ -20,11 +19,7 @@
 
 #include <inttypes.h>
 #include <sys/sendfile.h>
-
 #include "tst_test.h"
-#include "lapi/abisize.h"
-
-#ifndef TST_ABI32
 
 #define ONE_GB		(INT64_C(1) << 30)
 #define IN_FILE		"in_file"
@@ -96,13 +91,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.test = run,
 	.tcnt = ARRAY_SIZE(tc),
-	.max_runtime = 120,
+	.timeout = 120,
+	.needs_abi_bits = 64,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5d73320a96fcc"},
+		{"linux-git", "5d73320a96fcce80286f1447864c481b5f0b96fa"},
 		{}
 	}
 };
-
-#else
-TST_TEST_TCONF("This test is only for 64bit");
-#endif

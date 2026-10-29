@@ -32,6 +32,10 @@
 #define FAN_REPORT_DFID_NAME_TARGET (FAN_REPORT_DFID_NAME | \
 				     FAN_REPORT_FID | FAN_REPORT_TARGET_FID)
 #endif
+#ifndef FAN_REPORT_FD_ERROR
+#define FAN_REPORT_FD_ERROR	0x00002000
+#endif
+
 
 /* Non-uapi convenience macros */
 #ifndef FAN_REPORT_DFID_NAME_FID
@@ -105,6 +109,9 @@
 #ifndef FAN_FS_ERROR
 #define FAN_FS_ERROR		0x00008000
 #endif
+#ifndef FAN_PRE_ACCESS
+#define FAN_PRE_ACCESS		0x00100000
+#endif
 #ifndef FAN_RENAME
 #define FAN_RENAME		0x10000000
 #endif
@@ -115,6 +122,16 @@
 #endif
 #ifndef FAN_EPIDFD
 #define FAN_EPIDFD		-2
+#endif
+
+/* errno other than EPERM can specified in upper byte of deny response */
+#ifndef FAN_DENY_ERRNO
+#define FAN_ERRNO(err) (((((__u32)(err)) & 0xff) << 24))
+#define FAN_DENY_ERRNO(err) (FAN_DENY | FAN_ERRNO(err))
+#endif
+
+#ifndef FAN_RESPONSE_ERRNO
+#define FAN_RESPONSE_ERRNO(res) ((int)((res) >> 24))
 #endif
 
 /* Flags required for unprivileged user group */
@@ -129,6 +146,8 @@
  */
 #define LTP_ALL_PERM_EVENTS	(FAN_OPEN_PERM | FAN_OPEN_EXEC_PERM | \
 				 FAN_ACCESS_PERM)
+
+#define LTP_PRE_CONTENT_EVENTS	(FAN_PRE_ACCESS)
 
 struct fanotify_group_type {
 	unsigned int flag;
@@ -161,6 +180,9 @@ typedef struct {
 #endif
 #ifndef FAN_EVENT_INFO_TYPE_ERROR
 #define FAN_EVENT_INFO_TYPE_ERROR	5
+#endif
+#ifndef FAN_EVENT_INFO_TYPE_RANGE
+#define FAN_EVENT_INFO_TYPE_RANGE	6
 #endif
 
 #ifndef FAN_EVENT_INFO_TYPE_OLD_DFID_NAME
@@ -201,11 +223,25 @@ struct fanotify_event_info_error {
 };
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_ERROR */
 
+#ifndef HAVE_STRUCT_FANOTIFY_EVENT_INFO_RANGE
+struct fanotify_event_info_range {
+	struct fanotify_event_info_header hdr;
+	__u32 pad;
+	__u64 offset;
+	__u64 count;
+};
+#endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_RANGE */
+
 /* NOTE: only for struct fanotify_event_info_fid */
 #ifdef HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL
 # define FSID_VAL_MEMBER(fsid, i) (fsid.__val[i])
 #else
 # define FSID_VAL_MEMBER(fsid, i) (fsid.val[i])
 #endif /* HAVE_STRUCT_FANOTIFY_EVENT_INFO_FID_FSID___VAL */
+
+/* linux/exportfs.h */
+#ifndef FILEID_INVALID
+# define FILEID_INVALID		0xff
+#endif
 
 #endif /* LAPI_FANOTIFY_H__ */

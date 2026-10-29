@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether counter overflow is detected and handled correctly.
  *
  * It is not possible to directly overflow the counter using the
@@ -105,7 +103,7 @@ static void test_select(void)
 
 	TST_EXP_EQ_LI(FD_ISSET(fd, &readfds), 1);
 
-	SAFE_READ(0, evfd, &count, sizeof(count));
+	SAFE_READ(SAFE_READ_ANY, evfd, &count, sizeof(count));
 	TST_EXP_EQ_LI(count, UINT64_MAX);
 }
 
@@ -129,13 +127,15 @@ static void test_poll(void)
 
 	TST_EXP_EQ_LI(pollfd.revents & POLLERR, POLLERR);
 
-	SAFE_READ(0, evfd, &count, sizeof(count));
+	SAFE_READ(SAFE_READ_ANY, evfd, &count, sizeof(count));
 	TST_EXP_EQ_LI(count, UINT64_MAX);
 }
 
 static void setup(void)
 {
 	TEST(io_setup(MAXEVENTS, &ctx));
+	if (TST_RET == -ENOSYS)
+		tst_brk(TCONF | TRERRNO, "io_setup(): AIO not supported by kernel");
 	if (TST_RET < 0)
 		tst_brk(TBROK, "io_setup() failed: %s", tst_strerrno(-TST_RET));
 

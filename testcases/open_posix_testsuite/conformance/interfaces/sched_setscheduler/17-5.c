@@ -33,7 +33,7 @@
 #define ERR_MSG(f, rc)  printf("Failed: %s rc: %d errno: %s\n", \
 				f, rc, strerror(errno))
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int old_priority, old_policy, new_policy;
 	struct sched_param param;

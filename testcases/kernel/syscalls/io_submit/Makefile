@@ -5,6 +5,6 @@ top_srcdir		?= ../../../..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-LDLIBS			+= $(AIO_LIBS)
+io_submit01:	LDLIBS	+= $(AIO_LIBS)
 
 include $(top_srcdir)/include/mk/generic_leaf_target.mk

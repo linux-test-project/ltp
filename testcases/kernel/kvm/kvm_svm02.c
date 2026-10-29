@@ -33,22 +33,14 @@ static void *vmsave_buf;
 /* Load FS, GS, TR and LDTR state from vmsave_buf */
 static int guest_vmload(void)
 {
-	asm (
-		"vmload %0\n"
-		:
-		: "a" (vmsave_buf)
-	);
+	kvm_svm_vmload(vmsave_buf);
 	return 0;
 }
 
 /* Save current FS, GS, TR and LDTR state to vmsave_buf */
 static int guest_vmsave(void)
 {
-	asm (
-		"vmsave %0\n"
-		:
-		: "a" (vmsave_buf)
-	);
+	kvm_svm_vmsave(vmsave_buf);
 	return 0;
 }
 
@@ -96,7 +88,7 @@ void main(void)
 	vmsave_buf = kvm_alloc_vmcb();
 
 	/* Save allocated stack for later VM reinit */
-	ss = vcpu->vmcb->ss.selector;
+	ss = vcpu->vmcb->ss.selector >> 3;
 	rsp = vcpu->vmcb->rsp;
 
 	/* Load partial state from vmsave_buf and save it to vcpu->vmcb */
@@ -137,13 +129,17 @@ static struct tst_test test = {
 	.test_all = tst_kvm_run,
 	.setup = tst_kvm_setup,
 	.cleanup = tst_kvm_cleanup,
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_KVM",
+		NULL
+	},
 	.supported_archs = (const char *const []) {
 		"x86_64",
 		"x86",
 		NULL
 	},
 	.tags = (struct tst_tag[]){
-		{"linux-git", "c7dfa4009965"},
+		{"linux-git", "c7dfa4009965a9b2d7b329ee970eb8da0d32f0bc"},
 		{"CVE", "2021-3656"},
 		{}
 	}

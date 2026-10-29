@@ -4,19 +4,14 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * CVE 2018-18445
  *
  * Check that eBPF verifier correctly handles 32-bit arithmetic, in particular
  * the right bit shift instruction. It is an error if the BPF program passes
  * verification regardless of whether it then causes any actual damage. Kernel
  * bug fixed in:
- *
- *  commit b799207e1e1816b09e7a5920fbb2d5fcf6edd681
- *  Author: Jann Horn <jannh@google.com>
- *  Date:   Fri Oct 5 18:17:59 2018 +0200
- *
- *  bpf: 32-bit RSH verification must truncate input before the ALU op
+ * b799207e1e18 ("bpf: 32-bit RSH verification must truncate input before the ALU op")
  */
 
 #include <stdio.h>
@@ -108,7 +103,6 @@ static void run(void)
 static struct tst_test test = {
 	.setup = setup,
 	.test_all = run,
-	.min_kver = "3.18",
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
 	.caps = (struct tst_cap []) {
 		TST_CAP(TST_CAP_DROP, CAP_SYS_ADMIN),
@@ -121,7 +115,7 @@ static struct tst_test test = {
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b799207e1e18"},
+		{"linux-git", "b799207e1e1816b09e7a5920fbb2d5fcf6edd681"},
 		{"CVE", "2018-18445"},
 		{}
 	}

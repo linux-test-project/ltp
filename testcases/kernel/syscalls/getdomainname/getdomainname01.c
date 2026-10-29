@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for getdomainname(2)
  *
  * This is a Phase I test for the getdomainname(2) system call.

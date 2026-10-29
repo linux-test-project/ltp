@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2015 Cyril Hrubis <chrubis@suse.cz>
- *
+ */
+
+/*\
  * Block several threads on a private mutex, then wake them up.
  */
 

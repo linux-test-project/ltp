@@ -1,5 +1,10 @@
 /hangup01
 /ptem01
+/ptem02
+/ptem03
+/ptem04
+/ptem05
+/ptem06
 /pty01
 /pty02
 /pty03
@@ -7,3 +12,5 @@
 /pty05
 /pty06
 /pty07
+/pty08
+/pty09

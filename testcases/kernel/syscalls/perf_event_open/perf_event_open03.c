@@ -77,24 +77,49 @@ static void check_progress(int i)
 
 static void run(void)
 {
-	long diff;
-	int i;
+	long diff, diff_total, slab, slab_prev;
+	int i, sample;
 
-	diff = SAFE_READ_MEMINFO("MemAvailable:");
+	sample = 0;
+	diff_total = 0;
+
+	slab_prev = SAFE_READ_MEMINFO("SUnreclaim:");
 	tst_timer_start(CLOCK_MONOTONIC);
 
 	/* leak about 100MB of RAM */
 	for (i = 0; i < iterations; i++) {
 		ioctl(fd, PERF_EVENT_IOC_SET_FILTER, "filter,0/0@abcd");
 		check_progress(i);
+
+		/*
+		 * Every 1200000 iterations, calculate how much the unreclaimable
+		 * slab has grown. If the increase is greater than 20 * 1024
+		 * (20MB), increment the sample counter and log the event.
+		 */
+		if ((i % 1200000) == 0) {
+			slab = SAFE_READ_MEMINFO("SUnreclaim:");
+			diff = slab - slab_prev;
+			diff_total += diff;
+
+			if (diff > 20 * 1024) {
+				sample++;
+				tst_res(TINFO, "SUnreclaim increased by %ld kB at iteration %d", diff, i);
+			}
+
+			slab_prev = slab;
+		}
 	}
 
-	diff -= SAFE_READ_MEMINFO("MemAvailable:");
-
-	if (diff > 50 * 1024)
-		tst_res(TFAIL, "Likely kernel memory leak detected");
-	else
+	if ((sample > 5) || (diff_total > 100 * 1024)) {
+		tst_res(TFAIL,
+			"Likely kernel memory leak detected, SUnreclaim increased by %ld kB total",
+			diff_total);
+		tst_res(TINFO,
+			"Unreclaimable slab can also grow due to unrelated reasons as well. "
+			"You can rerun the test with CONFIG_DEBUG_KMEMLEAK to make sure the leak is real");
+	} else {
 		tst_res(TPASS, "No memory leak found");
+	}
 }
 
 static void cleanup(void)
@@ -108,9 +133,9 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_root = 1,
-	.max_runtime = 300,
+	.runtime = 300,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "7bdb157cdebb"},
+		{"linux-git", "7bdb157cdebbf95a1cd94ed2e01b338714075d00"},
 		{"CVE", "2020-25704"},
 		{}
 	}

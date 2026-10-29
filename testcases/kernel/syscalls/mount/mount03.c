@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Linux Test Project, 2022
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  */
 
 /*\
- * [Description]
- *
  * Check mount(2) system call with various flags.
  *
  * Verify that mount(2) syscall passes for each flag setting and validate
@@ -122,9 +120,9 @@ static void test_file_dir_noatime(int update_fatime, int update_datime)
 	SAFE_CLOSEDIR(test_dir);
 	dir_atime = dir_st.st_atime;
 
-	usleep(1001000);
+	usleep(1500000);
 
-	SAFE_READ(0, otfd, readbuf, sizeof(readbuf));
+	SAFE_READ(SAFE_READ_ANY, otfd, readbuf, sizeof(readbuf));
 	SAFE_FSTAT(otfd, &st);
 
 	test_dir = SAFE_OPENDIR(dir);

@@ -69,7 +69,7 @@ test5()
 	EXPECT_FAIL $LD -Bstatic -r main.o f1.o rf1.o test.so -L/usr/lib/ 2\> ld.out
 	cat ld.out
 
-	if grep -q "$LD: attempted static link of dynamic object" ld.out; then
+	if grep -q "attempted static link of dynamic object" ld.out; then
 		tst_res TPASS "Got expected error message"
 	else
 		tst_res TFAIL "Unexpected error message"

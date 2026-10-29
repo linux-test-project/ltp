@@ -229,8 +229,8 @@ void tst_setup_netns(void)
 	int real_gid = getgid();
 	int nscount = 1;
 
-	if (!access("/proc/sys/user/max_user_namespaces", F_OK)) {
-		SAFE_FILE_SCANF("/proc/sys/user/max_user_namespaces", "%d",
+	if (!access(PATH_USER_MAX_USER_NAMESPACES, F_OK)) {
+		SAFE_FILE_SCANF(PATH_USER_MAX_USER_NAMESPACES, "%d",
 			&nscount);
 	}
 

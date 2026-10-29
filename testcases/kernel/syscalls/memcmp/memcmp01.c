@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * The testcase for buffer comparison by check boundary conditions.
  */
 

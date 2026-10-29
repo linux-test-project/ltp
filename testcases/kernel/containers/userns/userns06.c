@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that when a process with non-zero user IDs performs an execve(),
  * the process's capability sets are cleared.
  * When a process with zero user IDs performs an execve(), the process's
@@ -62,7 +60,10 @@ static void child_fn2(void)
 
 static void run(void)
 {
-	const struct tst_clone_args args = { CLONE_NEWUSER, SIGCHLD };
+	const struct tst_clone_args args = {
+		.flags = CLONE_NEWUSER,
+		.exit_signal = SIGCHLD,
+	};
 	pid_t cpid1;
 	pid_t cpid2;
 	int parentuid;

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl link is correctly recognized by watch queue.
  */
 

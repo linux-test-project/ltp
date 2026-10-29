@@ -48,7 +48,7 @@
 #define VERBOSE 1
 #endif
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct tms ini_tms, parent_tms, child_tms;
 

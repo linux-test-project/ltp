@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Xiao Yang <ice_yangxiao@163.com>
+ */
+
+/*\
+ * Verify the basic functionality of :manpage:`futex(2)` with FUTEX_CMP_REQUEUE.
  *
- * Description:
- * Testcase to check the basic functionality of futex(FUTEX_CMP_REQUEUE).
- * futex(FUTEX_CMP_REQUEUE) can wake up the number of waiters specified
- * by val argument and then requeue the number of waiters limited by val2
- * argument(i.e. move some remaining waiters from uaddr to uaddr2 address).
+ * :manpage:`futex(2)` with FUTEX_CMP_REQUEUE can wake up the number of waiters
+ * specified by val argument and then requeue the number of waiters limited by
+ * val2 argument (i.e. move some remaining waiters from uaddr to uaddr2 address).
  */
 
 #include <errno.h>
@@ -20,8 +22,8 @@
 
 struct shared_data {
 	futex_t futexes[2];
-	int spurious;
-	int test_done;
+	tst_atomic_t spurious;
+	tst_atomic_t test_done;
 };
 
 static struct shared_data *sd;

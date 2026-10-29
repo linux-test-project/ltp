@@ -36,7 +36,7 @@
 #include <errno.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 char *TCID = "cgroup_xattr";
 
@@ -151,11 +151,8 @@ void setup(int argc, char *argv[])
 		tst_brkm(TCONF, NULL, "Kernel doesn't support cgroups");
 
 	for (i = 0; i < ARRAY_SIZE(tkeys); ++i) {
-		if (!strcmp(tkeys[i].name, "security.")) {
-			tkeys[i].good = tst_kvercmp(3, 15, 0) < 0;
-		} else if (!strcmp(tkeys[i].name, "trusted.")) {
+		if (!strcmp(tkeys[i].name, "trusted."))
 			tkeys[i].good = tst_kvercmp(4, 5, 0) < 0;
-		}
 	}
 
 	int value_size = DEFAULT_VALUE_SIZE;
@@ -269,12 +266,7 @@ int mount_cgroup(void)
 		 * additional "xattr" option. In that case, mount will succeed,
 		 * but xattr won't be supported in the new mount anyway.
 		 * Should be removed as soon as a fix committed to upstream.
-		 *
-		 * But not applicable for kernels >= 3.15 where xattr supported
-		 * natively.
 		 */
-		if (hier != 0 && tst_kvercmp(3, 15, 0) < 0)
-			continue;
 
 		int i, found = 0;
 		for (i = 0; i < cgrp_opt_num; ++i) {
@@ -297,7 +289,6 @@ int mount_cgroup(void)
 
 	int i, any_mounted = 0;
 	for (i = 0; i < cgrp_opt_num; ++i) {
-		char dir[MAX_DIR_NAME];
 		struct cgrp_option *opt = &cgrp_opt[i];
 		tst_resm(TINFO, "mount options %d: %s (hier = %d)",
 			i, opt->str, opt->hier);
@@ -305,7 +296,7 @@ int mount_cgroup(void)
 		SAFE_MKDIR(cleanup, opt->dir, 0755);
 
 		if (mount(opt->dir, opt->dir, "cgroup", 0, opt->str) == -1) {
-			tst_resm(TINFO, "Can't mount: %s", dir);
+			tst_resm(TINFO, "Can't mount: %s", opt->dir);
 			continue;
 		}
 

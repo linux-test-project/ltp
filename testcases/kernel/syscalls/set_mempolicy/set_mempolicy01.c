@@ -17,14 +17,14 @@
 # include <numaif.h>
 #endif
 #include "tst_test.h"
-#include "tst_numa.h"
+#include "tse_numa.h"
 
 #ifdef HAVE_NUMA_V2
 
 #include "set_mempolicy.h"
 
 static size_t page_size;
-static struct tst_nodemap *nodes;
+static struct tse_nodemap *nodes;
 
 #define PAGES_ALLOCATED 16u
 
@@ -32,7 +32,7 @@ static void setup(void)
 {
 	page_size = getpagesize();
 
-	nodes = tst_get_nodemap(TST_NUMA_MEM, 2 * PAGES_ALLOCATED * page_size / 1024);
+	nodes = tse_get_nodemap(TST_NUMA_MEM, 2 * PAGES_ALLOCATED * page_size / 1024);
 	if (nodes->cnt <= 1)
 		tst_brk(TCONF, "Test requires at least two NUMA memory nodes");
 
@@ -41,14 +41,14 @@ static void setup(void)
 	 * has multiple NUMA nodes, the test matrix combination grows exponentially
 	 * and bring about test time to increase extremely fast.
 	 *
-	 * Here reset the maximum runtime according to the NUMA nodes.
+	 * Here reset the entire timeout according to the NUMA nodes.
 	 */
-	tst_set_max_runtime(test.max_runtime * (1 << nodes->cnt/16));
+	tst_set_timeout(test.timeout * (1 << nodes->cnt/16));
 }
 
 static void cleanup(void)
 {
-	tst_nodemap_free(nodes);
+	tse_nodemap_free(nodes);
 }
 
 static void verify_mempolicy(unsigned int node, int mode)
@@ -63,12 +63,12 @@ static void verify_mempolicy(unsigned int node, int mode)
 	if (TST_RET) {
 		tst_res(TFAIL | TTERRNO,
 		        "set_mempolicy(%s) node %u",
-		        tst_mempolicy_mode_name(mode), node);
+		        tse_mempolicy_mode_name(mode), node);
 		return;
 	}
 
 	tst_res(TPASS, "set_mempolicy(%s) node %u",
-	        tst_mempolicy_mode_name(mode), node);
+	        tse_mempolicy_mode_name(mode), node);
 
 	numa_free_nodemask(bm);
 
@@ -79,9 +79,9 @@ static void verify_mempolicy(unsigned int node, int mode)
 		tst_reap_children();
 	}
 
-	tst_nodemap_reset_counters(nodes);
+	tse_nodemap_reset_counters(nodes);
 	alloc_fault_count(nodes, NULL, PAGES_ALLOCATED * page_size);
-	tst_nodemap_print_counters(nodes);
+	tse_nodemap_print_counters(nodes);
 
 	for (i = 0; i < nodes->cnt; i++) {
 		if (nodes->map[i] == node) {
@@ -118,8 +118,11 @@ static struct tst_test test = {
 	.test = verify_set_mempolicy,
 	.tcnt = 2,
 	.forks_child = 1,
-	.needs_checkpoints = 1,
-	.max_runtime = 600,
+	.timeout = 600,
+	.needs_kconfigs = (const char *const[]){
+		"CONFIG_NUMA=y",
+		NULL
+	}
 };
 
 #else

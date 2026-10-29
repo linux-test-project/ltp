@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that epoll_create1 returns -1 and set errno to EINVAL with an invalid
  * value specified in flags.
  */

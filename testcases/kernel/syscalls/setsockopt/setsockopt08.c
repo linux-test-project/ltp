@@ -3,9 +3,8 @@
  * Copyright (c) 2021 SUSE LLC <rpalethorpe@suse.com>
  * Based on reproducer by Nicolai Stange based on PoC Andy Nguyen
  */
+
 /*\
- * [Description]
- *
  * This will reproduce the bug on x86_64 in 32bit compatibility
  * mode. It is most reliable with KASAN enabled. Otherwise it relies
  * on the out-of-bounds write corrupting something which leads to a
@@ -38,20 +37,20 @@
  *
  *  * the mandatory struct compat_ipt_replace header,
  *  * a single entry consisting of
- *    ** the mandatory compat_ipt_entry header
- *    ** a single 'state' match entry of appropriate size for
- *      controlling the out-of-bounds write when converting
- *      the target entry following next,
- *    ** a single 'REJECT' target entry.
+ *     * the mandatory compat_ipt_entry header
+ *     * a single 'state' match entry of appropriate size for
+ *       controlling the out-of-bounds write when converting
+ *       the target entry following next,
+ *     * a single 'REJECT' target entry.
  *
  * The kernel will transform this into a buffer containing (in
  * this order)
  *
  * * a xt_table_info
  * * a single entry consisting of
- *   ** its ipt_entry header
- *   ** a single 'state' match entry
- *   ** followed by a single 'REJECT' target entry.
+ *    * its ipt_entry header
+ *    * a single 'state' match entry
+ *    * followed by a single 'REJECT' target entry.
  *
  * The expected sizes for the 'state' match entries as well as the
  * 'REJECT' target are the size of the base header struct (32 bytes)
@@ -69,8 +68,8 @@
  *
  * That is, the padding gets inserted unconditionally during the transformation,
  * independent of the actual values of ->u.user.match_size or
- * ->u.user.target_size and the result ends up getting layed out with proper
- *  alignment only if said values match the expectations.
+ * ->u.user.target_size and the result ends up getting laid out with proper
+ * alignment only if said values match the expectations.
  *
  * That's not a problem in itself, but this unconditional insertion of padding
  * must be taken into account in the match_size calculation below.
@@ -83,6 +82,13 @@
  *  * the kernel will insert four bytes of padding
  *    after the match and target entries each.
  *  * sizeof(struct xt_entry_target) = 32
+ *
+ * Since kernel commit ec1806a730a1 ("netfilter: x_tables: disable
+ * 32bit compat interface in user namespaces") in v7.2, the compat
+ * xtables ABI is rejected with EPERM inside a non-init user namespace.
+ * As this test runs isolated via tst_setup_netns(), it can no longer
+ * reach the vulnerable code path on such kernels and reports TCONF
+ * instead.
  */
 
 #include <netinet/in.h>
@@ -93,17 +99,15 @@
 
 static void *buffer;
 
-void setup(void)
+static void setup(void)
 {
-	if (tst_kernel_bits() == 32 || sizeof(long) > 4) {
-		tst_res(TINFO,
-			"The vulnerability was only present in 32-bit compat mode");
-	}
+	if (!tst_is_compat_mode())
+		tst_res(TINFO, "The vulnerability was only present in 32-bit compat mode");
 
 	tst_setup_netns();
 }
 
-void run(void)
+static void run(void)
 {
 	const char *const res_fmt_str =
 		"setsockopt(%d, IPPROTO_IP, IPT_SO_SET_REPLACE, %p, 1)";
@@ -114,7 +118,7 @@ void run(void)
 	const size_t tgt_size = 32;
 	const size_t match_size = 1024 - 64 - 112 - 4 - tgt_size - 4;
 	struct xt_entry_target *xt_entry_tgt =
-		((struct xt_entry_target *) (&ipt_entry->elems[0] + match_size));
+		((struct xt_entry_target *)(&ipt_entry->elems[0] + match_size));
 	int fd = SAFE_SOCKET(AF_INET, SOCK_DGRAM, 0);
 	int result;
 
@@ -137,6 +141,11 @@ void run(void)
 
 	if (TST_RET == -1 && TST_ERR == ENOPROTOOPT)
 		tst_brk(TCONF | TTERRNO, res_fmt_str, fd, buffer);
+
+	if (TST_RET == -1 && TST_ERR == EPERM && tst_is_compat_mode()) {
+		tst_res(TINFO, "32bit compat xtables interface is disabled in user namespaces since commit ec1806a730a1");
+		tst_brk(TCONF | TTERRNO, res_fmt_str, fd, buffer);
+	}
 
 	result = (TST_RET == -1 && TST_ERR == EINVAL) ? TPASS : TFAIL;
 	tst_res(result | TTERRNO, res_fmt_str, fd, buffer);
@@ -161,11 +170,12 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b29c457a6511"},
+		{"linux-git", "b29c457a6511435960115c0f548c4360d5f4801d"},
+		{"linux-git", "ec1806a730a1c0b3d68a7f9afe81514fb0dd7991"},
 		{"CVE", "2021-22555"},
 		{}
 	}

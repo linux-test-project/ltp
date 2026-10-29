@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test basic error handling of the pwrite syscall.
  *
  * - ESPIPE when attempted to write to an unnamed pipe

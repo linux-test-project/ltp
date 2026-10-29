@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test whether writefd is set by select() when eventfd() counter value is
  * not the maximum value, then check if writefd is not set when eventfd()
  * counter value is maximum value.
@@ -39,7 +37,7 @@ static void run(void)
 
 	TST_EXP_EQ_LI(FD_ISSET(fd, &writefds), 1);
 
-	SAFE_READ(0, fd, &val, sizeof(val));
+	SAFE_READ(SAFE_READ_ANY, fd, &val, sizeof(val));
 	SAFE_WRITE(0, fd, &max, sizeof(max));
 
 	TEST(select(fd + 1, NULL, &writefds, NULL, &timeout));

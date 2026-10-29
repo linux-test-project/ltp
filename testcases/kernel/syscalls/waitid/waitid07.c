@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if waitid() filters children killed with SIGSTOP.
  */
 

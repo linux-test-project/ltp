@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setegid() sets the effective UID of the calling process
  * correctly, and does not modify the saved GID and real GID.
  */

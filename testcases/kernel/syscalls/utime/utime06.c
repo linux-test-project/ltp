@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that system call utime() fails with
  *
  * - EACCES when times argument is NULL and user does not have rights to modify

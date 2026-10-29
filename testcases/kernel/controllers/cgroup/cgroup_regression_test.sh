@@ -117,6 +117,15 @@ test2()
 {
 	local val1
 	local val2
+	local cgroup_version
+
+	cgroup_require "memory"
+	cgroup_version=$(cgroup_get_version "memory")
+	if [ "$cgroup_version" = "2" ]; then
+		tst_res TCONF "This test requires cgroup v1, but system is using cgroup v2"
+		cgroup_cleanup
+		return
+	fi
 
 	mount -t cgroup -o none,name=foo cgroup cgroup/
 	if [ $? -ne 0 ]; then
@@ -352,7 +361,7 @@ test7()
 		return
 	fi
 
-	subsys=`tail -n 1 /proc/cgroups | awk '{ print $1 }'`
+	subsys=$(awk 'END{ print $1 }' /proc/cgroups)
 
 	# remount to add new subsystems to the hierarchy
 	while [ $i -le 2 ]; do

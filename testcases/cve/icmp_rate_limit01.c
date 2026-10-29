@@ -6,21 +6,14 @@
  */
 
 /*\
- * CVE-2020-25705
+ * Test for CVE-2020-25705 fixed in kernel v5.10:
+ * b38e7819cae9 ("icmp: randomize the global rate limiter").
  *
  * Test of ICMP rate limiting behavior that may be abused for DNS cache
  * poisoning attack. Send a few batches of 100 packets to a closed UDP port
  * and count the ICMP errors. If the number of errors is always the same
  * for each batch (not randomized), the system is vulnerable. Send packets
  * from multiple IP addresses to bypass per-address ICMP throttling.
- *
- * Fixed in:
- *
- *  commit b38e7819cae946e2edf869e604af1e65a5d241c5
- *  Author: Eric Dumazet <edumazet@google.com>
- *  Date:   Thu Oct 15 11:42:00 2020 -0700
- *
- *  icmp: randomize the global rate limiter
  */
 
 #include <time.h>
@@ -68,6 +61,18 @@ static void setup(void)
 
 	/* Do NOT close this FD, or both interfaces will be destroyed */
 	childns = SAFE_OPEN("/proc/self/ns/net", O_RDONLY);
+
+	/*
+	 * Set namespace local rate limits if needed. The global limits might
+	 * be ignored otherwise. Lower icmp_msgs_per_sec to ensure rate limiting
+	 * engages even on slow debug kernels where the send loop takes long
+	 * enough that the token bucket refills mid-batch at the default 1000/sec.
+	 */
+	if (!access(PATH_IPV4_ICMP_MSGS_BURST, F_OK))
+		SAFE_FILE_PRINTF(PATH_IPV4_ICMP_MSGS_BURST, "50");
+
+	if (!access(PATH_IPV4_ICMP_MSGS_PER_SEC, F_OK))
+		SAFE_FILE_PRINTF(PATH_IPV4_ICMP_MSGS_PER_SEC, "10");
 
 	/* Configure child namespace */
 	CREATE_VETH_PAIR("ltp_veth1", "ltp_veth2");
@@ -255,17 +260,20 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.needs_kconfigs = (const char *[]) {
+		"CONFIG_INET",
 		"CONFIG_VETH",
 		"CONFIG_USER_NS=y",
 		"CONFIG_NET_NS=y",
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_IPV4_ICMP_MSGS_BURST, "50", TST_SR_TBROK},
+		{PATH_IPV4_ICMP_MSGS_PER_SEC, "10", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "b38e7819cae9"},
+		{"linux-git", "b38e7819cae946e2edf869e604af1e65a5d241c5"},
 		{"CVE", "2020-25705"},
 		{}
 	}

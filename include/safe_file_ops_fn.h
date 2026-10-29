@@ -20,6 +20,7 @@
 
 #include <sys/stat.h>
 #include <time.h>
+#include <stdarg.h>
 
 #include "lapi/utime.h"
 
@@ -62,6 +63,11 @@ void safe_file_printf(const char *file, const int lineno,
                       const char *path, const char *fmt, ...)
                       __attribute__ ((format (printf, 5, 6)));
 
+void safe_file_vprintf(const char *file, const int lineno,
+		       void (*cleanup_fn)(void),
+		       const char *path, const char *fmt, va_list va)
+	__attribute__ ((format (printf, 5, 0)));
+
 void safe_try_file_printf(const char *file, const int lineno,
 	void (*cleanup_fn)(void), const char *path, const char *fmt, ...)
 	__attribute__ ((format (printf, 5, 6)));
@@ -89,9 +95,5 @@ int safe_touch(const char *file, const int lineno,
 		void (*cleanup_fn)(void),
 		const char *pathname,
 		mode_t mode, const struct timespec times[2]);
-
-/* helper functions to setup overlayfs mountpoint */
-void create_overlay_dirs(void);
-int mount_overlay(const char *file, const int lineno, int skip);
 
 #endif /* SAFE_FILE_OPS_FN */

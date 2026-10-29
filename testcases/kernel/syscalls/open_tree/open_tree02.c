@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2020 Viresh Kumar <viresh.kumar@linaro.org>
- *
- * Basic open_tree() failure tests.
  */
+
+/*\
+ * Basic :manpage:`open_tree(2)` failure tests.
+ */
+
 #include "tst_test.h"
 #include "lapi/fsmount.h"
 

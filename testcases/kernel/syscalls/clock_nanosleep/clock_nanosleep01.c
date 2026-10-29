@@ -219,6 +219,7 @@ static void do_test(unsigned int i)
 }
 
 static struct tst_test test = {
+	.timeout = 3,
 	.tcnt = ARRAY_SIZE(tcase),
 	.test = do_test,
 	.test_variants = ARRAY_SIZE(variants),

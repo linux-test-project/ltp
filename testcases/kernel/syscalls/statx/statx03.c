@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test basic error handling of statx syscall:
  *
  * - EBADF - Bad file descriptor

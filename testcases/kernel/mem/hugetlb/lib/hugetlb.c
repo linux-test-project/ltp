@@ -1,34 +1,7 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * NAME
- *	hugetlb.c
- *
- * DESCRIPTION
- *	common routines for the hugepage tests.
- *
- *	The library contains the following routines:
- *
- *	getipckey()
- *	getuserid()
- *	rm_shm()
+ * Copyright (c) Linux Test Project, 2006-2025
+ * Copyright (c) International Business Machines Corp., 2001
  */
 
 #define TST_NO_DEFAULT_MAIN
@@ -54,9 +27,7 @@ int getipckey(void)
 	key_t ipc_key;
 	struct timeval time_info;
 
-	curdir = getcwd(curdir, size);
-	if (curdir == NULL)
-		tst_brk(TBROK | TERRNO, "getcwd(curdir)");
+	curdir = SAFE_GETCWD(curdir, size);
 
 	/*
 	 * Get a Sys V IPC key
@@ -87,10 +58,7 @@ int getuserid(char *user)
 {
 	struct passwd *ent;
 
-	ent = getpwnam(user);
-	if (ent == NULL)
-		tst_brk(TBROK | TERRNO, "getpwnam");
-
+	ent = SAFE_GETPWNAM(user);
 	return ent->pw_uid;
 }
 
@@ -129,4 +97,15 @@ int do_readback(void *p, size_t size, char *desc)
 		}
 	}
 	return 0;
+}
+
+void update_shm_size(size_t * shm_size)
+{
+	size_t shmmax;
+
+	SAFE_FILE_SCANF(PATH_KERN_SHMMAX, "%zu", &shmmax);
+	if (*shm_size > shmmax) {
+		tst_res(TINFO, "Set shm_size to shmmax: %zu", shmmax);
+		*shm_size = shmmax;
+	}
 }

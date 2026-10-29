@@ -35,7 +35,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	pthread_t new_th;
 	int ret;
@@ -57,6 +57,11 @@ int main(void)
 
 	/* Detach the non-existant thread. */
 	ret = pthread_detach(new_th);
+
+	if (ret == 0) {
+		printf("Test UNTESTED: Implementation does not return ESRCH\n");
+		return PTS_UNTESTED;
+	}
 
 	/* Check return value of pthread_detach() */
 	if (ret != ESRCH) {

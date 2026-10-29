@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * On some old ppc64 kernel, when hpage is mmaped on 32 bit boundary and
  * normal page below it, it triggers the bug caused by off-by-one error.
  *
@@ -21,6 +19,7 @@
 #include <limits.h>
 #include <sys/param.h>
 #include <sys/types.h>
+#include <lapi/mmap.h>
 
 #include "hugetlb.h"
 
@@ -44,7 +43,7 @@ static void run_test(void)
 		below_start = FOURGB;
 		above_end = 1024ULL*1024*1024*1024;
 
-		if (range_is_mapped(below_start, above_end) == 1) {
+		if (tst_mapping_in_range(below_start, above_end) == 1) {
 			tst_res(TINFO|TERRNO, "region 4G-IT is not free & "
 					"mmap() failed expected");
 			tst_res(TPASS, "Successful but inconclusive");
@@ -62,15 +61,15 @@ static void run_test(void)
 	memset(p, 0, hpage_size);
 
 	/* Test just below 4GB to check for off-by-one errors */
-	lowaddr = FOURGB - page_size;
-	q = mmap((void *)lowaddr, page_size, PROT_READ|PROT_WRITE,
+	lowaddr = FOURGB - MMAP_GRANULARITY;
+	q = mmap((void *)lowaddr, MMAP_GRANULARITY, PROT_READ|PROT_WRITE,
 		 MAP_SHARED|MAP_FIXED|MAP_ANONYMOUS, 0, 0);
 	if (q == MAP_FAILED) {
-		below_start = FOURGB - page_size;
+		below_start = FOURGB - MMAP_GRANULARITY;
 		above_end = FOURGB;
 
-		if (range_is_mapped(below_start, above_end) == 1) {
-			tst_res(TINFO|TERRNO, "region (4G-page)-4G is not free & "
+		if (tst_mapping_in_range(below_start, above_end) == 1) {
+			tst_res(TINFO|TERRNO, "region (4G-MMAP_GRANULARITY)-4G is not free & "
 					"mmap() failed expected");
 			tst_res(TPASS, "Successful but inconclusive");
 		} else
@@ -101,7 +100,7 @@ static void setup(void)
 		tst_brk(TCONF, "Machine must be >32 bit");
 	if (hpage_size > FOURGB)
 		tst_brk(TCONF, "Huge page size is too large");
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)
@@ -112,7 +111,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.tags = (struct tst_tag[]) {
-		{"linux-git", "9a94c5793a7b"},
+		{"linux-git", "9a94c5793a7b44720f19ebb71b636bc9c31b44d8"},
 		{}
 	},
 	.needs_root = 1,

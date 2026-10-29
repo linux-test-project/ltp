@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if keyctl invalidate is correctly recognized by watch queue.
  */
 

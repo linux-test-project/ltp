@@ -7,13 +7,11 @@
  */
 
 /*\
- * [Description]
- *
  * Verify write operation for eventfd fail with:
  *
  * - EAGAIN when counter is zero on non blocking fd
  * - EINVAL when buffer size is less than 8 bytes, or if an attempt is made to
- *	write the value 0xffffffffffffffff
+ *   write the value 0xffffffffffffffff
  */
 
 #include <stdlib.h>
@@ -30,7 +28,7 @@ static void run(void)
 	fd = TST_EXP_FD(eventfd(0, EFD_NONBLOCK));
 
 	SAFE_WRITE(0, fd, &val, sizeof(val));
-	SAFE_READ(0, fd, &buf, sizeof(buf));
+	SAFE_READ(SAFE_READ_ANY, fd, &buf, sizeof(buf));
 	TST_EXP_EQ_LI(buf, val);
 
 	val = UINT64_MAX - 1;

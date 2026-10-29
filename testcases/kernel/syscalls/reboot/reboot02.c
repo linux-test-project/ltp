@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Linux Test Project, 2009-2021
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
@@ -6,7 +6,6 @@
  */
 
 /*\
- * [Description]
  * Test whether libc wrapper of reboot(2) system call returns appropriate
  * error number for invalid cmd parameter or invalid user.
  */

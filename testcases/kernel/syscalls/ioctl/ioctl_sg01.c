@@ -3,7 +3,7 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * CVE-2018-1000204
  *
  * Test ioctl(SG_IO) and check that kernel doesn't leak data. Requires
@@ -16,6 +16,12 @@
  *  Date:   Fri May 18 16:23:18 2018 +0200
  *
  *  scsi: sg: allocate with __GFP_ZERO in sg_build_indirect()
+ *
+ *  commit 41e99fe2005182139b1058db71f0d241f8f0078c
+ *  Author: Desnes Nunes <desnesn@redhat.com>
+ *  Date:   Fri Oct 31 01:34:36 2025 -0300
+ *
+ *  usb: storage: Fix memory leak in USB bulk transport
  */
 
 #include <sys/types.h>
@@ -29,46 +35,81 @@
 #include "tst_test.h"
 #include "tst_memutils.h"
 
+#define SYSDIR "/sys/block"
+#define BLOCKDIR "/sys/block/%s/device/generic"
+
 #define BUF_SIZE (128 * 4096)
 #define CMD_SIZE 6
 
 static int devfd = -1;
-static char buffer[BUF_SIZE];
+static char buffer[BUF_SIZE + 1];
 static unsigned char command[CMD_SIZE];
 static struct sg_io_hdr query;
 
 /* TODO: split this off to a separate SCSI library? */
 static const char *find_generic_scsi_device(int access_flags)
 {
-	DIR *devdir;
+	DIR *sysdir;
 	struct dirent *ent;
 	int tmpfd;
-	static char devpath[PATH_MAX];
+	ssize_t length;
+	char *filename;
+	static char devpath[PATH_MAX], genpath[PATH_MAX];
 
-	errno = 0;
-	devdir = opendir("/dev");
+	sysdir = opendir(SYSDIR);
 
-	if (!devdir)
+	if (!sysdir)
 		return NULL;
 
-	while ((ent = SAFE_READDIR(devdir))) {
-		/* The bug is most likely reproducible only on /dev/sg* */
-		if (strncmp(ent->d_name, "sg", 2) || !isdigit(ent->d_name[2]))
+	/* Scan block devices */
+	while ((ent = SAFE_READDIR(sysdir))) {
+		if (ent->d_name[0] == '.')
 			continue;
 
-		snprintf(devpath, PATH_MAX, "/dev/%s", ent->d_name);
+		snprintf(devpath, PATH_MAX, BLOCKDIR, ent->d_name);
+		devpath[PATH_MAX - 1] = '\0';
+		length = readlink(devpath, genpath, PATH_MAX - 1);
+
+		if (length < 0)
+			continue;
+
+		genpath[length] = '\0';
+		filename = basename(genpath);
+
+		snprintf(devpath, PATH_MAX, "/dev/%s", filename);
 		/* access() makes incorrect assumptions about block devices */
 		tmpfd = open(devpath, access_flags);
 
 		if (tmpfd >= 0) {
 			SAFE_CLOSE(tmpfd);
-			SAFE_CLOSEDIR(devdir);
+			SAFE_CLOSEDIR(sysdir);
 			return devpath;
 		}
+
+		tst_res(TINFO | TERRNO, "Cannot open device %s", devpath);
 	}
 
-	SAFE_CLOSEDIR(devdir);
+	SAFE_CLOSEDIR(sysdir);
 	return NULL;
+}
+
+static void dump_hex(const char *str, size_t size)
+{
+	size_t i;
+
+	for (; size && !str[size - 1]; size--)
+		;
+
+	for (i = 0; i < size; i++) {
+		if (i && (i % 32) == 0)
+			printf("\n");
+		else if (i && (i % 4) == 0)
+			printf(" ");
+
+		printf("%02x", (unsigned int)str[i]);
+	}
+
+	printf("\n");
 }
 
 static void setup(void)
@@ -106,6 +147,7 @@ static void run(void)
 
 	for (i = 0; i < 100; i++) {
 		TEST(ioctl(devfd, SG_IO, &query));
+		buffer[BUF_SIZE] = '\0';
 
 		if (TST_RET != 0 && TST_RET != -1)
 			tst_brk(TBROK|TTERRNO, "Invalid ioctl() return value");
@@ -114,6 +156,8 @@ static void run(void)
 		for (j = 0; j < BUF_SIZE; j++) {
 			if (buffer[j]) {
 				tst_res(TFAIL, "Kernel memory leaked");
+				tst_res(TINFO, "Buffer contents: %s", buffer);
+				dump_hex(buffer, BUF_SIZE);
 				return;
 			}
 		}
@@ -126,9 +170,10 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 3600,
+	.timeout = 3600,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a45b599ad808"},
+		{"linux-git", "a45b599ad808c3c982fdcdc12b0b8611c2f92824"},
+		{"linux-git", "41e99fe2005182139b1058db71f0d241f8f0078c"},
 		{"CVE", "2018-1000204"},
 		{}
 	}

@@ -18,9 +18,3 @@ route{4,6}-change-netlink-if
 
 route{4,6}-redirect01
 	Change IPv4/IPv6 route by ICMP Redirects frequently
-
-route{4,6}-rmmod01
-	Add IPv4/IPv6 route by route command then delete it by the removing network driver
-
-route{4,6}-rmmod02
-	Add IPv4/IPv6 route by ip command then delete it by the removing network driver

@@ -17,6 +17,7 @@
 #include "data_storage.h"
 
 #define INCLUDE_PATH_MAX 5
+#define GROUPS_TAG "@groups"
 
 static int verbose;
 static char *cmdline_includepath[INCLUDE_PATH_MAX];
@@ -25,7 +26,7 @@ static char *includepath;
 
 #define WARN(str) fprintf(stderr, "WARNING: " str "\n")
 
-static void oneline_comment(FILE *f)
+static void remove_to_newline(FILE *f)
 {
 	int c;
 
@@ -34,7 +35,7 @@ static void oneline_comment(FILE *f)
 	} while (c != '\n');
 }
 
-static const char *eat_asterisk_space(const char *c)
+static char *eat_asterisk_space(char *c)
 {
 	unsigned int i = 0;
 
@@ -50,7 +51,62 @@ static const char *eat_asterisk_space(const char *c)
 	return c;
 }
 
-static void multiline_comment(FILE *f, struct data_node *doc)
+/*
+ * Add a group to the groups array, skipping path components that are too
+ * generic ('kernel') or assigned from a more reliable source ('cve', which
+ * is derived from the CVE tag instead). Returns 0 if no group was added,
+ * 1 otherwise.
+ */
+static int add_group(struct data_node *groups, const char *name)
+{
+	if (name && strcmp(name, "kernel") && strcmp(name, "cve")) {
+		data_node_array_add(groups, data_node_string(name));
+		return 1;
+	}
+
+	return 0;
+}
+
+/*
+ * Parse a '@groups foo bar baz' doc comment line, adding each
+ * whitespace-separated name to the groups array. Returns 1 if the line
+ * was a @groups tag (and should be consumed), 0 otherwise.
+ */
+static int parse_groups(struct data_node *groups, char *line)
+{
+	char *s;
+	char *name;
+
+	if (!groups)
+		return 0;
+
+	s = eat_asterisk_space(line);
+	if (strncmp(s, GROUPS_TAG, sizeof(GROUPS_TAG) - 1))
+		return 0;
+
+	s += sizeof(GROUPS_TAG) - 1;
+
+	/*
+	 * Not the @groups tag, just a word that shares its prefix
+	 * (e.g. "@groupsfoo"). Leave it in the doc string.
+	 */
+	if (*s && *s != ' ' && *s != '\t')
+		return 0;
+
+	name = strtok(s, " \t");
+	if (!name) {
+		WARN("Empty @groups tag");
+		return 1;
+	}
+
+	for (; name; name = strtok(NULL, " \t"))
+		add_group(groups, name);
+
+	return 1;
+}
+
+static void multiline_comment(FILE *f, struct data_node *doc,
+			      struct data_node *groups)
 {
 	int c;
 	int state = 0;
@@ -62,12 +118,14 @@ static void multiline_comment(FILE *f, struct data_node *doc)
 
 		if (doc) {
 			if (c == '\n') {
-				struct data_node *line;
+				char *str;
 				buf[bufp] = 0;
-				line = data_node_string(eat_asterisk_space(buf));
-				if (data_node_array_add(doc, line))
-					WARN("doc string comment truncated");
+				str = eat_asterisk_space(buf);
 				bufp = 0;
+				if (parse_groups(groups, str))
+					continue;
+				if (data_node_array_add(doc, data_node_string(str)))
+					WARN("doc string comment truncated");
 				continue;
 			}
 
@@ -100,7 +158,8 @@ static void multiline_comment(FILE *f, struct data_node *doc)
 
 static const char doc_prefix[] = "\\\n";
 
-static void maybe_doc_comment(FILE *f, struct data_node *doc)
+static void maybe_doc_comment(FILE *f, struct data_node *doc,
+			      struct data_node *groups)
 {
 	int c, i;
 
@@ -113,23 +172,24 @@ static void maybe_doc_comment(FILE *f, struct data_node *doc)
 		if (c == '*')
 			ungetc(c, f);
 
-		multiline_comment(f, NULL);
+		multiline_comment(f, NULL, NULL);
 		return;
 	}
 
-	multiline_comment(f, doc);
+	multiline_comment(f, doc, groups);
 }
 
-static void maybe_comment(FILE *f, struct data_node *doc)
+static void maybe_comment(FILE *f, struct data_node *doc,
+			  struct data_node *groups)
 {
 	int c = getc(f);
 
 	switch (c) {
 	case '/':
-		oneline_comment(f);
+		remove_to_newline(f);
 	break;
 	case '*':
-		maybe_doc_comment(f, doc);
+		maybe_doc_comment(f, doc, groups);
 	break;
 	default:
 		ungetc(c, f);
@@ -137,7 +197,8 @@ static void maybe_comment(FILE *f, struct data_node *doc)
 	}
 }
 
-static char *next_token2(FILE *f, char *buf, size_t buf_len, struct data_node *doc)
+static char *next_token2(FILE *f, char *buf, size_t buf_len,
+			 struct data_node *doc, struct data_node *groups)
 {
 	size_t i = 0;
 	int c;
@@ -173,6 +234,10 @@ static char *next_token2(FILE *f, char *buf, size_t buf_len, struct data_node *d
 		case '[':
 		case ']':
 		case '#':
+		case '|':
+		case '+':
+		case '*':
+		case '%':
 			if (i) {
 				ungetc(c, f);
 				goto exit;
@@ -190,7 +255,7 @@ static char *next_token2(FILE *f, char *buf, size_t buf_len, struct data_node *d
 			buf[i++] = c;
 		break;
 		case '/':
-			maybe_comment(f, doc);
+			maybe_comment(f, doc, groups);
 		break;
 		case '"':
 			in_str = 1;
@@ -212,11 +277,11 @@ exit:
 	return buf;
 }
 
-static char *next_token(FILE *f, struct data_node *doc)
+static char *next_token(FILE *f, struct data_node *doc, struct data_node *groups)
 {
 	static char buf[4096];
 
-	return next_token2(f, buf, sizeof(buf), doc);
+	return next_token2(f, buf, sizeof(buf), doc, groups);
 }
 
 static FILE *open_file(const char *dir, const char *fname)
@@ -234,6 +299,20 @@ static FILE *open_file(const char *dir, const char *fname)
 	return f;
 }
 
+/**
+ * List of includes to be skipped.
+ *
+ * These define many macros or include many include files that are mostly
+ * useless to values expanded in tst_test structure. Or macros that shouldn't
+ * be expanded at all.
+ */
+static const char *skip_includes[] = {
+	"\"tst_test.h\"",
+	"\"config.h\"",
+	"\"tst_taint.h\"",
+	NULL
+};
+
 static FILE *open_include(FILE *f)
 {
 	char buf[256], *fname;
@@ -245,6 +324,20 @@ static FILE *open_include(FILE *f)
 
 	if (buf[0] != '"')
 		return NULL;
+
+	for (i = 0; skip_includes[i]; i++) {
+		if (!strcmp(skip_includes[i], buf)) {
+			if (verbose)
+				fprintf(stderr, "INCLUDE SKIP %s\n", buf);
+			return NULL;
+		}
+	}
+
+	if (!strncmp(buf, "\"lapi/", 6)) {
+		if (verbose)
+			fprintf(stderr, "INCLUDE SKIP %s\n", buf);
+		return NULL;
+	}
 
 	fname = buf + 1;
 
@@ -286,43 +379,6 @@ static void close_include(FILE *inc)
 	fclose(inc);
 }
 
-static int parse_array(FILE *f, struct data_node *node)
-{
-	const char *token;
-
-	for (;;) {
-		if (!(token = next_token(f, NULL)))
-			return 1;
-
-		if (!strcmp(token, "{")) {
-			struct data_node *ret = data_node_array();
-			parse_array(f, ret);
-
-			if (data_node_array_len(ret))
-				data_node_array_add(node, ret);
-			else
-				data_node_free(ret);
-
-			continue;
-		}
-
-		if (!strcmp(token, "}"))
-			return 0;
-
-		if (!strcmp(token, ","))
-			continue;
-
-		if (!strcmp(token, "NULL"))
-			continue;
-
-		struct data_node *str = data_node_string(token);
-
-		data_node_array_add(node, str);
-	}
-
-	return 0;
-}
-
 static void try_apply_macro(char **res)
 {
 	ENTRY macro = {
@@ -342,19 +398,206 @@ static void try_apply_macro(char **res)
 	*res = ret->data;
 }
 
+static void finalize_array_entry(char **val, char **id, struct data_node *node)
+{
+	if (!*val)
+		return;
+
+	if (*id)
+		data_node_hash_add(node, *id+1, data_node_string(*val));
+	else
+		data_node_array_add(node, data_node_string(*val));
+
+	free(*id);
+	free(*val);
+	*id = NULL;
+	*val = NULL;
+}
+
+static void str_append(char **res, char *append)
+{
+	char *cur_str = *res;
+
+	if (!cur_str) {
+		*res = strdup(append);
+		if (!*res)
+			goto err;
+		return;
+	}
+
+	if (asprintf(res, "%s%s", cur_str, append) < 0)
+		goto err;
+
+	free(cur_str);
+	return;
+err:
+	fprintf(stderr, "Allocation failed :(\n");
+	exit(1);
+}
+
+static int array_is_hash(FILE *f)
+{
+	long pos = ftell(f);
+	int has_ids = 1;
+	int elem_seen = 0;
+	int comma_last = 0;
+	int in_id = 1;
+	char *token;
+
+	while ((token = next_token(f, NULL, NULL))) {
+
+		if (!strcmp(token, "}")) {
+			if (in_id && !comma_last)
+				has_ids = 0;
+			goto ret;
+		}
+
+		elem_seen = 1;
+
+		if (!strcmp(token, "{")) {
+			if (in_id) {
+				has_ids = 0;
+				goto ret;
+			}
+
+			int level = 1;
+
+			for (;;) {
+				token = next_token(f, NULL, NULL);
+
+				if (!token)
+					goto ret;
+
+				if (!strcmp(token, "{"))
+					level++;
+
+				if (!strcmp(token, "}"))
+					level--;
+
+				if (!level)
+					break;
+			}
+		} else if (!strcmp(token, ",")) {
+			if (in_id) {
+				has_ids = 0;
+				goto ret;
+			}
+
+			in_id = 1;
+
+			comma_last = 1;
+		} else if (!strcmp(token, "=")) {
+			in_id = 0;
+		} else {
+			comma_last = 0;
+		}
+	}
+
+ret:
+	fseek(f, pos, SEEK_SET);
+	return elem_seen && has_ids;
+}
+
+static int parse_array(FILE *f, const char *arr_id, struct data_node **ret)
+{
+	char *token;
+	char *val = NULL, *id = NULL;
+	int parent_cnt = 0;
+	int is_hash = array_is_hash(f);
+
+	if (verbose)
+		fprintf(stderr, "PARSING ARRAY (%s) is_hash = %i\n", arr_id, is_hash);
+
+	if (is_hash)
+		*ret = data_node_hash();
+	else
+		*ret = data_node_array();
+
+	for (;;) {
+		if (!(token = next_token(f, NULL, NULL)))
+			return 1;
+
+		if (!strcmp(token, "{")) {
+			struct data_node *sub_ret;
+
+			parse_array(f, id, &sub_ret);
+
+			if (data_node_is_empty(sub_ret)) {
+				data_node_free(sub_ret);
+			} else {
+				if (is_hash)
+					data_node_hash_add(*ret, id+1, sub_ret);
+				else
+					data_node_array_add(*ret, sub_ret);
+			}
+
+			free(id);
+			id = NULL;
+			free(val);
+			val = NULL;
+
+			continue;
+		}
+
+		if (!strcmp(token, "}")) {
+			struct data_node *arr_last;
+
+			finalize_array_entry(&val, &id, *ret);
+			/* Remove NULL terminating entry, if present. */
+			if (!is_hash) {
+				arr_last = data_node_array_last(*ret);
+				if (arr_last && arr_last->type == DATA_NULL)
+					data_node_array_last_rem(*ret);
+			}
+
+			return 0;
+		}
+
+		if (is_hash && !strcmp(token, "=") && !id) {
+			id = val;
+			val = NULL;
+			continue;
+		}
+
+		if (!strcmp(token, ",") && parent_cnt <= 0) {
+			finalize_array_entry(&val, &id, *ret);
+			continue;
+		}
+
+		if (!strcmp(token, "NULL")) {
+			if (is_hash)
+				data_node_hash_add(*ret, id, data_node_null());
+			else
+				data_node_array_add(*ret, data_node_null());
+			continue;
+		}
+
+		if (!strcmp(token, "("))
+			parent_cnt++;
+
+		if (!strcmp(token, ")"))
+			parent_cnt--;
+
+		try_apply_macro(&token);
+		str_append(&val, token);
+	}
+
+	return 0;
+}
+
 static int parse_get_array_len(FILE *f)
 {
 	const char *token;
 	int cnt = 0, depth = 0, prev_comma = 0;
 
-	if (!(token = next_token(f, NULL)))
+	if (!(token = next_token(f, NULL, NULL)))
 		return 0;
 
 	if (strcmp(token, "{"))
 		return 0;
 
 	for (;;) {
-		if (!(token = next_token(f, NULL)))
+		if (!(token = next_token(f, NULL, NULL)))
 			return 0;
 
 		if (!strcmp(token, "{"))
@@ -383,7 +626,7 @@ static void look_for_array_size(FILE *f, const char *arr_id, struct data_node **
 	int prev_buf = 1;
 
 	for (;;) {
-		if (!(token = next_token2(f, buf[cur_buf], sizeof(buf[cur_buf]), NULL)))
+		if (!(token = next_token2(f, buf[cur_buf], sizeof(buf[cur_buf]), NULL, NULL)))
 			break;
 
 		if (!strcmp(token, "=") && !strcmp(buf[prev_buf], arr_id)) {
@@ -413,13 +656,13 @@ static int parse_array_size(FILE *f, struct data_node **res)
 
 	*res = NULL;
 
-	if (!(token = next_token(f, NULL)))
+	if (!(token = next_token(f, NULL, NULL)))
 		return 1;
 
 	if (strcmp(token, "("))
 		return 1;
 
-	if (!(token = next_token(f, NULL)))
+	if (!(token = next_token(f, NULL, NULL)))
 		return 1;
 
 	arr_id = strdup(token);
@@ -439,7 +682,7 @@ static int parse_array_size(FILE *f, struct data_node **res)
 		rewind(f);
 
 		for (;;) {
-			if (!(token = next_token(f, NULL)))
+			if (!(token = next_token(f, NULL, NULL)))
 				break;
 
 			if (token[0] == '#') {
@@ -472,7 +715,8 @@ static int parse_array_size(FILE *f, struct data_node **res)
 	return 0;
 }
 
-static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *node)
+static int parse_test_struct(FILE *f, struct data_node *doc,
+			     struct data_node *groups, struct data_node *node)
 {
 	char *token;
 	char *id = NULL;
@@ -480,11 +724,16 @@ static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *n
 	struct data_node *ret;
 
 	for (;;) {
-		if (!(token = next_token(f, doc)))
+		if (!(token = next_token(f, doc, groups)))
 			return 1;
 
 		if (!strcmp(token, "}"))
 			return 0;
+
+		if (!strcmp(token, "#")) {
+			remove_to_newline(f);
+			continue;
+		}
 
 		switch (state) {
 		case 0:
@@ -515,8 +764,7 @@ static int parse_test_struct(FILE *f, struct data_node *doc, struct data_node *n
 		}
 
 		if (!strcmp(token, "{")) {
-			ret = data_node_array();
-			parse_array(f, ret);
+			parse_array(f, id, &ret);
 		} else if (!strcmp(token, "ARRAY_SIZE")) {
 			if (parse_array_size(f, &ret))
 				return 1;
@@ -638,17 +886,25 @@ static void parse_macro(FILE *f)
 	hsearch(e, ENTER);
 }
 
-static void parse_include_macros(FILE *f)
+static void parse_include_macros(FILE *f, int level)
 {
 	FILE *inc;
 	const char *token;
 	int hash = 0;
 
+	/**
+	 * Allow only three levels of include indirection.
+	 *
+	 * Should be more than enough (TM).
+	 */
+	if (level >= 3)
+		return;
+
 	inc = open_include(f);
 	if (!inc)
 		return;
 
-	while ((token = next_token(inc, NULL))) {
+	while ((token = next_token(inc, NULL, NULL))) {
 		if (token[0] == '#') {
 			hash = 1;
 			continue;
@@ -659,11 +915,133 @@ static void parse_include_macros(FILE *f)
 
 		if (!strcmp(token, "define"))
 			parse_macro(inc);
+		else if (!strcmp(token, "include"))
+			parse_include_macros(inc, level+1);
 
 		hash = 0;
 	}
 
 	close_include(inc);
+}
+
+/* pre-defined macros that makes the output cleaner. */
+static const struct macro {
+	char *from;
+	char *to;
+} internal_macros[] = {
+	{"TST_CG_V2", "2"},
+	{"TST_CG_V1", "1"},
+	{"TST_KB", "1024"},
+	{"TST_MB", "1048576"},
+	{"TST_GB", "1073741824"},
+	{"TST_SR_TBROK", "TBROK"},
+	{"TST_SR_TCONF", "TCONF"},
+	{"TST_SR_SKIP", "SKIP"},
+	{"TST_SR_TBROK_MISSING", "TBROK_MISSING"},
+	{"TST_SR_TCONF_MISSING", "TCONF_MISSING"},
+	{"TST_SR_SKIP_MISSING", "SKIP_MISSING"},
+	{"TST_SR_TBROK_RO", "TBROK_RO"},
+	{"TST_SR_TCONF_RO", "TCONF_RO"},
+	{"TST_SR_SKIP_RO", "SKIP_RO"},
+	{}
+};
+
+static void load_internal_macros(void)
+{
+	unsigned int i;
+
+	if (verbose)
+		fprintf(stderr, "PREDEFINED MACROS\n");
+
+	for (i = 0; internal_macros[i].from; i++) {
+		ENTRY e = {
+			.key = internal_macros[i].from,
+			.data = internal_macros[i].to,
+		};
+
+		if (verbose)
+			fprintf(stderr, " MACRO %s=%s\n", e.key, (char*)e.data);
+
+		hsearch(e, ENTER);
+	}
+
+	if (verbose)
+		fprintf(stderr, "END PREDEFINED MACROS\n");
+}
+
+/*
+ * Add groups derived from the source file path.
+ *
+ * Groups are the two nearest parent directories (immediate parent
+ * first), skipping 'kernel' (too generic) and 'cve' (assigned from the
+ * CVE tag instead, see add_tag_groups()):
+ *
+ *   testcases/kernel/syscalls/clone/clone01.c  -> clone, syscalls
+ *   testcases/kernel/kvm/kvm_pagefault01.c     -> kvm
+ */
+static void add_path_groups(struct data_node *groups, const char *fname)
+{
+	char *buf;
+	char *dirs[8];
+	int ndirs = 0;
+	char *p;
+
+	if (strncmp(fname, "testcases/", 10))
+		return;
+
+	buf = strdup(fname + 10);
+	if (!buf) {
+		fprintf(stderr, "Allocation failed!\n");
+		exit(1);
+	}
+
+	p = strtok(buf, "/");
+	while (p && ndirs < 8) {
+		dirs[ndirs++] = p;
+		p = strtok(NULL, "/");
+	}
+
+	/* Last element is the filename, skip it */
+	ndirs--;
+
+	if (ndirs >= 1)
+		add_group(groups, dirs[ndirs - 1]);
+	if (ndirs >= 2)
+		add_group(groups, dirs[ndirs - 2]);
+
+	free(buf);
+}
+
+/*
+ * Add group to specific test tags.
+ */
+static void add_tag_groups(struct data_node *groups, struct data_node *res)
+{
+	struct data_node *tags = data_node_hash_get(res, "tags");
+	int has_cve = 0, has_regression = 0;
+
+	if (!tags || tags->type != DATA_ARRAY)
+		return;
+
+	for (unsigned int i = 0; i < data_node_array_len(tags); i++) {
+		struct data_node *tag = tags->array.array[i];
+		struct data_node *name;
+
+		if (tag->type != DATA_ARRAY || !data_node_array_len(tag))
+			continue;
+
+		name = tag->array.array[0];
+		if (name->type != DATA_STRING)
+			continue;
+
+		if (!has_cve && !strcmp(name->string.val, "CVE")) {
+			data_node_array_add(groups, data_node_string("cve"));
+			has_cve = 1;
+		} else if (!has_regression && !strcmp(name->string.val, "linux-git")) {
+			data_node_array_add(groups, data_node_string("regression"));
+			has_regression = 1;
+		}
+	}
 }
 
 static struct data_node *parse_file(const char *fname)
@@ -682,19 +1060,24 @@ static struct data_node *parse_file(const char *fname)
 
 	struct data_node *res = data_node_hash();
 	struct data_node *doc = data_node_array();
+	struct data_node *groups = data_node_array();
 
-	while ((token = next_token(f, doc))) {
+	add_path_groups(groups, fname);
+
+	load_internal_macros();
+
+	while ((token = next_token(f, doc, groups))) {
 		if (state < 6 && !strcmp(tokens[state], token)) {
 			state++;
 		} else {
 			if (token[0] == '#') {
-				token = next_token(f, doc);
+				token = next_token(f, doc, groups);
 				if (token) {
 					if (!strcmp(token, "define"))
 						parse_macro(f);
 
 					if (!strcmp(token, "include"))
-						parse_include_macros(f);
+						parse_include_macros(f, 0);
 				}
 			}
 
@@ -705,7 +1088,7 @@ static struct data_node *parse_file(const char *fname)
 			continue;
 
 		found = 1;
-		parse_test_struct(f, doc, res);
+		parse_test_struct(f, doc, groups, res);
 	}
 
 	if (data_node_array_len(doc)) {
@@ -714,6 +1097,14 @@ static struct data_node *parse_file(const char *fname)
 	} else {
 		data_node_free(doc);
 	}
+
+	add_tag_groups(groups, res);
+
+	/*
+	 * Always emit groups, even when empty: tests outside testcases/
+	 * and files whose only parent dir is 'kernel' produce no groups.
+	 */
+	data_node_hash_add(res, "groups", groups);
 
 	fclose(f);
 
@@ -725,11 +1116,67 @@ static struct data_node *parse_file(const char *fname)
 	return res;
 }
 
-static struct typemap {
+static const char *must_includes[] = {
+	"tst_path_defs.h",
+	NULL
+};
+
+static void parse_must_files(void)
+{
+	unsigned int i, j;
+	FILE *f;
+	const char *token;
+
+	for (i = 0; must_includes[i]; i++) {
+		for (j = 0; j < cmdline_includepaths; j++) {
+			f = open_file(cmdline_includepath[j], must_includes[i]);
+			if (!f)
+				continue;
+
+			while ((token = next_token(f, NULL, NULL))) {
+				if (!strcmp(token, "define"))
+					parse_macro(f);
+			}
+			fclose(f);
+			break;
+		}
+	}
+}
+
+struct typemap {
 	const char *id;
 	enum data_type type;
-} tst_test_typemap[] = {
+	struct typemap *child;
+};
+
+static struct typemap needs_cmds_typemap[] = {
+	{.id = "optional", .type = DATA_BOOL},
+	{}
+};
+
+static struct typemap tst_test_typemap[] = {
 	{.id = "test_variants", .type = DATA_INT},
+	/* All bitflags in tst_test struct */
+	{.id = "needs_tmpdir", .type = DATA_BOOL},
+	{.id = "needs_root", .type = DATA_BOOL},
+	{.id = "forks_child", .type = DATA_BOOL},
+	{.id = "needs_device", .type = DATA_BOOL},
+	{.id = "needs_checkpoints", .type = DATA_BOOL},
+	{.id = "needs_overlay", .type = DATA_BOOL},
+	{.id = "format_device", .type = DATA_BOOL},
+	{.id = "mount_device", .type = DATA_BOOL},
+	{.id = "needs_rofs", .type = DATA_BOOL},
+	{.id = "child_needs_reinit", .type = DATA_BOOL},
+	{.id = "runs_script", .type = DATA_BOOL},
+	{.id = "needs_devfs", .type = DATA_BOOL},
+	{.id = "restore_wallclock", .type = DATA_BOOL},
+	{.id = "all_filesystems", .type = DATA_BOOL},
+	{.id = "skip_in_lockdown", .type = DATA_BOOL},
+	{.id = "skip_in_secureboot", .type = DATA_BOOL},
+	{.id = "skip_in_compat", .type = DATA_BOOL},
+	{.id = "needs_hugetlbfs", .type = DATA_BOOL},
+	{.id = "needs_cgroup_nsdelegate", .type = DATA_BOOL},
+	{.id = "needs_cmds", .child = needs_cmds_typemap},
 	{}
 };
 
@@ -753,23 +1200,65 @@ static void convert_str2int(struct data_node *res, const char *id, const char *s
 	data_node_hash_add(res, id, data_node_int(val));
 }
 
-static void check_normalize_types(struct data_node *res)
+static void convert_str2bool(struct data_node *res, const char *id, const char *str_val)
+{
+	long val;
+	char *endptr;
+
+	errno = 0;
+	val = strtol(str_val, &endptr, 10);
+
+	if (errno || *endptr) {
+		fprintf(stderr,	"Cannot convert %s value %s to bool!\n", id, str_val);
+		exit(1);
+	}
+
+	if (verbose)
+		fprintf(stderr, "NORMALIZING %s TO BOOL %li\n", id, val);
+
+	data_node_hash_del(res, id);
+	data_node_hash_add(res, id, data_node_bool(val));
+}
+
+static void check_normalize_types(struct data_node *res, const char *id, struct typemap *typemaps)
 {
 	unsigned int i;
 
-	for (i = 0; tst_test_typemap[i].id; i++) {
+	if (res->type == DATA_ARRAY) {
+		for (i = 0; i < res->array.array_used; i++)
+			check_normalize_types(res->array.array[i], id, typemaps);
+
+		return;
+	}
+
+	if (res->type != DATA_HASH) {
+		fprintf(stderr, "Typemap '%s' type %s has no children!\n", id, data_type_name(res->type));
+		exit(1);
+	}
+
+	for (i = 0; typemaps[i].id; i++) {
 		struct data_node *n;
-		struct typemap *typemap = &tst_test_typemap[i];
+		struct typemap *typemap = &typemaps[i];
 
 		n = data_node_hash_get(res, typemap->id);
 		if (!n)
 			continue;
+
+		if (typemap->child) {
+			check_normalize_types(n, typemap->id, typemap->child);
+			continue;
+		}
 
 		if (n->type == typemap->type)
 			continue;
 
 		if (n->type == DATA_STRING && typemap->type == DATA_INT) {
 			convert_str2int(res, typemap->id, n->string.val);
+			continue;
+		}
+
+		if (n->type == DATA_STRING && typemap->type == DATA_BOOL) {
+			convert_str2bool(res, typemap->id, n->string.val);
 			continue;
 		}
 
@@ -862,6 +1351,8 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	parse_must_files();
+
 	res = parse_file(argv[optind]);
 	if (!res)
 		return 0;
@@ -882,19 +1373,20 @@ int main(int argc, char *argv[])
 	}
 
 	/* Normalize types */
-	check_normalize_types(res);
+	check_normalize_types(res, "", tst_test_typemap);
 
 	for (i = 0; implies[i].flag; i++) {
 		if (data_node_hash_get(res, implies[i].flag)) {
 			for (j = 0; implies[i].implies[j]; j++) {
 				if (!data_node_hash_get(res, implies[i].implies[j]))
 					data_node_hash_add(res, implies[i].implies[j],
-							   data_node_string("1"));
+							   data_node_bool(true));
 			}
 		}
 	}
 
 	data_node_hash_add(res, "fname", data_node_string(argv[optind]));
+
 	printf("  \"%s\": ", strip_name(argv[optind]));
 	data_to_json(res, stdout, 2);
 	data_node_free(res);

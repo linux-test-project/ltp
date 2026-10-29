@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2017 Cyril Hrubis <chrubis@suse.cz>
+ * Copyright (c) Linux Test Project, 2018-2023
  */
 
 #include <stdio.h>
@@ -13,6 +14,7 @@
 #define TST_NO_DEFAULT_MAIN
 #include "tst_test.h"
 #include "tst_fs.h"
+#include "tst_private.h"
 
 /*
  * NOTE: new filesystem should be also added to
@@ -24,11 +26,18 @@ static const char *const fs_type_whitelist[] = {
 	"ext4",
 	"xfs",
 	"btrfs",
+	"bcachefs",
 	"vfat",
 	"exfat",
 	"ntfs",
+	"ntfs3",
 	"tmpfs",
 	NULL
+};
+
+static const char *const fs_type_fuse_blacklist[] = {
+	"bcachefs",
+	NULL,
 };
 
 static const char *fs_types[ARRAY_SIZE(fs_type_whitelist)];
@@ -42,6 +51,9 @@ static int has_mkfs(const char *fs_type)
 		tst_res(TINFO, "mkfs is not needed for tmpfs");
 		return 1;
 	}
+
+	if (!strcmp(fs_type, "ntfs3"))
+		fs_type = "ntfs";
 
 	sprintf(buf, "mkfs.%s >/dev/null 2>&1", fs_type);
 
@@ -59,6 +71,9 @@ static int has_mkfs(const char *fs_type)
 int tst_fs_in_skiplist(const char *fs_type, const char *const *skiplist)
 {
 	unsigned int i;
+
+	if (!strcmp(fs_type, "ntfs3"))
+		fs_type = "ntfs";
 
 	if (!skiplist)
 		return 0;
@@ -79,6 +94,9 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 	char template[PATH_MAX];
 	int ret;
 
+	if (!strcmp(fs_type, "ntfs"))
+		goto check_fuse;
+
 	snprintf(template, sizeof(template), "%s/mountXXXXXX", tmpdir);
 	if (!mkdtemp(template))
 		tst_brk(TBROK | TERRNO, "mkdtemp(%s) failed", template);
@@ -93,6 +111,12 @@ static enum tst_fs_impl has_kernel_support(const char *fs_type)
 	}
 
 	SAFE_RMDIR(template);
+
+check_fuse:
+	if (tst_fs_in_skiplist(fs_type, fs_type_fuse_blacklist)) {
+		tst_res(TINFO, "Skipping %s because of FUSE blacklist", fs_type);
+		return TST_FS_UNSUPPORTED;
+	}
 
 	/* Is FUSE supported by kernel? */
 	if (fuse_supported == -1) {
@@ -135,40 +159,61 @@ enum tst_fs_impl tst_fs_is_supported(const char *fs_type)
 	return TST_FS_UNSUPPORTED;
 }
 
+static int fs_could_be_used(const char *fs_type, const char *const *skiplist,
+			    int skip_fuse)
+{
+	enum tst_fs_impl sup;
+
+	if (tst_fs_in_skiplist(fs_type, skiplist)) {
+		tst_res(TINFO, "Skipping %s as requested by the test",
+			fs_type);
+		return 0;
+	}
+
+	sup = tst_fs_is_supported(fs_type);
+
+	if (skip_fuse && sup == TST_FS_FUSE) {
+		tst_res(TINFO,
+			"Skipping FUSE based %s as requested by the test",
+			fs_type);
+		return 0;
+	}
+
+	return sup != TST_FS_UNSUPPORTED;
+}
+
 const char **tst_get_supported_fs_types(const char *const *skiplist)
 {
 	unsigned int i, j = 0;
 	int skip_fuse;
-	enum tst_fs_impl sup;
-	const char *only_fs;
+	const char *only_fs, *force_only_fs;
+
+	only_fs = getenv("LTP_SINGLE_FS_TYPE");
+	force_only_fs = getenv("LTP_FORCE_SINGLE_FS_TYPE");
+
+	if (only_fs && force_only_fs) {
+		tst_brk(TBROK,
+			"Only one of LTP_SINGLE_FS_TYPE and LTP_FORCE_SINGLE_FS_TYPE can be set");
+		return NULL;
+	}
 
 	skip_fuse = tst_fs_in_skiplist("fuse", skiplist);
-	only_fs = getenv("LTP_SINGLE_FS_TYPE");
 
-	if (only_fs) {
+	if (only_fs && only_fs[0] != '\0') {
 		tst_res(TINFO, "WARNING: testing only %s", only_fs);
-		if (tst_fs_is_supported(only_fs))
+		if (fs_could_be_used(only_fs, skiplist, skip_fuse))
 			fs_types[0] = only_fs;
 		return fs_types;
 	}
 
+	if (force_only_fs) {
+		tst_res(TINFO, "WARNING: force testing only %s", force_only_fs);
+		fs_types[0] = force_only_fs;
+		return fs_types;
+	}
+
 	for (i = 0; fs_type_whitelist[i]; i++) {
-		if (tst_fs_in_skiplist(fs_type_whitelist[i], skiplist)) {
-			tst_res(TINFO, "Skipping %s as requested by the test",
-				fs_type_whitelist[i]);
-			continue;
-		}
-
-		sup = tst_fs_is_supported(fs_type_whitelist[i]);
-
-		if (skip_fuse && sup == TST_FS_FUSE) {
-			tst_res(TINFO,
-				"Skipping FUSE based %s as requested by the test",
-				fs_type_whitelist[i]);
-			continue;
-		}
-
-		if (sup)
+		if (fs_could_be_used(fs_type_whitelist[i], skiplist, skip_fuse))
 			fs_types[j++] = fs_type_whitelist[i];
 	}
 

@@ -4,17 +4,15 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * sched_getparam(2) gets correct scheduling parameters for
  * the specified process:
  *
  * - If pid is zero, sched_getparam(2) gets the scheduling parameters
- * for the calling process.
+ *   for the calling process.
  * - If pid is not zero, sched_getparam(2) gets the scheduling
- * parameters for the specified [pid] process.
+ *   parameters for the specified [pid] process.
  */
 
 #include <errno.h>

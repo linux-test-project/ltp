@@ -3,8 +3,6 @@
 /* Copyright 2023 Wei Gao <wegao@suse.com> */
 /*\
  *
- * [Description]
- *
  * Thread starvation test. On fauluty kernel the test timeouts.
  *
  * Original reproducer taken from:
@@ -21,11 +19,39 @@
 #include <sched.h>
 
 #include "tst_test.h"
+#include "tst_kconfig.h"
+#include "tst_safe_clocks.h"
+#include "tst_timer.h"
 
 static char *str_loop;
-static long loop = 2000000;
+static long loop = 1000000;
 static char *str_timeout;
-static int timeout = 240;
+static int timeout;
+
+#define CALLIBRATE_LOOPS 120000000
+
+static int callibrate(void)
+{
+	int i;
+	struct timespec start, stop;
+	long long diff;
+
+	for (i = 0; i < CALLIBRATE_LOOPS; i++)
+		__asm__ __volatile__ ("" : "+g" (i) : :);
+
+	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC_RAW, &start);
+
+	for (i = 0; i < CALLIBRATE_LOOPS; i++)
+		__asm__ __volatile__ ("" : "+g" (i) : :);
+
+	SAFE_CLOCK_GETTIME(CLOCK_MONOTONIC_RAW, &stop);
+
+	diff = tst_timespec_diff_us(stop, start);
+
+	tst_res(TINFO, "CPU did %i loops in %llius", CALLIBRATE_LOOPS, diff);
+
+	return diff;
+}
 
 static int wait_for_pid(pid_t pid)
 {
@@ -49,12 +75,32 @@ again:
 static void setup(void)
 {
 	cpu_set_t mask;
+	int cpu = 0;
+	long ncpus = tst_ncpus_conf();
+
+	if (tst_check_preempt_rt())
+		tst_brk(TCONF, "This test is not designed for the RT kernel");
 
 	CPU_ZERO(&mask);
 
-	CPU_SET(0, &mask);
+	/* Restrict test to a single cpu */
+	if (sched_getaffinity(0, sizeof(mask), &mask) < 0)
+		tst_brk(TBROK | TERRNO, "sched_getaffinity() failed");
 
-	TST_EXP_POSITIVE(sched_setaffinity(0, sizeof(mask), &mask));
+	if (CPU_COUNT(&mask) == 0)
+		tst_brk(TBROK, "No cpus available");
+
+	while (CPU_ISSET(cpu, &mask) == 0 && cpu < ncpus)
+		cpu++;
+
+	CPU_ZERO(&mask);
+
+	CPU_SET(cpu, &mask);
+
+	tst_res(TINFO, "Setting affinity to CPU %d", cpu);
+
+	if (sched_setaffinity(0, sizeof(mask), &mask) < 0)
+		tst_brk(TBROK | TERRNO, "sched_setaffinity() failed");
 
 	if (tst_parse_long(str_loop, &loop, 1, LONG_MAX))
 		tst_brk(TBROK, "Invalid number of loop number '%s'", str_loop);
@@ -62,7 +108,13 @@ static void setup(void)
 	if (tst_parse_int(str_timeout, &timeout, 1, INT_MAX))
 		tst_brk(TBROK, "Invalid number of timeout '%s'", str_timeout);
 
-	tst_set_max_runtime(timeout);
+	if (!timeout)
+		timeout = callibrate() / 1000;
+
+	if (tst_has_slow_kconfig())
+		tst_brk(TCONF, "Skip test due to slow kernel configuration");
+
+	tst_set_runtime(timeout);
 }
 
 static void handler(int sig LTP_ATTRIBUTE_UNUSED)
@@ -97,7 +149,13 @@ static void do_test(void)
 		sleep(1);
 
 	SAFE_KILL(child_pid, SIGTERM);
-	TST_EXP_PASS(wait_for_pid(child_pid));
+
+	if (!tst_remaining_runtime())
+		tst_res(TFAIL, "Scheduler starvation reproduced");
+	else
+		tst_res(TPASS, "Haven't reproduced scheduler starvation");
+
+	TST_EXP_PASS_SILENT(wait_for_pid(child_pid));
 }
 
 static struct tst_test test = {

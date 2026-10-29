@@ -1,230 +1,78 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
- *
- *   Copyright (c) International Business Machines  Corp., 2001
- *
- *   This program is free software;  you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY;  without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
- *   the GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program;  if not, write to the Free Software
- *   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
-
-/*
- * NAME
- *	modify_ldt01.c
- *
- * DESCRIPTION
- *	Testcase to check the error conditions for modify_ldt(2)
- *
- * CALLS
- *	modify_ldt()
- *
- * ALGORITHM
- *	block1:
- *		Invoke modify_ldt() with a func value which is neither
- *		0 or 1. Verify that ENOSYS is set.
- *	block2:
- *		Invoke mprotect() with ptr == NULL. Verify that EINVAL
- *		is set.
- *	block3:
- *		Create an LDT segment.
- *		Try to read from an invalid pointer.
- *		Verify that EFAULT is set.
- *
- * USAGE
- *	modify_ldt01
- *
- * HISTORY
+ * Copyright (c) International Business Machines  Corp., 2001
  *	07/2001 Ported by Wayne Boyer
+ * Copyright (c) 2025 SUSE LLC Ricardo B. Marlière <rbm@suse.com>
+ */
+
+/*\
+ * Verify that modify_ldt() calls:
  *
- * RESTRICTIONS
- *	None
+ * - Fails with EFAULT, when reading (func=0) from an invalid pointer
+ * - Passes when reading (func=0) from a valid pointer
+ * - Fails with EINVAL, when writing (func=1) to an invalid pointer
+ * - Fails with EINVAL, when writing (func=1) with an invalid bytecount value
+ * - Fails with EINVAL, when writing (func=1) an entry with invalid values
+ * - Fails with EINVAL, when writing (func=0x11) an entry with invalid values
  */
 
-#include "config.h"
-#include "test.h"
+#include "tst_test.h"
 
-TCID_DEFINE(modify_ldt01);
-int TST_TOTAL = 1;
+#ifdef __i386__
+#include "common.h"
 
-#if defined(__i386__) && defined(HAVE_MODIFY_LDT)
-
-#ifdef HAVE_ASM_LDT_H
-#include <asm/ldt.h>
-#endif
-extern int modify_ldt(int, void *, unsigned long);
-
-#include <asm/unistd.h>
-#include <errno.h>
-
-/* Newer ldt.h files use user_desc, instead of modify_ldt_ldt_s */
-#ifdef HAVE_STRUCT_USER_DESC
-typedef struct user_desc modify_ldt_s;
-#elif  HAVE_STRUCT_MODIFY_LDT_LDT_S
-typedef struct modify_ldt_ldt_s modify_ldt_s;
-#else
-typedef struct modify_ldt_ldt_t {
-	unsigned int entry_number;
-	unsigned long int base_addr;
-	unsigned int limit;
-	unsigned int seg_32bit:1;
-	unsigned int contents:2;
-	unsigned int read_exec_only:1;
-	unsigned int limit_in_pages:1;
-	unsigned int seg_not_present:1;
-	unsigned int useable:1;
-	unsigned int empty:25;
-} modify_ldt_s;
-#endif
-
-int create_segment(void *, size_t);
-void cleanup(void);
-void setup(void);
-
-int main(int ac, char **av)
-{
-	int lc;
-
+static void *ptr;
+static char *buf;
+static struct user_desc invalid_entry;
+static struct tcase {
+	int tfunc;
 	void *ptr;
-	int retval, func;
+	unsigned long bytecount;
+	int exp_errno;
+} tcases[] = {
+	{ 0, &ptr, sizeof(ptr), EFAULT },
+	{ 0, &buf, sizeof(buf), 0 },
+	{ 1, (void *)0, 0, EINVAL },
+	{ 1, &buf, sizeof(struct user_desc) - 1, EINVAL },
+	{ 1, &invalid_entry, sizeof(struct user_desc), EINVAL },
+	{ 0x11, &invalid_entry, sizeof(struct user_desc), EINVAL },
+};
 
-	int seg[4];
-
-	tst_parse_opts(ac, av, NULL, NULL);
-
-	setup();
-
-	for (lc = 0; TEST_LOOPING(lc); lc++) {
-
-		/* reset tst_count in case we are looping */
-		tst_count = 0;
-
-		/*
-		 * Check for ENOSYS.
-		 */
-		ptr = malloc(10);
-		func = 100;
-		retval = modify_ldt(func, ptr, sizeof(ptr));
-		if (retval < 0) {
-			if (errno != ENOSYS) {
-				tst_resm(TFAIL, "modify_ldt() set invalid "
-					 "errno, expected ENOSYS, got: %d",
-					 errno);
-			} else {
-				tst_resm(TPASS,
-					"modify_ldt() set expected errno");
-			}
-		} else {
-			tst_resm(TFAIL, "modify_ldt error: "
-				 "unexpected return value %d", retval);
-		}
-
-		free(ptr);
-
-		/*
-		 * Check for EINVAL
-		 */
-		ptr = 0;
-
-		retval = modify_ldt(1, ptr, sizeof(ptr));
-		if (retval < 0) {
-			if (errno != EINVAL) {
-				tst_resm(TFAIL, "modify_ldt() set invalid "
-					 "errno, expected EINVAL, got: %d",
-					 errno);
-			} else {
-				tst_resm(TPASS,
-					"modify_ldt() set expected errno");
-			}
-		} else {
-			tst_resm(TFAIL, "modify_ldt error: "
-				 "unexpected return value %d", retval);
-		}
-
-		/*
-		 * Create a new LDT segment.
-		 */
-		if (create_segment(seg, sizeof(seg)) == -1) {
-			tst_brkm(TBROK, cleanup, "Creation of segment failed");
-		}
-
-		/*
-		 * Check for EFAULT
-		 */
-		ptr = sbrk(0);
-
-		retval = modify_ldt(0, ptr + 0xFFF, sizeof(ptr));
-		if (retval < 0) {
-			if (errno != EFAULT) {
-				tst_resm(TFAIL, "modify_ldt() set invalid "
-					 "errno, expected EFAULT, got: %d",
-					 errno);
-			} else {
-				tst_resm(TPASS,
-					"modify_ldt() set expected errno");
-			}
-		} else {
-			tst_resm(TFAIL, "modify_ldt error: "
-				 "unexpected return value %d", retval);
-		}
-	}
-	cleanup();
-	tst_exit();
-}
-
-/*
- * create_segment() -
- */
-int create_segment(void *seg, size_t size)
+void run(unsigned int i)
 {
-	modify_ldt_s entry;
+	struct tcase *tc = &tcases[i];
 
-	entry.entry_number = 0;
-	entry.base_addr = (unsigned long)seg;
-	entry.limit = size;
-	entry.seg_32bit = 1;
-	entry.contents = 0;
-	entry.read_exec_only = 0;
-	entry.limit_in_pages = 0;
-	entry.seg_not_present = 0;
-
-	return modify_ldt(1, &entry, sizeof(entry));
+	if (tc->exp_errno)
+		TST_EXP_FAIL(modify_ldt(tc->tfunc, tc->ptr, tc->bytecount),
+			     tc->exp_errno);
+	else
+		TST_EXP_POSITIVE(modify_ldt(tc->tfunc, tc->ptr, tc->bytecount));
 }
 
 void setup(void)
 {
+	int seg[4];
 
-	tst_sig(FORK, DEF_HANDLER, cleanup);
+	create_segment(seg, sizeof(seg));
 
-	TEST_PAUSE;
+	invalid_entry.contents = 3;
+	invalid_entry.seg_not_present = 0;
+
+	ptr = sbrk(0) + 0xFFF;
+	tcases[0].ptr = ptr;
 }
+#endif /* __i386__ */
 
-void cleanup(void)
-{
-
-}
-
-#elif HAVE_MODIFY_LDT
-int main(void)
-{
-	tst_brkm(TCONF,
-		 NULL,
-		 "modify_ldt is available but not tested on the platform than __i386__");
-}
-
-#else
-int main(void)
-{
-	tst_resm(TINFO, "modify_ldt01 test only for ix86");
-	tst_exit();
-}
-
-#endif /* defined(__i386__) */
+static struct tst_test test = {
+#ifdef __i386__
+	.test = run,
+	.tcnt = ARRAY_SIZE(tcases),
+	.setup = setup,
+	.bufs =
+		(struct tst_buffers[]){
+			{ &buf, .size = sizeof(struct user_desc) },
+			{},
+		},
+#endif /* __i386__ */
+	.supported_archs = (const char *[]){"x86", NULL},
+};

@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * zram: generic RAM based compressed R/W block devices
  * http://lkml.org/lkml/2010/8/9/227
  *
@@ -89,7 +87,7 @@ static void verify_device(void)
 	SAFE_CLOSE(fd);
 }
 
-static void reset(void)
+static void reset_zram(void)
 {
 	char reset_path[200];
 
@@ -163,7 +161,7 @@ static void run(void)
 	dump_info();
 	verify_device();
 
-	reset();
+	reset_zram();
 	dump_info();
 }
 
@@ -181,7 +179,7 @@ static void setup(void)
 		tst_res(TINFO,
 			"zram module already loaded, kernel supports zram-control interface");
 		SAFE_FILE_SCANF(HOT_ADD_PATH, "%d", &dev_num);
-		hot_add_flag =1;
+		hot_add_flag = 1;
 		goto fill_path;
 	}
 
@@ -238,13 +236,13 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_drivers = (const char *const []) {
-		"zram",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_ZRAM",
 		NULL
 	},
-	.needs_cmds = (const char *[]) {
-		"modprobe",
-		"rmmod",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "modprobe"},
+		{.cmd = "rmmod"},
+		{}
 	}
 };

@@ -4,19 +4,17 @@
  */
 
 /*\
- * [Description]
+ * Tests misaligned :manpage:`fallocate(2)`
  *
- * Tests misaligned fallocate()
+ * [Test scenario]
  *
- * Test scenario:
- *
- * 1. write() several blocks worth of data
- * 2. fallocate() some more space (not aligned to FS blocks)
- * 3. try to write() into the allocated space
+ * 1. :manpage:`write(2)` several blocks worth of data
+ * 2. :manpage:`fallocate(2)` some more space (not aligned to FS blocks)
+ * 3. try to :manpage:`write(2)` into the allocated space
  * 4. deallocate misaligned part of file range written in step 1
- * 5. read() the deallocated range and check that it was zeroed
+ * 5. :manpage:`read(2)` the deallocated range and check that it was zeroed
  *
- * Subtests:
+ * [Subtests]
  *
  * - fill filesystem between step 2 and 3
  * - disable copy-on-write on test file
@@ -225,7 +223,7 @@ static void run(unsigned int n)
 
 	/* Validate that fallocate() cleared the correct file range */
 	SAFE_LSEEK(fd, 0, SEEK_SET);
-	SAFE_READ(1, fd, rbuf, rbuf_size);
+	SAFE_READ(SAFE_READ_ALL, fd, rbuf, rbuf_size);
 
 	for (err = 0, i = offset; i < offset + size; i++) {
 		if (rbuf[i]) {
@@ -260,14 +258,16 @@ static struct tst_test test = {
 	.test = run,
 	.tcnt = ARRAY_SIZE(testcase_list),
 	.needs_root = 1,
+	.dev_min_size = 1024,
+	.timeout = 150,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "e093c4be760e"},
-		{"linux-git", "6d4572a9d71d"},
+		{"linux-git", "e093c4be760ebf46c131ae0dd6138865a22f46fa"},
+		{"linux-git", "6d4572a9d71d5fc2affee0258d8582d39859188c"},
 		{}
 	}
 };

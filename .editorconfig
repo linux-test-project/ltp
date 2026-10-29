@@ -1,0 +1,43 @@
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+root = true
+
+# Default for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+tab_width = 8
+
+# C/Assembly source files, headers, and shell files use tabs
+[{*.{c,h,S,sh},ver_linux}]
+indent_style = tab
+indent_size = tab
+
+[{Makefile,Makefile.*,*.{mk.in,mk}}]
+indent_style = tab
+indent_size = tab
+
+[*.py]
+indent_style = space
+indent_size  = 4
+
+[*.pl]
+indent_style = tab
+indent_size = tab
+
+# Exceptions use spaces: Python (Sphinx, scripts), Perl (checkbashisms.pl vendored)
+[{doc/conf.py,scripts/*.py,scripts/checkbashisms.pl}]
+indent_style = space
+indent_size = 4
+
+# Documentation files
+[*.{rst,md}]
+indent_style = space
+indent_size = 4
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 4

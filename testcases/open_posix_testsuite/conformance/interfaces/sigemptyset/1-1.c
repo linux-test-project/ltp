@@ -17,7 +17,7 @@
 
 #define NUMSIGNALS (sizeof(siglist) / sizeof(siglist[0]))
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int siglist[] = { SIGABRT, SIGALRM, SIGBUS, SIGCHLD,

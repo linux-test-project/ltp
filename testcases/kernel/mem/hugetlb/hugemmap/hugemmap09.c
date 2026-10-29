@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test sanity of cow optimization on page cache. If a page in page cache
  * has only 1 ref count, it is mapped for a private mapping directly and
  * is overwritten freely, so next time we access the page, we can see
@@ -59,7 +57,7 @@ static void run_test(void)
 static void setup(void)
 {
 	hpage_size = SAFE_READ_MEMINFO(MEMINFO_HPAGE_SIZE)*1024;
-	huge_fd = tst_creat_unlinked(MNTPOINT, 0);
+	huge_fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 }
 
 static void cleanup(void)

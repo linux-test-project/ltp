@@ -291,11 +291,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "ddddd", &parent_pipe[0], &parent_pipe[1],
-			&child_pipe[0], &child_pipe[1], &fd);
-#endif
-
 	setup();		/* global setup */
 
 	/* Check for looping state if -i option is given */
@@ -303,18 +298,9 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		if ((child_pid = FORK_OR_VFORK()) == 0) {
-#ifdef UCLINUX
-			if (self_exec
-			    (av[0], "ddddd", parent_pipe[0], parent_pipe[1],
-			     child_pipe[0], child_pipe[1], fd) < 0) {
-				tst_resm(TFAIL, "self_exec failed");
-				cleanup();
-			}
-#else
+		if ((child_pid = tst_fork()) == 0)
 			do_child();
-#endif
-		}
+
 		if (child_pid < 0) {
 			tst_resm(TFAIL, "Fork failed");
 			cleanup();
@@ -391,7 +377,7 @@ int main(int ac, char **av)
 
 		/*
 		 * Add a read lock to the middle of the file and a write
-		 * at the begining
+		 * at the beginning
 		 */
 		if (do_lock(F_SETLK, (short)F_RDLCK, (short)0, 10, 5) < 0) {
 			tst_resm(TFAIL, "fcntl on file failed, errno =%d",

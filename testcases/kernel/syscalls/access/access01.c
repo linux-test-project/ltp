@@ -6,9 +6,7 @@
  */
 
 /*\
- * [Description]
- *
- * Basic test for access(2) using F_OK, R_OK, W_OK and X_OK
+ * Basic test for :manpage:`access(2)` using F_OK, R_OK, W_OK and X_OK.
  */
 
 #include <errno.h>
@@ -238,13 +236,8 @@ static struct tcase {
 
 static void access_test(struct tcase *tc, const char *user)
 {
-	if (tc->exp_errno) {
-		TST_EXP_FAIL(access(tc->fname, tc->mode), tc->exp_errno,
-		             "access(%s, %s) as %s", tc->fname, tc->name, user);
-	} else {
-		TST_EXP_PASS(access(tc->fname, tc->mode),
-		             "access(%s, %s) as %s", tc->fname, tc->name, user);
-	}
+	TST_EXP_PASS_OR_FAIL(access(tc->fname, tc->mode), tc->exp_errno,
+				 "access(%s, %s) as %s", tc->fname, tc->name, user);
 }
 
 static void verify_access(unsigned int n)
@@ -314,6 +307,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 1,
 	.needs_tmpdir = 1,
 	.needs_root = 1,
 	.forks_child = 1,

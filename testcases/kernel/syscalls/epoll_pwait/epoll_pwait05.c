@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, epoll_pwait2() return -1 and set errno to EINVAL with an
  * invalid timespec.
  */

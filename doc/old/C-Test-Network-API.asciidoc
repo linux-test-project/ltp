@@ -1,0 +1,506 @@
+LTP C Test Network API
+======================
+
+NOTE: See also
+      https://github.com/linux-test-project/ltp/wiki/Test-Writing-Guidelines[Test Writing Guidelines],
+      https://github.com/linux-test-project/ltp/wiki/C-Test-Case-Tutorial[C Test Case Tutorial],
+      https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API],
+      https://github.com/linux-test-project/ltp/wiki/Shell-Test-API[Shell Test API].
+
+LTP library includes helper functions for configuring sockets and setting up
+network devices.
+
+1 Configuring sockets
+---------------------
+
+1.1 Safe syscall variants
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
++#include "tst_safe_net.h"+
+
+Most common standard syscalls and libc functions for configuring sockets have a
+"safe" variant in LTP library which will call +tst_brk()+ if the underlying
+system function fails. See
+https://github.com/linux-test-project/ltp/wiki/C-Test-API[C Test API]. The
+safe function names are in uppercase with the +SAFE_+ prefix (e.g. the safe
+variant of +socket()+ is called +SAFE_SOCKET()+). For most safe functions, the
+parameters and return type are identical to the standard system function:
+
+- +SAFE_SOCKET()+
+- +SAFE_SOCKETPAIR()+
+- +SAFE_GETSOCKOPT()+
+- +SAFE_SETSOCKOPT()+
+- +SAFE_BIND()+
+- +SAFE_LISTEN()+
+- +SAFE_ACCEPT()+
+- +SAFE_CONNECT()+
+- +SAFE_GETSOCKNAME()+
+- +SAFE_GETHOSTNAME()+
+- +SAFE_GETADDRINFO()+
+
+A few safe functions have extra parameters for quick return value validation.
+The ellipsis (+...+) represents the standard parameters of the underlying system
+function:
+
+* +SAFE_SEND(char strict, ...)+
+* +SAFE_SENDTO(char strict, ...)+
+** If +strict+ is non-zero, the return value must be equal to the data length
+   argument. Otherwise the test will fail and exit.
+
+* +SAFE_SENDMSG(size_t msg_len, ...)+
+* +SAFE_RECV(size_t msg_len, ...)+
+* +SAFE_RECVMSG(size_t msg_len, ...)+
+** If +msg_len+ is non-zero, the return value must be equal to the +msg_len+
+   argument. Otherwise the test will fail and exit.
+
+There are also some custom functions for simpler configuration and queries:
+
+- +int SAFE_SETSOCKOPT_INT(int sockfd, int level, int optname, int value)+ –
+  Simple setsockopt() variant for passing integers by value.
+
+- +int TST_GETSOCKPORT(int sockfd)+ – Get port number (in host byte order) of a
+  bound socket.
+
+- +unsigned short TST_GET_UNUSED_PORT(int family, int type)+ – Get a random
+  port number (in network byte order) which is currently closed for the given
+  socket family and type. Note that another application may open the port while
+  the test is still running. The test user is responsible for setting up test
+  environment without such interference.
+
+1.2 Address conversion functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++#include "tst_net.h"+
+
+LTP library also provides helper functions for quick initialization of socket
+address structures:
+
+- +void tst_get_in_addr(const char *ip_str, struct in_addr *ip)+ – Convert
+  human-readable IPv4 address string +ip_str+ to binary representation in
+  network byte order. The converted value will be stored in the second argument.
+
+- +void tst_get_in6_addr(const char *ip_str, struct in6_addr *ip6)+ – Convert
+  human-readable IPv6 address string +ip_str+ to binary representation in
+  network byte order. The converted value will be stored in the second argument.
+
+- +socklen_t tst_get_connect_address(int sock, struct sockaddr_storage *addr)+ –
+  Find the address which can be used to send data to bound socket +sock+ from
+  another socket. The address will be stored in the second argument. This
+  function automatically converts wildcard bind address to localhost. Returns
+  size of the address in bytes.
+
+- +void tst_init_sockaddr_inet(struct sockaddr_in *sa, const char *ip_str,
+  uint16_t port)+ – Initialize socket address structure +sa+ using
+  human-readable IPv4 address +ip_str+ and port number +port+ in host byte
+  order.
+
+- +void tst_init_sockaddr_inet_bin(struct sockaddr_in *sa, uint32_t ip_val,
+  uint16_t port)+ – Initialize socket address structure +sa+ using binary IPv4
+  address +ip_val+ and port number +port+, both in host byte order.
+
+- +void tst_init_sockaddr_inet6(struct sockaddr_in6 *sa, const char *ip_str,
+  uint16_t port)+ – Initialize socket address structure +sa+ using
+  human-readable IPv6 address +ip_str+ and port number +port+ in host byte
+  order.
+
+- +void tst_init_sockaddr_inet6_bin(struct sockaddr_in6 *sa, const struct
+  in6_addr *ip_val, uint16_t port)+ – Initialize socket address structure +sa+
+  using binary IPv6 address +ip_val+ and port number +port+, both in host byte
+  order.
+
+Example Usage
++++++++++++++
+[source,c]
+-------------------------------------------------------------------------------
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include "tst_test.h"
+#include "tst_safe_net.h"
+#include "tst_net.h"
+
+static int sockfd = -1;
+
+static void setup(void)
+{
+	struct sockaddr_in addr;
+
+	tst_init_sockaddr_inet_bin(&addr, INADDR_ANY, 0);
+	sockfd = SAFE_SOCKET(AF_INET, SOCK_STREAM, 0);
+	SAFE_SETSOCKOPT_INT(sockfd, SOL_SOCKET, SO_SNDBUF, 4096);
+	SAFE_BIND(sockfd, (struct sockaddr *)&addr, sizeof(addr));
+	SAFE_LISTEN(sockfd, 8);
+}
+
+-------------------------------------------------------------------------------
+
+2 Configuring network devices
+-----------------------------
+
++#include "tst_netdevice.h"+
+
+When opening a localhost socket isn't enough and the test needs special device
+or routing configuration, the netdevice library can create the required network
+setup without calling external programs. Internally, the netdevice functions
+use a netlink socket to communicate with the kernel.
+
+All of these functions will call +tst_brk()+ on failure, unless stated
+otherwise. Error values described below are returned only during test cleanup
+stage.
+
+2.1 Network device management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- +int NETDEV_INDEX_BY_NAME(const char *ifname)+ – Returns the device index for
+  the given device name, or -1 on error.
+
+- +int NETDEV_SET_STATE(const char *ifname, int up)+ – Enable or disable a
+  network device +ifname+. Returns 0 on success, -1 on error.
+
+- +int CREATE_VETH_PAIR(const char *ifname1, const char *ifname2)+ – Creates a
+  connected pair of virtual network devices with given device names. Returns 1
+  on success, 0 on error. Add +"CONFIG_VETH"+ to +test.needs_kconfigs+ if your
+  test calls this function.
+
+- +int NETDEV_ADD_DEVICE(const char *ifname, const char *devtype)+ - Creates
+  a new network device named +ifname+ of specified device type. Returns 1 on
+  success, 0 on error.
+
+- +int NETDEV_REMOVE_DEVICE(const char *ifname)+ – Removes network device
+  +ifname+. Returns 1 on success, 0 on error.
+
+2.2 Network address management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- +int NETDEV_ADD_ADDRESS(const char \*ifname, unsigned int family, const void
+  *address, unsigned int prefix, size_t addrlen, unsigned int flags)+ – Adds
+  new address to network device +ifname+. This is a low-level function which
+  allows setting any type of address. You must specify the protocol +family+,
+  address length in bytes (+addrlen+) and network prefix length (+prefix+). The
+  +address+ itself must be in binary representation in network byte order. You
+  can also pass rtnetlink flags from the +IFA_F_*+ group. Returns 1 on success,
+  0 on error.
+
+- +int NETDEV_ADD_ADDRESS_INET(const char *ifname, in_addr_t address, unsigned
+  int prefix, unsigned int flags)+ – Adds new IPv4 address to network device
+  +ifname+. Parameters have the same meaning as in +NETDEV_ADD_ADDRESS()+.
+  Returns 1 on success, 0 on error.
+
+- +int NETDEV_REMOVE_ADDRESS(const char *ifname, unsigned int family, const
+  void *address, size_t addrlen)+ – Removes the specified address from network
+  device +ifname+. Parameters have the same meaning as in
+  +NETDEV_ADD_ADDRESS()+. Returns 1 on success, 0 on error.
+
+- +int NETDEV_REMOVE_ADDRESS_INET(const char *ifname, in_addr_t address)+ –
+  Removes specified IPv4 +address+ (in network byte order) from network device
+  +ifname+. Returns 1 on success, 0 on error.
+
+2.3 Network namespace device assignment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+WARNING: Moving a network device to another namespace will erase previous
+         configuration. Move the device to the correct namespace first, then
+         configure it.
+
+- +int NETDEV_CHANGE_NS_FD(const char *ifname, int nsfd)+ – Moves network
+  device +ifname+ to network namespace designated by open file descriptor
+  +nsfd+. Returns 1 on success, 0 on error.
+
+- +int NETDEV_CHANGE_NS_PID(const char *ifname, pid_t nspid)+ – Moves network
+  device +ifname+ to the network namespace currently used by process +nspid+.
+  Returns 1 on success, 0 on error.
+
+2.4 Routing table management
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- +int NETDEV_ADD_ROUTE(const char *ifname, unsigned int family, const void
+  *srcaddr, unsigned int srcprefix, size_t srclen, const void *dstaddr,
+  unsigned int dstprefix, size_t dstlen, const void *gateway, size_t
+  gatewaylen)+ – Adds new route to the main routing table. This is a low-level
+  function which allows creating routes for any protocol. You must specify the
+  protocol +family+ and either network device name +ifname+ or +gateway+
+  address. Both packet source address +srcaddr+ and destination address
+  +dstaddr+ are optional. You must also specify the corresponding length
+  and prefix argument for any address which is not +NULL+. All addresses must
+  be in binary representation in network byte order. Returns 1 on success,
+  0 on error.
+
+- +int NETDEV_ADD_ROUTE_INET(const char *ifname, in_addr_t srcaddr, unsigned
+  int srcprefix, in_addr_t dstaddr, unsigned int dstprefix, in_addr_t
+  gateway)+ – Adds new IPv4 route to the main routing table. Parameters have
+  the same meaning as in +NETDEV_ADD_ROUTE()+. If you do not want to set
+  explicit +gateway+ address, set it to 0. If the routing rule should ignore
+  the source or destination address, set the corresponding prefix argument
+  to 0. Returns 1 on success, 0 on error.
+
+- +int NETDEV_REMOVE_ROUTE(const char *ifname, unsigned int family, const void
+  *srcaddr, unsigned int srcprefix, size_t srclen, const void *dstaddr,
+  unsigned int dstprefix, size_t dstlen, const void *gateway, size_t
+  gatewaylen)+ – Removes a route from the main routing table. Parameters have
+  the same meaning as in +NETDEV_ADD_ROUTE()+. Returns 1 on success, 0 on
+  error.
+
+- +int NETDEV_REMOVE_ROUTE_INET(const char *ifname, in_addr_t srcaddr,
+  unsigned int srcprefix, in_addr_t dstaddr, unsigned int dstprefix, in_addr_t
+  gateway)+ – Removes IPv4 route from the main routing table. Parameters have
+  the same meaning as in +NETDEV_ADD_ROUTE_INET()+. Returns 1 on success,
+  0 on error.
+
+Example Usage
++++++++++++++
+[source,c]
+-------------------------------------------------------------------------------
+#include <arpa/inet.h>
+#include <linux/if_addr.h>
+#include "tst_test.h"
+#include "tst_netdevice.h"
+
+...
+
+static void setup(void)
+{
+	CREATE_VETH_PAIR("ltp_veth1", "ltp_veth2");
+	NETDEV_ADD_ADDRESS_INET("ltp_veth2", htonl(DSTADDR), NETMASK,
+		IFA_F_NOPREFIXROUTE);
+	NETDEV_SET_STATE("ltp_veth2", 1);
+	NETDEV_ADD_ROUTE_INET("ltp_veth2", 0, 0, htonl(SRCNET), NETMASK, 0);
+
+	NETDEV_ADD_ADDRESS_INET("ltp_veth1", htonl(SRCADDR), NETMASK,
+		IFA_F_NOPREFIXROUTE);
+	NETDEV_SET_STATE("ltp_veth1", 1);
+	NETDEV_ADD_ROUTE_INET("ltp_veth1", 0, 0, htonl(DSTNET), NETMASK, 0);
+	...
+}
+-------------------------------------------------------------------------------
+
+3 Netlink API
+-------------
+
++#include "tst_netlink.h"+
+
+The netlink library provides helper functions for constructing and sending
+arbitrary messages and parsing kernel responses.
+
+All of the functions below will call +tst_brk()+ on failure, unless stated
+otherwise. Error values described below are returned only during test cleanup
+stage.
+
+3.1 Data structures
+~~~~~~~~~~~~~~~~~~~
+
+[source,c]
+-------------------------------------------------------------------------------
+struct tst_netlink_context;
+
+struct tst_netlink_attr_list {
+	unsigned short type;
+	const void *data;
+	ssize_t len;
+	const struct tst_netlink_attr_list *sublist;
+};
+
+struct tst_netlink_message {
+	struct nlmsghdr *header;
+	struct nlmsgerr *err;
+	void *payload;
+	size_t payload_size;
+};
+-------------------------------------------------------------------------------
+
++struct tst_netlink_context+ is an opaque netlink socket with buffer for
+constructing and sending arbitrary messages using the functions described
+below. Create a new context using +NETLINK_CREATE_CONTEXT()+, then free it
+using +NETLINK_DESTROY_CONTEXT()+ when you're done with it.
+
++struct tst_netlink_attr_list+ is a helper structure for defining complex
+rtnetlink message attribute payloads, including nested attribute lists. Every
+list and sublist defined using this structure is terminated by item with
+negative +len+.
+
+- +type+ is the attribute type that will be stored in +struct nlattr.nla_type+
+  or +struct rtattr.rta_type+.
+
+- +data+ contains arbitrary attribute payload.
+
+- +len+ contains length of the +data+ attribute in bytes. If +data+ is +NULL+,
+  set +len+ to 0. The last item in a list or sublist must have negative length.
+
+- +sublist+ contains a nested attribute list which will be appended after
+  +data+ as part of the attribute payload. +struct nlattr.nla_len+ or
+  +struct rtattr.rta_len+ will be calculated automatically with proper
+  alignment, do _not_ add the sublist size to the +len+ field. If you do not
+  want to add nested attributes, set +sublist+ to +NULL+.
+
++struct tst_netlink_message+ is a structure holding partially parsed netlink
+messages received from the kernel. +NETLINK_RECV()+ returns an array of these
+structures with the last item having +NULL+ in the +header+ field. Call
++NETLINK_FREE_MESSAGE()+ to free a message list returned by +NETLINK_RECV()+.
+
+- +header+ is the netlink header structure of the message. +NULL+ in the header
+  field terminates a list of messages.
+
+- +err+ points to the payload of +NLMSG_ERROR+ messages. It is set to +NULL+
+  for all other message types.
+
+- +payload+ is a pointer to message data.
+
+- +payload_size+ is the length of +payload+ data in bytes.
+
+3.2 Sending and receiving messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- +struct tst_netlink_context *NETLINK_CREATE_CONTEXT(int protocol)+ – Creates
+  a new netlink communication context with given netlink protocol for use
+  with the functions described below. Returns +NULL+ on error.
+
+- +void NETLINK_FREE_MESSAGE(struct tst_netlink_message *msg)+ – Frees
+  an array of messages returned by +NETLINK_RECV()+.
+
+- +void NETLINK_DESTROY_CONTEXT(struct tst_netlink_context *ctx)+ – Closes a
+  communication context created by +NETLINK_CREATE_CONTEXT()+.
+
+- +int NETLINK_SEND(struct tst_netlink_context *ctx)+ – Sends all messages
+  waiting in +ctx+ buffer to the kernel. If there are multiple messages
+  to send, a new +NLMSG_DONE+ message will be added automatically. Returns
+  the number of bytes sent on success. Return 0 or negative value on error.
+
+- +int NETLINK_SEND_VALIDATE(struct tst_netlink_context *ctx)+ – Sends all
+  messages just like +NETLINK_SEND()+, then receives the response from
+  the kernel and validates results of requests sent with the +NLM_F_ACK+ flag.
+  This function calls +tst_brk()+ as usual if communication fails but it will
+  return error status without terminating the test if one of the received
+  messages contains error code. See +NETLINK_CHECK_ACKS()+ below for
+  explanation of the return value.
+
+- +int NETLINK_WAIT(struct tst_netlink_context *ctx)+ – Waits until data becomes
+  available to read from the netlink socket (timeout: 1 second). Returns 1
+  if there is data to read, 0 on timeout or -1 on error.
+
+- +struct tst_netlink_message *NETLINK_RECV(struct tst_netlink_context *ctx)+ –
+  Receives netlink messages from the kernel. The messages are received
+  in non-blocking mode so calling +NETLINK_WAIT()+ first is recommended.
+  Returns an array of partially parsed messages terminated by an item with
+  +NULL+ in the +header+ field. On error or when there are no messages
+  to receive, returns +NULL+. Call +NETLINK_FREE_MESSAGE()+ to free
+  the returned data.
+
+- +int NETLINK_CHECK_ACKS(struct tst_netlink_context *ctx,
+  struct tst_netlink_message *response)+ – Validate results of requests sent
+  with the +NLM_F_ACK+ flag. Do not call +NETLINK_ADD_MESSAGE()+ between
+  +NETLINK_SEND()+ and +NETLINK_CHECK_ACKS()+ because it will reset the state
+  of +ctx+ and prevent result validation. Returns 1 if all messages sent
+  with the +NLM_F_ACK+ flag have a corresponding message in +response+ and
+  the error code is 0. If any of the expected response messages is missing,
+  this function will call +tst_brk()+ (or return 0 during test cleanup phase).
+  If any of the response messages has non-zero error code, this function will
+  return 0 and store the first non-zero error code in global variable
+  +tst_netlink_errno+ (sign-flipped just like regular libc +errno+).
+
+3.3 Creating messages
+~~~~~~~~~~~~~~~~~~~~~
+
+- +int NETLINK_ADD_MESSAGE(struct tst_netlink_context *ctx, const struct
+  nlmsghdr *header, const void *payload, size_t payload_size)+ – Adds new
+  netlink message to +ctx+ buffer. You need to provide message +header+ and
+  optional +payload+. +payload_size+ is the size of +payload+ data in bytes.
+  If you don't want to add any payload data, set +payload+ to +NULL+ and
+  +payload_size+ to 0. This function will automatically fill the +nlmsg_len+,
+  +nlmsg_seq+ and +nlmsg_pid+ fields of the new message header. You don't need
+  to set those. It'll also automatically add +NLM_F_MULTI+ flag when needed.
+  Returns 1 on success, 0 on error. Note that the first call of
+  +NETLINK_ADD_MESSAGE()+ after +NETLINK_SEND()+ will reset the state of +ctx+
+  and +NETLINK_CHECK_ACKS()+ will not work correctly until the next
+  +NETLINK_SEND()+.
+
+- +int NETLINK_ADD_ATTR(struct tst_netlink_context *ctx, unsigned short type,
+  const void *data, unsigned short len)+ – Adds new +struct nlattr+ attribute
+  to the last message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need
+  to provide attribute +type+ which will be stored in +struct nlattr.nla_type+,
+  optional payload +data+ and payload size +len+ in bytes. If you don't want
+  to add any payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on
+  success, 0 on error.
+
+- +int NETLINK_ADD_ATTR_STRING(struct tst_netlink_context *ctx, unsigned short
+  type, const char *data)+ – Adds new +struct nlattr+ string attribute to the
+  last message in +ctx+ buffer. Parameters and return value are the same as
+  for +NETLINK_ADD_ATTR()+, except the payload length is calculated using
+  +strlen()+.
+
+- +int NETLINK_ADD_ATTR_LIST(struct tst_netlink_context *ctx, const struct
+  tst_netlink_attr_list *list)+ – Adds a list of +struct nlattr+ attributes
+  to the last message in +ctx+ buffer. See description of
+  +struct tst_netlink_attr_list+ and +NETLINK_ADD_MESSAGE()+ above. Returns
+  the number of added attributes on success (nested attributes are not
+  counted), -1 on error.
+
+- +int RTNL_ADD_ATTR(struct tst_netlink_context *ctx, unsigned short type,
+  const void *data, unsigned short len)+ – Adds new +struct rtattr+ attribute
+  to the last message in +ctx+ buffer. See +NETLINK_ADD_MESSAGE()+. You need
+  to provide attribute +type+ which will be stored in +struct rtattr.rta_type+,
+  optional payload +data+ and payload size +len+ in bytes. If you don't want
+  to add any payload, set +data+ to +NULL+ and +len+ to 0. Returns 1 on
+  success, 0 on error.
+
+- +int RTNL_ADD_ATTR_STRING(struct tst_netlink_context *ctx, unsigned short
+  type, const char *data)+ – Adds new +struct rtattr+ string attribute to the
+  last message in +ctx+ buffer. Parameters and return value are the same as
+  for +RTNL_ADD_ATTR()+, except the payload length is calculated using
+  +strlen()+.
+
+- +int RTNL_ADD_ATTR_LIST(struct tst_netlink_context *ctx, const struct
+  tst_netlink_attr_list *list)+ – Adds a list of +struct rtattr+ attributes
+  to the last message in +ctx+ buffer. See description of
+  +struct tst_netlink_attr_list+ and +NETLINK_ADD_MESSAGE()+ above. Returns
+  the number of added attributes on success (nested attributes are not
+  counted), -1 on error.
+
+Example Usage
++++++++++++++
+[source,c]
+-------------------------------------------------------------------------------
+#include <asm/types.h>
+#include <linux/netlink.h>
+#include <linux/rtnetlink.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
+#include "tst_test.h"
+#include "tst_netlink.h"
+#include "tst_netdevice.h"
+
+...
+
+void setup(void)
+{
+	struct tst_netlink_context *ctx;
+	int index, ret;
+	in_addr_t addr;
+
+	struct nlmsghdr header = {
+		.nlmsg_type = RTM_NEWADDR,
+		.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_CREATE |
+			NLM_F_EXCL
+	};
+
+	struct ifaddrmsg info = {
+		.ifa_family = AF_INET,
+		.ifa_prefixlen = 24
+	};
+
+	index = NETDEV_INDEX_BY_NAME("ltp_veth1");
+	info.ifa_index = index;
+
+	ctx = NETLINK_CREATE_CONTEXT(NETLINK_ROUTE);
+	NETLINK_ADD_MESSAGE(ctx, &header, &info, sizeof(info));
+	addr = inet_addr("192.168.123.45");
+	RTNL_ADD_ATTR(ctx, IFA_LOCAL, &addr, sizeof(addr));
+	ret = NETLINK_SEND_VALIDATE(ctx);
+	NETLINK_DESTROY_CONTEXT(ctx);
+
+	if (!ret) {
+		tst_brk(TBROK, "Failed to set ltp_veth1 address");
+	}
+}
+-------------------------------------------------------------------------------

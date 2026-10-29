@@ -46,7 +46,7 @@ static char *random_string(int len)
     output_string[len] = '\0';
     return output_string;
 }
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
     int i, j, c;
     char *ret_str;

@@ -3,18 +3,15 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * CVE-2020-14386
  *
  * Check for vulnerability in tpacket_rcv() which allows an unprivileged user
  * to write arbitrary data to a memory area outside the allocated packet
- * buffer. Kernel crash fixed in:
+ * buffer.
  *
- *  commit acf69c946233259ab4d64f8869d4037a198c7f06
- *  Author: Or Cohen <orcohen@paloaltonetworks.com>
- *  Date:   Thu Sep 3 21:05:28 2020 -0700
- *
- *  net/packet: fix overflow in tpacket_rcv
+ * Kernel crash fixed in 5.9
+ * acf69c946233 ("net/packet: fix overflow in tpacket_rcv")
  */
 
 #include <stdio.h>
@@ -208,12 +205,12 @@ static struct tst_test test = {
 		NULL
 	},
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/user/max_user_namespaces", "1024", TST_SR_SKIP},
+		{PATH_USER_MAX_USER_NAMESPACES, "1024", TST_SR_SKIP},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "bcc5364bdcfe"},
-		{"linux-git", "acf69c946233"},
+		{"linux-git", "bcc5364bdcfe131e6379363f089e7b4108d35b70"},
+		{"linux-git", "acf69c946233259ab4d64f8869d4037a198c7f06"},
 		{"CVE", "2020-14386"},
 		{}
 	}

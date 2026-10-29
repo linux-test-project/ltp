@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (mq_close((mqd_t) - 1) != -1) {
 		printf("mq_close() did not return -1 on invalid descriptor\n");

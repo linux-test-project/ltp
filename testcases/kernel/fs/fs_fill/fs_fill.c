@@ -22,7 +22,7 @@
 
 static volatile int run;
 static unsigned int nthreads;
-static int enospc_cnt;
+static tst_atomic_t enospc_cnt;
 static struct worker *workers;
 
 struct worker {
@@ -121,8 +121,9 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
-	.max_runtime = 60,
+	.timeout = 300,
 	.needs_root = 1,
+	.dev_min_size = 1024,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,
 	.all_filesystems = 1,

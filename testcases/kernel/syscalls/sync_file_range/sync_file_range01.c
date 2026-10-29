@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic error conditions test for sync_file_range() system call, tests for:
  *
  * - EBADFD Wrong filedescriptor

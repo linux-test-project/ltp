@@ -106,7 +106,7 @@ static void *thread_run(void *arg)
 		madvise(write_thp, thp_size, MADV_DONTNEED);
 		memcpy(&c, write_ptr, sizeof(c));
 		SAFE_LSEEK(readfd, (off_t)write_ptr, SEEK_SET);
-		SAFE_READ(1, readfd, &c, sizeof(int));
+		SAFE_READ(SAFE_READ_ALL, readfd, &c, sizeof(int));
 		tst_fzsync_end_race_b(&fzsync_pair);
 		/* Wait for dirty page handling before next madvise() */
 		usleep(10);
@@ -161,10 +161,10 @@ static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
 	.cleanup = cleanup,
-	.max_runtime = 150,
+	.runtime = 150,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a8f97366452e"},
-		{"linux-git", "8310d48b125d"},
+		{"linux-git", "a8f97366452ed491d13cf1e44241bc0b5740b1f0"},
+		{"linux-git", "8310d48b125d19fcd9521d83b8293e63eb1646aa"},
 		{"CVE", "2017-1000405"},
 		{}
 	}

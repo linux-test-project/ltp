@@ -6,6 +6,26 @@
 #ifndef TST_KCONFIG_H__
 #define TST_KCONFIG_H__
 
+#include <stdbool.h>
+#include <stddef.h>
+
+/**
+ * TST_KCONFIG_INIT() - Initialization helper macro for struct
+ *     tst_kconfig_var. Requires <string.h> for strlen().
+ * @confname: Config variable name string.
+ */
+#define TST_KCONFIG_INIT(confname) { \
+	.id = confname, \
+	.id_len = strlen(confname) \
+}
+
+/**
+ * struct tst_kconfig_var - Kernel config variable lookup result.
+ * @id: Config variable name (e.g. CONFIG_FOO).
+ * @id_len: Length of @id string.
+ * @choice: Result: 'm', 'y', 'v', 'n', or 0 (not found).
+ * @val: Allocated value string when @choice is 'v'.
+ */
 struct tst_kconfig_var {
 	char id[64];
 	unsigned int id_len;
@@ -14,46 +34,75 @@ struct tst_kconfig_var {
 };
 
 /**
+ * tst_kconfig_read() - Read and parse kernel config.
+ * @vars: An array of caller initialized tst_kconfig_var structures.
+ * @vars_len: Length of the @vars array.
  *
- * Reads a kernel config, parses it and writes results into an array of
- * tst_kconfig_var structures.
+ * The path to the kernel config is autodetected from known locations
+ * and can be overridden with the KCONFIG_PATH environment variable.
  *
- * The path to the kernel config should be autodetected in most of the cases as
- * the code looks for know locations. It can be explicitely set/overrided with
- * the KCONFIG_PATH environment variable as well.
+ * After a call to this function each choice is set as follows:
  *
- * The caller has to initialize the tst_kconfig_var structure. The id has to be
- * filled with config variable name such as 'CONFIG_FOO', the id_len should
- * hold the id string length and the choice and val has to be zeroed.
+ *  - 'm' - config option set to m
+ *  - 'y' - config option set to y
+ *  - 'v' - config option set to other value
+ *  - 'n' - config option is not set
+ *  - 0   - config option not found
  *
- * After a call to this function each choice be set as follows:
- *
- *  'm' - config option set to m
- *  'y' - config option set to y
- *  'v' - config option set to other value
- *  'n' - config option is not set
- *   0  - config option not found
- *
- * In the case that match is set to 'v' the val pointer points to a newly
- * allocated string that holds the value.
- *
- * @param vars An array of caller initalized tst_kconfig_var structures.
- * @param vars_len Length of the vars array.
+ * When choice is 'v' the val pointer holds a newly allocated string.
  */
 void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len);
 
 /**
- * Checks if required kernel configuration options are set in the kernel
- * config. Return 0 if every config is satisfied and return 1 if at least
- * one is missing.
+ * tst_kconfig_check() - Check if required kernel config options are set.
+ * @kconfigs: NULL-terminated array of config strings needed for the testrun.
  *
- * The config options can be passed in two different formats, either
- * "CONFIG_FOO" in which case the option has to be set in order to continue the
- * test or with an explicit value "CONFIG_FOO=bar" in which case the value has
- * to match.
+ * Config options can be passed as "CONFIG_FOO" (must be set) or
+ * "CONFIG_FOO=bar" (value must match).
  *
- * @param kconfigs NULL-terminated array of config strings needed for the testrun.
+ * Return: 0 if every config is satisfied, 1 if at least one is missing.
  */
 int tst_kconfig_check(const char *const kconfigs[]);
+
+/**
+ * TST_KCMDLINE_INIT() - Initialization helper macro for struct tst_kcmdline_var.
+ * @paraname: Kernel command-line parameter name.
+ */
+#define TST_KCMDLINE_INIT(paraname) { \
+	.key = paraname, \
+	.value = "", \
+	.found = false \
+}
+
+/**
+ * struct tst_kcmdline_var - Kernel command-line parameter storage.
+ * @key: Parameter name.
+ * @value: Parameter value buffer.
+ * @found: Whether the parameter was found.
+ */
+struct tst_kcmdline_var {
+	const char *key;
+	char value[256];
+	bool found;
+};
+
+/**
+ * tst_kcmdline_parse() - Parse kernel command-line parameters from /proc/cmdline.
+ * @params: Array of tst_kcmdline_var structures to fill.
+ * @params_len: Length of the @params array.
+ */
+void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len);
+
+/*
+ * tst_has_slow_kconfig() - Check if any performance-degrading kernel configs are enabled.
+ *
+ * This function iterates over the list of slow kernel configuration options
+ * (`tst_slow_kconfigs`) and checks if any of them are enabled in the running kernel.
+ *
+ * Return:
+ * - 1 if at least one slow kernel config is enabled.
+ * - 0 if none of the slow kernel configs are enabled.
+ */
+int tst_has_slow_kconfig(void);
 
 #endif	/* TST_KCONFIG_H__ */

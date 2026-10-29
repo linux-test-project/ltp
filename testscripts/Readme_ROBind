@@ -3,9 +3,9 @@ the {LTPROOT}/testcases/kernel/fs .
 
 EXECUTING TESTS
 ==================
-The tests can be executed through runltp like:
+The tests can be executed with kirk:
 
-./runltp -f fs_readonly
+kirk -f fs_readonly
 
 Following tests are executed when the above is invoked:
 

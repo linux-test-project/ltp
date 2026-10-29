@@ -3,6 +3,7 @@ abort01 abort01
 
 accept01 accept01
 accept02 accept02
+accept03 accept03
 
 accept4_01 accept4_01
 
@@ -29,6 +30,8 @@ alarm03 alarm03
 alarm05 alarm05
 alarm06 alarm06
 alarm07 alarm07
+
+arch_prctl01 arch_prctl01
 
 bind01 bind01
 bind02 bind02
@@ -59,16 +62,22 @@ capset04 capset04
 
 cacheflush01 cacheflush01
 
+cachestat01 cachestat01
+cachestat02 cachestat02
+cachestat03 cachestat03
+cachestat04 cachestat04
+
 chdir01 chdir01
-chdir01A symlink01 -T chdir01
+chdir02 chdir02
 chdir04 chdir04
 
 chmod01 chmod01
-chmod01A symlink01 -T chmod01
 chmod03 chmod03
 chmod05 chmod05
 chmod06 chmod06
 chmod07 chmod07
+chmod08 chmod08
+chmod09 chmod09
 
 chown01 chown01
 chown01_16 chown01_16
@@ -104,6 +113,7 @@ leapsec01 leapsec01
 clock_settime01 clock_settime01
 clock_settime02 clock_settime02
 clock_settime03 clock_settime03
+clock_settime04 clock_settime04
 
 clone01 clone01
 clone02 clone02
@@ -114,9 +124,13 @@ clone06 clone06
 clone07 clone07
 clone08 clone08
 clone09 clone09
+clone10 clone10
+clone11 clone11
 
 clone301 clone301
 clone302 clone302
+clone303 clone303
+clone304 clone304
 
 close01 close01
 close02 close02
@@ -128,6 +142,7 @@ confstr01 confstr01
 
 connect01 connect01
 connect02 connect02
+connect03 connect03
 
 creat01 creat01
 creat03 creat03
@@ -163,25 +178,42 @@ dup3_02 dup3_02
 
 epoll_create01 epoll_create01
 epoll_create02 epoll_create02
+epoll_create03 epoll_create03
+
 epoll_create1_01 epoll_create1_01
 epoll_create1_02 epoll_create1_02
-epoll01 epoll-ltp
+
 epoll_ctl01 epoll_ctl01
 epoll_ctl02 epoll_ctl02
 epoll_ctl03 epoll_ctl03
 epoll_ctl04 epoll_ctl04
 epoll_ctl05 epoll_ctl05
+epoll_ctl06 epoll_ctl06
+epoll_ctl07 epoll_ctl07
+
 epoll_wait01 epoll_wait01
 epoll_wait02 epoll_wait02
 epoll_wait03 epoll_wait03
 epoll_wait04 epoll_wait04
 epoll_wait05 epoll_wait05
 epoll_wait06 epoll_wait06
+epoll_wait07 epoll_wait07
+epoll_wait08 epoll_wait08
+epoll_wait09 epoll_wait09
+epoll_wait10 epoll_wait10
+epoll_wait11 epoll_wait11
+epoll_wait12 epoll_wait12
+epoll_wait13 epoll_wait13
+epoll_wait14 epoll_wait14
+epoll_wait15 epoll_wait15
+epoll_wait16 epoll_wait16
+
 epoll_pwait01 epoll_pwait01
 epoll_pwait02 epoll_pwait02
 epoll_pwait03 epoll_pwait03
 epoll_pwait04 epoll_pwait04
 epoll_pwait05 epoll_pwait05
+epoll_pwait06 epoll_pwait06
 
 eventfd01 eventfd01
 eventfd02 eventfd02
@@ -234,6 +266,12 @@ fallocate06 fallocate06
 fsetxattr01 fsetxattr01
 fsetxattr02 fsetxattr02
 
+file_attr01 file_attr01
+file_attr02 file_attr02
+file_attr03 file_attr03
+file_attr04 file_attr04
+file_attr05 file_attr05
+
 #posix_fadvise test cases
 posix_fadvise01                      posix_fadvise01
 posix_fadvise01_64                posix_fadvise01_64
@@ -257,6 +295,10 @@ fchmod06 fchmod06
 
 #fchmodat test cases
 fchmodat01 fchmodat01
+fchmodat02 fchmodat02
+
+fchmodat2_01 fchmodat2_01
+fchmodat2_02 fchmodat2_02
 
 fchown01 fchown01
 fchown01_16 fchown01_16
@@ -272,6 +314,21 @@ fchown05_16 fchown05_16
 #fchownat test case
 fchownat01 fchownat01
 fchownat02 fchownat02
+fchownat03 fchownat03
+
+fchroot01 fchroot01
+fchroot02 fchroot02
+fchroot03 fchroot03
+fchroot04 fchroot04
+fchroot05 fchroot05
+fchroot06 fchroot06
+fchroot07 fchroot07
+fchroot08 fchroot08
+fchroot09 fchroot09
+fchroot10 fchroot10
+fchroot11 fchroot11
+fchroot12 fchroot12
+fchroot13 fchroot13
 
 fcntl01 fcntl01
 fcntl01_64 fcntl01_64
@@ -325,8 +382,6 @@ fcntl26 fcntl26
 fcntl26_64 fcntl26_64
 fcntl27 fcntl27
 fcntl27_64 fcntl27_64
-fcntl28 fcntl28
-fcntl28_64 fcntl28_64
 fcntl29 fcntl29
 fcntl29_64 fcntl29_64
 fcntl30 fcntl30
@@ -349,6 +404,8 @@ fcntl38 fcntl38
 fcntl38_64 fcntl38_64
 fcntl39 fcntl39
 fcntl39_64 fcntl39_64
+fcntl40 fcntl40
+fcntl40_64 fcntl40_64
 
 fdatasync01 fdatasync01
 fdatasync02 fdatasync02
@@ -370,6 +427,7 @@ flock02 flock02
 flock03 flock03
 flock04 flock04
 flock06 flock06
+flock07 flock07
 
 fmtmsg01 fmtmsg01
 
@@ -377,12 +435,12 @@ fork01 fork01
 fork03 fork03
 fork04 fork04
 fork05 fork05
-fork06 fork06
+fork06 fork_procs -n 1000
 fork07 fork07
 fork08 fork08
 fork09 fork09
 fork10 fork10
-fork11 fork11
+fork11 fork_procs -n 100
 fork13 fork13
 fork14 fork14
 
@@ -435,6 +493,7 @@ futimesat01 futimesat01
 getcontext01 getcontext01
 
 getcpu01 getcpu01
+getcpu02 getcpu02
 
 getcwd01 getcwd01
 getcwd02 getcwd02
@@ -445,8 +504,6 @@ getdents01 getdents01
 getdents02 getdents02
 
 getdomainname01 getdomainname01
-
-getdtablesize01 getdtablesize01
 
 getegid01 getegid01
 getegid01_16 getegid01_16
@@ -473,6 +530,7 @@ gethostbyname_r01 gethostbyname_r01
 gethostid01 gethostid01
 
 gethostname01 gethostname01
+gethostname02 gethostname02
 
 getitimer01 getitimer01
 getitimer02 getitimer02
@@ -487,7 +545,6 @@ getpgid02 getpgid02
 getpgrp01 getpgrp01
 
 getpid01 getpid01
-getpid02 getpid02
 
 getppid01 getppid01
 getppid02 getppid02
@@ -499,6 +556,7 @@ getrandom01 getrandom01
 getrandom02 getrandom02
 getrandom03 getrandom03
 getrandom04 getrandom04
+getrandom05 getrandom05
 
 getresgid01 getresgid01
 getresgid01_16 getresgid01_16
@@ -536,6 +594,7 @@ getsockopt01 getsockopt01
 getsockopt02 getsockopt02
 
 gettid01 gettid01
+gettid02 gettid02
 
 gettimeofday01 gettimeofday01
 gettimeofday02 gettimeofday02
@@ -555,11 +614,11 @@ init_module01 init_module01
 init_module02 init_module02
 
 #Needs tty device.
-#ioctl01 ioctl01 -D /dev/tty0
-#ioctl02 ioctl02 -D /dev/tty0
+#ioctl02 ioctl02 -d /dev/tty0
 
 # Introducing ioctl tests for all /dev/tty* devices
-ioctl01_02   test_ioctl
+ioctl01      ioctl01
+ioctl02      test_ioctl
 ioctl03      ioctl03
 ioctl04      ioctl04
 ioctl05      ioctl05
@@ -567,6 +626,7 @@ ioctl06      ioctl06
 ioctl07      ioctl07
 ioctl08      ioctl08
 ioctl09      ioctl09
+ioctl10      ioctl10
 
 ioctl_loop01 ioctl_loop01
 ioctl_loop02 ioctl_loop02
@@ -585,6 +645,22 @@ ioctl_ns06 ioctl_ns06
 ioctl_ns07 ioctl_ns07
 
 ioctl_sg01 ioctl_sg01
+
+ioctl_ficlone01 ioctl_ficlone01
+ioctl_ficlone02 ioctl_ficlone02
+ioctl_ficlone03 ioctl_ficlone03
+ioctl_ficlonerange01 ioctl_ficlonerange01
+ioctl_ficlonerange02 ioctl_ficlonerange02
+ioctl_fiemap01 ioctl_fiemap01
+
+ioctl_getlbmd01 ioctl_getlbmd01
+
+ioctl_pidfd01 ioctl_pidfd01
+ioctl_pidfd02 ioctl_pidfd02
+ioctl_pidfd03 ioctl_pidfd03
+ioctl_pidfd04 ioctl_pidfd04
+ioctl_pidfd05 ioctl_pidfd05
+ioctl_pidfd06 ioctl_pidfd06
 
 inotify_init1_01 inotify_init1_01
 inotify_init1_02 inotify_init1_02
@@ -625,6 +701,8 @@ fanotify20 fanotify20
 fanotify21 fanotify21
 fanotify22 fanotify22
 fanotify23 fanotify23
+fanotify24 fanotify24
+fanotify25 fanotify25
 
 ioperm01 ioperm01
 ioperm02 ioperm02
@@ -652,6 +730,7 @@ io_setup02 io_setup02
 io_submit01 io_submit01
 io_submit02 io_submit02
 io_submit03 io_submit03
+io_submit04 io_submit04
 
 keyctl01 keyctl01
 keyctl02 keyctl02
@@ -662,6 +741,27 @@ keyctl06 keyctl06
 keyctl07 keyctl07
 keyctl08 keyctl08
 keyctl09 keyctl09
+keyctl10 keyctl10
+keyctl11 keyctl11
+keyctl12 keyctl12
+keyctl13 keyctl13
+keyctl14 keyctl14
+keyctl15 keyctl15
+keyctl16 keyctl16
+keyctl17 keyctl17
+keyctl18 keyctl18
+keyctl19 keyctl19
+keyctl20 keyctl20
+keyctl21 keyctl21
+keyctl22 keyctl22
+keyctl23 keyctl23
+keyctl24 keyctl24
+keyctl25 keyctl25
+keyctl26 keyctl26
+keyctl27 keyctl27
+keyctl28 keyctl28
+keyctl29 keyctl29
+keyctl30 keyctl30
 
 kcmp01 kcmp01
 kcmp02 kcmp02
@@ -671,27 +771,32 @@ kill02 kill02
 kill03 kill03
 kill05 kill05
 kill06 kill06
-kill07 kill07
 kill08 kill08
-kill09 kill09
 kill10 kill10
 kill11 kill11
 kill12 kill12
 kill13 kill13
 
+landlock01 landlock01
+landlock02 landlock02
+landlock03 landlock03
+landlock04 landlock04
+landlock05 landlock05
+landlock06 landlock06
+landlock07 landlock07
+landlock08 landlock08
+landlock09 landlock09
+landlock10 landlock10
+
 lchown01 lchown01
 lchown01_16 lchown01_16
 lchown02  lchown02
-lchown03  lchown03
 lchown02_16 lchown02_16
-lchown03_16 lchown03_16
 
 lgetxattr01 lgetxattr01
 lgetxattr02 lgetxattr02
 
-link01 symlink01 -T link01
 link02 link02
-link03 link03
 link04 link04
 link05 link05
 link08 link08
@@ -702,9 +807,15 @@ linkat02 linkat02
 
 listen01 listen01
 
+listmount01 listmount01
+listmount02 listmount02
+listmount03 listmount03
+listmount04 listmount04
+
 listxattr01 listxattr01
 listxattr02 listxattr02
 listxattr03 listxattr03
+listxattr04 listxattr04
 
 llistxattr01 llistxattr01
 llistxattr02 llistxattr02
@@ -721,12 +832,19 @@ lseek02 lseek02
 lseek07 lseek07
 lseek11 lseek11
 
-lstat01A symlink01 -T lstat01
-lstat01A_64 symlink01 -T lstat01_64
+lsm_get_self_attr01 lsm_get_self_attr01
+lsm_get_self_attr02 lsm_get_self_attr02
+lsm_get_self_attr03 lsm_get_self_attr03
+lsm_list_modules01 lsm_list_modules01
+lsm_list_modules02 lsm_list_modules02
+lsm_set_self_attr01 lsm_set_self_attr01
+
 lstat01 lstat01
 lstat01_64 lstat01_64
 lstat02 lstat02
 lstat02_64 lstat02_64
+lstat03 lstat03
+lstat03_64 lstat03_64
 
 mallinfo02 mallinfo02
 
@@ -755,7 +873,6 @@ mkdir02 mkdir02
 mkdir03 mkdir03
 mkdir04 mkdir04
 mkdir05 mkdir05
-mkdir05A symlink01 -T mkdir05
 mkdir09 mkdir09
 
 #mkdirat test cases
@@ -780,12 +897,12 @@ mlock01 mlock01
 mlock02 mlock02
 mlock03 mlock03 -i 20
 mlock04 mlock04
+mlock05 mlock05
 
 mlock201 mlock201
 mlock202 mlock202
 mlock203 mlock203
 
-qmm01 mmap001 -m 1
 mmap01 mmap01
 mmap02 mmap02
 mmap03 mmap03
@@ -805,10 +922,14 @@ mmap17 mmap17
 mmap18 mmap18
 mmap19 mmap19
 mmap20 mmap20
+mmap21_01 mmap21 -m 1
+mmap21_02 mmap21
+mmap22 mmap22
+mmap23 mmap23
+mmap24 mmap24
 
 modify_ldt01 modify_ldt01
 modify_ldt02 modify_ldt02
-modify_ldt03 modify_ldt03
 
 mount01 mount01
 mount02 mount02
@@ -817,11 +938,14 @@ mount04 mount04
 mount05 mount05
 mount06 mount06
 mount07 mount07
+mount08 mount08
 
 mount_setattr01 mount_setattr01
+mount_setattr02 mount_setattr02
 
 move_mount01 move_mount01
 move_mount02 move_mount02
+move_mount03 move_mount03
 
 move_pages01 move_pages01
 move_pages02 move_pages02
@@ -857,6 +981,12 @@ mremap03 mremap03
 mremap04 mremap04
 mremap05 mremap05
 mremap06 mremap06
+mremap07 mremap07
+mremap08 mremap08
+mremap09 mremap09
+
+mseal01 mseal01
+mseal02 mseal02
 
 msgctl01 msgctl01
 msgctl02 msgctl02
@@ -864,11 +994,9 @@ msgctl03 msgctl03
 msgctl04 msgctl04
 msgctl05 msgctl05
 msgctl06 msgctl06
-msgstress01 msgstress01
-msgstress02 msgstress02
-msgstress03 msgstress03
-msgstress04 msgstress04
 msgctl12 msgctl12
+
+msgstress01 msgstress01
 
 msgget01 msgget01
 msgget02 msgget02
@@ -900,8 +1028,8 @@ munlock02 munlock02
 munlockall01 munlockall01
 
 munmap01 munmap01
-munmap02 munmap02
 munmap03 munmap03
+munmap04 munmap04
 
 nanosleep01 nanosleep01
 nanosleep02 nanosleep02
@@ -909,6 +1037,7 @@ nanosleep04 nanosleep04
 
 name_to_handle_at01 name_to_handle_at01
 name_to_handle_at02 name_to_handle_at02
+name_to_handle_at03 name_to_handle_at03
 
 nftw01 nftw01
 nftw6401 nftw6401
@@ -920,7 +1049,6 @@ nice04 nice04
 nice05 nice05
 
 open01 open01
-open01A symlink01 -T open01
 open02 open02
 open03 open03
 open04 open04
@@ -933,6 +1061,7 @@ open11 open11
 open12 open12
 open13 open13
 open14 open14
+open15 open15
 
 openat01 openat01
 openat02 openat02
@@ -964,14 +1093,15 @@ madvise08 madvise08
 madvise09 madvise09
 madvise10 madvise10
 madvise11 madvise11
+madvise12 madvise12
 
 newuname01 newuname01
 
 pathconf01 pathconf01
+pathconf02 pathconf02
 
 pause01 pause01
 pause02 pause02
-pause03 pause03
 
 personality01 personality01
 personality02 personality02
@@ -1002,22 +1132,34 @@ pipe11 pipe11
 pipe12 pipe12
 pipe13 pipe13
 pipe14 pipe14
+pipe15 pipe15
 
 pipe2_01 pipe2_01
 pipe2_02 pipe2_02
 pipe2_04 pipe2_04
 
+# Interprocess communication stress tests
+pipeio_1 pipeio -T pipeio_1 -c 5 -s 4090 -i 100 -b -f x80
+pipeio_2 pipeio -T pipeio_2 -c 5 -s 4090 -i 100 -f x80
+pipeio_3 pipeio -T pipeio_3 -c 5 -s 4090 -i 100 -u -b -f x80
+pipeio_4 pipeio -T pipeio_4 -c 5 -s 4090 -i 100 -u -f x80
+pipeio_5 pipeio -T pipeio_5 -c 5 -s 5000 -i 10 -b -f x80
+pipeio_6 pipeio -T pipeio_6 -c 5 -s 5000 -i 10 -b -u -f x80
+pipeio_7 pipeio -T pipeio_7 -c 5 -s 5000 -i 10 -f x80
+pipeio_8 pipeio -T pipeio_8 -c 5 -s 5000 -i 10 -u -f x80
+
 pivot_root01 pivot_root01
 
 poll01 poll01
 poll02 poll02
+poll03 poll03
+poll04 poll04
 
 ppoll01 ppoll01
 
 prctl01 prctl01
 prctl02 prctl02
 prctl03 prctl03
-prctl04 prctl04
 prctl05 prctl05
 prctl06 prctl06
 prctl07 prctl07
@@ -1046,6 +1188,9 @@ preadv203_64 preadv203_64
 
 profil01 profil01
 
+process_mrelease01 process_mrelease01
+process_mrelease02 process_mrelease02
+
 process_vm_readv01 process_vm01 -r
 process_vm_readv02 process_vm_readv02
 process_vm_readv03 process_vm_readv03
@@ -1071,8 +1216,7 @@ ptrace02 ptrace02
 ptrace03 ptrace03
 ptrace04 ptrace04
 ptrace05 ptrace05
-# Broken test; See: testcases/kernel/syscalls/ptrace/Makefile for more details.
-#ptrace06 ptrace06
+ptrace06 ptrace06
 ptrace07 ptrace07
 ptrace08 ptrace08
 ptrace09 ptrace09
@@ -1122,7 +1266,6 @@ readahead02 readahead02
 readdir01 readdir01
 readdir21 readdir21
 
-readlink01A symlink01 -T readlink01
 readlink01 readlink01
 readlink03 readlink03
 
@@ -1155,7 +1298,6 @@ removexattr01 removexattr01
 removexattr02 removexattr02
 
 rename01 rename01
-rename01A symlink01 -T rename01
 rename03 rename03
 rename04 rename04
 rename05 rename05
@@ -1168,6 +1310,7 @@ rename11 rename11
 rename12 rename12
 rename13 rename13
 rename14 rename14
+rename15 rename15
 
 #renameat test cases
 renameat01 renameat01
@@ -1180,11 +1323,11 @@ request_key02 request_key02
 request_key03 request_key03
 request_key04 request_key04
 request_key05 request_key05
+request_key06 request_key06
 
 rmdir01 rmdir01
 rmdir02 rmdir02
 rmdir03 rmdir03
-rmdir03A symlink01 -T rmdir03
 
 rt_sigaction01 rt_sigaction01
 rt_sigaction02 rt_sigaction02
@@ -1192,6 +1335,7 @@ rt_sigaction03 rt_sigaction03
 rt_sigprocmask01 rt_sigprocmask01
 rt_sigprocmask02 rt_sigprocmask02
 rt_sigqueueinfo01 rt_sigqueueinfo01
+rt_sigqueueinfo02 rt_sigqueueinfo02
 rt_sigsuspend01 rt_sigsuspend01
 rt_sigtimedwait01 rt_sigtimedwait01
 rt_tgsigqueueinfo01 rt_tgsigqueueinfo01
@@ -1225,6 +1369,7 @@ sched_getscheduler02 sched_getscheduler02
 sched_setscheduler01 sched_setscheduler01
 sched_setscheduler02 sched_setscheduler02
 sched_setscheduler03 sched_setscheduler03
+sched_setscheduler04 sched_setscheduler04
 
 sched_yield01 sched_yield01
 
@@ -1232,8 +1377,11 @@ sched_setaffinity01 sched_setaffinity01
 sched_getaffinity01 sched_getaffinity01
 
 sched_setattr01 sched_setattr01
+sched_setattr02 sched_setattr02
 sched_getattr01 sched_getattr01
 sched_getattr02 sched_getattr02
+
+seccomp01 seccomp01
 
 select01 select01
 select02 select02
@@ -1299,6 +1447,7 @@ set_mempolicy04 set_mempolicy04
 
 set_robust_list01 set_robust_list01
 set_thread_area01 set_thread_area01
+set_thread_area02 set_thread_area02
 set_tid_address01 set_tid_address01
 
 setdomainname01	setdomainname01
@@ -1422,6 +1571,8 @@ setsockopt06 setsockopt06
 setsockopt07 setsockopt07
 setsockopt08 setsockopt08
 setsockopt09 setsockopt09
+setsockopt10 setsockopt10
+setsockopt11 setsockopt11
 
 settimeofday01 settimeofday01
 settimeofday02 settimeofday02
@@ -1440,6 +1591,7 @@ setxattr03 setxattr03
 shmat01 shmat01
 shmat02 shmat02
 shmat03 shmat03
+shmat04 shmat04
 
 shmctl01 shmctl01
 shmctl02 shmctl02
@@ -1459,6 +1611,9 @@ shmget04 shmget04
 shmget05 shmget05
 shmget06 shmget06
 
+shutdown01 shutdown01
+shutdown02 shutdown02
+
 sigaction01 sigaction01
 sigaction02 sigaction02
 
@@ -1476,6 +1631,7 @@ signal05 signal05
 signal06 signal06
 
 signalfd01 signalfd01
+signalfd02 signalfd02
 
 signalfd4_01 signalfd4_01
 signalfd4_02 signalfd4_02
@@ -1487,6 +1643,7 @@ sigprocmask01 sigprocmask01
 sigrelse01 sigrelse01
 
 sigsuspend01 sigsuspend01
+sigsuspend02 sigsuspend02
 
 sigtimedwait01 sigtimedwait01
 
@@ -1510,6 +1667,10 @@ splice02 splice02
 splice03 splice03
 splice04 splice04
 splice05 splice05
+splice06 splice06
+splice07 splice07
+splice08 splice08
+splice09 splice09
 
 tee01 tee01
 tee02 tee02
@@ -1522,8 +1683,18 @@ stat02 stat02
 stat02_64 stat02_64
 stat03 stat03
 stat03_64 stat03_64
-stat04 symlink01 -T stat04
-stat04_64 symlink01 -T stat04_64
+stat04 stat04
+stat04_64 stat04_64
+
+statmount01 statmount01
+statmount02 statmount02
+statmount03 statmount03
+statmount04 statmount04
+statmount05 statmount05
+statmount06 statmount06
+statmount07 statmount07
+statmount08 statmount08
+statmount09 statmount09
 
 statfs01 statfs01
 statfs01_64 statfs01_64
@@ -1546,15 +1717,14 @@ swapoff02 swapoff02
 swapon01 swapon01
 swapon02 swapon02
 swapon03 swapon03
+swapon04 swapon04
 
 #Exclusive syscall() for POWER6 machines only
 switch01 endian_switch01
 
-symlink01 symlink01
 symlink02 symlink02
 symlink03 symlink03
 symlink04 symlink04
-symlink05 symlink05
 
 #symlinkat test cases
 symlinkat01 symlinkat01
@@ -1568,6 +1738,7 @@ sync_file_range01 sync_file_range01
 sync_file_range02 sync_file_range02
 
 syscall01 syscall01
+syscall02 syscall02
 
 sysconf01 sysconf01
 
@@ -1601,7 +1772,6 @@ times03 times03
 
 timerfd01 timerfd01
 timerfd02 timerfd02
-timerfd03 timerfd03
 timerfd04 timerfd04
 timerfd_create01 timerfd_create01
 timerfd_gettime01 timerfd_gettime01
@@ -1642,16 +1812,20 @@ uname01 uname01
 uname02 uname02
 uname04 uname04
 
-unlink01 symlink01 -T unlink01
 unlink05 unlink05
 unlink07 unlink07
 unlink08 unlink08
+unlink09 unlink09
+unlink10 unlink10
 
 #unlinkat test cases
 unlinkat01 unlinkat01
 
 unshare01 unshare01
 unshare02 unshare02
+unshare03 unshare03
+unshare04 unshare04
+unshare05 unshare05
 
 #
 # These tests require an unmounted block device
@@ -1666,17 +1840,23 @@ umount2_01 umount2_01
 umount2_02 umount2_02
 
 userfaultfd01 userfaultfd01
+userfaultfd02 userfaultfd02
+userfaultfd03 userfaultfd03
+userfaultfd04 userfaultfd04
+userfaultfd05 userfaultfd05
+userfaultfd06 userfaultfd06
+userfaultfd07 userfaultfd07
 
 ustat01 ustat01
 ustat02 ustat02
 
 utime01 utime01
-utime01A symlink01 -T utime01
 utime02 utime02
 utime03 utime03
 utime04 utime04
 utime05 utime05
 utime06 utime06
+utime07 utime07
 
 utimes01 utimes01
 
@@ -1703,10 +1883,8 @@ wait402 wait402
 wait403 wait403
 
 waitpid01 waitpid01
-waitpid02 waitpid02
 waitpid03 waitpid03
 waitpid04 waitpid04
-waitpid05 waitpid05
 waitpid06 waitpid06
 waitpid07 waitpid07
 waitpid08 waitpid08
@@ -1747,11 +1925,14 @@ perf_event_open02 perf_event_open02
 
 futex_cmp_requeue01 futex_cmp_requeue01
 futex_cmp_requeue02 futex_cmp_requeue02
+futex_cmp_requeue03 futex_cmp_requeue03
 futex_wait01 futex_wait01
 futex_wait02 futex_wait02
 futex_wait03 futex_wait03
 futex_wait04 futex_wait04
 futex_wait05 futex_wait05
+futex_wait06 futex_wait06
+futex_wait07 futex_wait07
 futex_waitv01 futex_waitv01
 futex_waitv02 futex_waitv02
 futex_waitv03 futex_waitv03
@@ -1759,6 +1940,7 @@ futex_wake01 futex_wake01
 futex_wake02 futex_wake02
 futex_wake03 futex_wake03
 futex_wake04 futex_wake04
+futex_wake05 futex_wake05
 futex_wait_bitset01 futex_wait_bitset01
 
 memfd_create01 memfd_create01
@@ -1787,6 +1969,8 @@ membarrier01 membarrier01
 
 io_uring01 io_uring01
 io_uring02 io_uring02
+io_uring03 io_uring03
+io_uring04 io_uring04
 
 # Tests below may cause kernel memory leak
 perf_event_open03 perf_event_open03

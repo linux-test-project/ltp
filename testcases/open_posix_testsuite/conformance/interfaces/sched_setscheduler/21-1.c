@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int result, child_pid, stat_loc;
 	struct sched_param param;

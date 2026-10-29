@@ -73,6 +73,26 @@ static inline int safe_clock_settime(const char *file, const int lineno,
 	return rval;
 }
 
+static inline int safe_clock_nanosleep(const char *file, const int lineno,
+	clockid_t clockid, int flags, const struct timespec *ts,
+	struct timespec *remain)
+{
+	int ret;
+
+	errno = 0;
+	ret = clock_nanosleep(clockid, flags, ts, remain);
+
+	if (ret == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"clock_nanosleep() failed");
+	} else if (ret) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			"Invalid clock_nanosleep() return value %d", ret);
+	}
+
+	return ret;
+}
+
 static inline int safe_timer_create(const char *file, const int lineno,
 	clockid_t clockid, struct sigevent *sevp, timer_t *timerid)
 {
@@ -158,6 +178,9 @@ static inline int safe_timer_delete(const char *file, const int lineno,
 
 #define SAFE_CLOCK_SETTIME(clk_id, tp)\
 	safe_clock_settime(__FILE__, __LINE__, (clk_id), (tp))
+
+#define SAFE_CLOCK_NANOSLEEP(clockid, flags, ts, remain)\
+	safe_clock_nanosleep(__FILE__, __LINE__, clockid, flags, ts, remain)
 
 #define SAFE_TIMER_CREATE(clockid, sevp, timerid)\
 	safe_timer_create(__FILE__, __LINE__, (clockid), (sevp), (timerid))

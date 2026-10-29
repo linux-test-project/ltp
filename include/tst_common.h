@@ -9,9 +9,12 @@
 #ifndef TST_COMMON_H__
 #define TST_COMMON_H__
 
+#define LTP_ATTRIBUTE_NOINLINE		__attribute__((noinline))
 #define LTP_ATTRIBUTE_NORETURN		__attribute__((noreturn))
 #define LTP_ATTRIBUTE_UNUSED		__attribute__((unused))
 #define LTP_ATTRIBUTE_UNUSED_RESULT	__attribute__((warn_unused_result))
+
+#define LTP_VAR_USED(p) asm volatile("" :: "m"(p)); p
 
 #ifndef ARRAY_SIZE
 # define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
@@ -23,17 +26,21 @@
 #define LTP_ALIGN(x, a)    __LTP_ALIGN_MASK(x, (typeof(x))(a) - 1)
 #define __LTP_ALIGN_MASK(x, mask)  (((x) + (mask)) & ~(mask))
 
+unsigned int tst_multiply_timeout(unsigned int timeout);
+
 /**
  * TST_RETRY_FUNC() - Repeatedly retry a function with an increasing delay.
- * @FUNC - The function which will be retried
- * @ECHCK - Function/macro for validating @FUNC return value
  *
- * This macro will call @FUNC in a loop with a delay between retries.
- * If ECHCK(ret) evaluates to non-zero, the loop ends. The delay between
- * retries starts at one microsecond and is then doubled each iteration until
- * it exceeds one second (the total time sleeping will be approximately one
- * second as well). When the delay exceeds one second, the loop will end.
- * The TST_RETRY_FUNC() macro returns the last value returned by @FUNC.
+ * @FUNC: The function which will be retried.
+ * @ECHCK: Function or macro for validating @FUNC return value.
+ *
+ * This macro will call @FUNC in a loop with an exponential delay between
+ * retries. If ``ECHCK(ret)`` evaluates to non-zero, the loop ends. The delay
+ * starts at one microsecond and doubles each iteration until it exceeds
+ * one second (scaled by tst_multiply_timeout()). When the maximum delay
+ * is exceeded, the loop ends.
+ *
+ * Return: The last value returned by @FUNC.
  */
 #define TST_RETRY_FUNC(FUNC, ECHCK) \
 	TST_RETRY_FN_EXP_BACKOFF(FUNC, ECHCK, 1)
@@ -77,14 +84,16 @@
 #define TST_BUILD_BUG_ON(condition) \
 	do { ((void)sizeof(char[1 - 2 * !!(condition)])); } while (0)
 
-#define TST_BRK_SUPPORTS_ONLY_TCONF_TBROK(condition) \
-	TST_BUILD_BUG_ON(condition)
-
-#define TST_RES_SUPPORTS_TCONF_TFAIL_TINFO_TPASS_TWARN(condition) \
+#define TST_RES_SUPPORTS_TCONF_TDEBUG_TFAIL_TINFO_TPASS_TWARN(condition) \
 	TST_BUILD_BUG_ON(condition)
 
 /* stringification */
 #define TST_TO_STR_(s) #s
 #define TST_TO_STR(s) TST_TO_STR_(s)
+
+/*
+ * TST_PTR_TO_UINT - Casts a pointer to a 64-bit unsigned integer.
+ */
+#define TST_PTR_TO_UINT(x) ((uintptr_t)(x))
 
 #endif /* TST_COMMON_H__ */

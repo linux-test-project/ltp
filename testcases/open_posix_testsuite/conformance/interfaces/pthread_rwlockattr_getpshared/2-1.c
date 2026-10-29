@@ -38,7 +38,7 @@ static struct shmstruct {
 	int data;
 } *rwlock_data;
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	/* Make sure there is process-shared capability. */

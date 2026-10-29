@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) 2019 Xiao Yang <ice_yangxiao@163.com>
+ */
+
+/*\
+ * Check various errnos for :manpage:`futex(2)` with FUTEX_CMP_REQUEUE:
  *
- * Description:
- * Check various errnos for futex(FUTEX_CMP_REQUEUE).
- * 1) futex(FUTEX_CMP_REQUEUE) with invalid val returns EINVAL.
- * 2) futex(FUTEX_CMP_REQUEUE) with invalid val2 returns EINVAL.
- * 3) futex(FUTEX_CMP_REQUEUE) with mismatched val3 returns EAGAIN.
+ * 1. EINVAL on invalid val2
+ * 2. EINVAL on another invalid val2
+ * 3. EAGAIN on mismatched val3
  *
- * It's also a regression test for CVE-2018-6927:
+ * It's also a regression test for CVE-2018-6927 from kernel 4.15:
  * fbe0e839d1e2 ("futex: Prevent overflow by strengthen input validation")
  */
 
@@ -92,7 +94,7 @@ static struct tst_test test = {
 	.test_variants = ARRAY_SIZE(variants),
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2018-6927"},
-		{"linux-git", "fbe0e839d1e2"},
+		{"linux-git", "fbe0e839d1e22d88810f3ee3e2f1479be4c0aa4a"},
 		{}
 	}
 };

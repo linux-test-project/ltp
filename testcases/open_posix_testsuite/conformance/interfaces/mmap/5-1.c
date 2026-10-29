@@ -87,7 +87,7 @@ static void print_error(struct testcase *t, int saved_errno)
 	printf(" has failed: %s\n", strerror(saved_errno));
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[PATH_MAX];
 	void *pa;

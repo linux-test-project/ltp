@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that a correct call to getitimer() succeeds.
  */
 

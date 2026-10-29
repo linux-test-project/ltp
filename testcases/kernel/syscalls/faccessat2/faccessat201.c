@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check the basic functionality of faccessat2().
  *
  * Minimum Linux version required is v5.8.
@@ -56,10 +54,7 @@ static void verify_faccessat2(unsigned int i)
 
 static void setup(void)
 {
-	char *tmpdir_path = tst_get_tmpdir();
-
-	abs_path = tst_aprintf("%s/%s", tmpdir_path, RELPATH);
-	free(tmpdir_path);
+	abs_path = tst_tmpdir_genpath(RELPATH);
 
 	SAFE_MKDIR(TESTDIR, 0777);
 	dir_fd = SAFE_OPEN(TESTDIR, O_DIRECTORY);

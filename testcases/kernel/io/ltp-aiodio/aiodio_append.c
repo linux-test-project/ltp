@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Append zeroed data to a file using libaio while other processes are doing
  * buffered reads and check if the buffer reads always see zero.
  */
@@ -108,7 +106,7 @@ static void setup(void)
 	if (tst_parse_int(str_numaio, &numaio, 1, INT_MAX))
 		tst_brk(TBROK, "Number of async IO blocks '%s'", str_numaio);
 
-	SAFE_FILE_SCANF("/proc/sys/fs/aio-max-nr", "%d", &maxaio);
+	SAFE_FILE_SCANF(PATH_FS_NR_AIO_MAX_NR, "%d", &maxaio);
 	tst_res(TINFO, "Maximum AIO blocks: %d", maxaio);
 
 	if (numaio > maxaio)
@@ -190,7 +188,7 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
-	.max_runtime = 1800,
+	.runtime = 1800,
 	.options = (struct tst_option[]) {
 		{"n:", &str_numchildren, "Number of threads (default 16)"},
 		{"s:", &str_writesize, "Size of the file to write (default 64K)"},

@@ -28,11 +28,8 @@ static int set_block_size(int fd)
 static void setup(void)
 {
 	int fd;
-	int ret;
 
-	ret = asprintf(&mntpoint, "%s/mnt", tst_get_tmpdir());
-	if (ret < 0)
-		tst_brk(TBROK, "asprintf failure");
+	mntpoint = tst_tmpdir_genpath("mnt");
 
 	fd = SAFE_OPEN(tst_device->dev, O_RDONLY);
 
@@ -50,7 +47,7 @@ static void setup(void)
 
 static void cleanup(void)
 {
-	if (tst_is_mounted(mntpoint))
+	if (!access(mntpoint, F_OK) && tst_is_mounted(mntpoint))
 		SAFE_UMOUNT(mntpoint);
 }
 

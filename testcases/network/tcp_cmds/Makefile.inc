@@ -22,7 +22,7 @@
 
 GENERATE_FILE_DIR	:= ../..
 
-MAKE_DEPS		:= $(GENERATE_FILE_DIR)/datafiles/bin.sm
+MAKE_DEPS		:= $(GENERATE_FILE_DIR)/datafiles/ascii.sm
 
 $(MAKE_DEPS):
 	$(MAKE) -C $(GENERATE_FILE_DIR) \

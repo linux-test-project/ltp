@@ -9,7 +9,7 @@
  set pointed to by set, if the value of the argument how is SIG_BLOCK.
 
  Steps:
- 1. Have main create a new thread and wait for its termination.
+ 1. Have test_main create a new thread and wait for its termination.
  2. Inside the new thread, set up the signal mask such that it contains
     only SIGABRT.
  3. Also inside the new thread, using the SIG_BLOCK as the value to
@@ -18,7 +18,7 @@
  4. Raise both signals make sure that the handler associated with these
     signals wasn't executed.
  5. Also make sure that both signals are pending.
- 6. Pass one of three return codes to the main() function:
+ 6. Pass one of three return codes to the test_main() function:
     - A value of -1 if one of the two signals wasn't found pending or
       causes the handler to be executed.
     - A value of 0 if both signals were infact pending and the handler
@@ -102,7 +102,7 @@ static void *a_thread_func()
 	return NULL;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	int *thread_return_value;

@@ -34,7 +34,7 @@ static void an_init_func(void)
 	init_flag++;
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int ret;
 

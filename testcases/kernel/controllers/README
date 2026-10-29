@@ -1,5 +1,4 @@
 The complete dir tree is for testcases for resource management testing of linux kernel.
-For the test plan please refer to the file testplan.txt
 
 --------------
 ***WARNING:***
@@ -13,10 +12,6 @@ similar work as above.
 
 
 FILES DESCRIPTION:
-
-testplan.txt
-------------
-A brief description of the plan for resource management testing.
 
 test_controllers.sh
 -------------------

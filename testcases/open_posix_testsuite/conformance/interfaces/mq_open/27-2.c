@@ -25,7 +25,7 @@
 #include <limits.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAME_MAX * 2];
 	mqd_t queue;

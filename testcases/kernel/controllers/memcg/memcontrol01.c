@@ -1,9 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2021-2022 Richard Palethorpe <rpalethorpe@suse.com>
+ */
+
 /*\
+ * Conversion of the first kself test in :kselftest:`cgroup/test_memcontrol.c`.
  *
- * [Description]
- *
- * Conversion of the first kself test in cgroup/test_memcontrol.c.
  * This test creates two nested cgroups with and without enabling the
  * memory controller.
  *
@@ -11,10 +13,9 @@
  * a child cgroup is added. So unlike the kselftest we remove the
  * controller after it being added automatically.
  */
+
 #define _GNU_SOURCE
-
 #include <stdio.h>
-
 #include "tst_test.h"
 
 static struct tst_cg_group *parent, *child;

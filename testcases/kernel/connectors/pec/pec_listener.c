@@ -3,7 +3,9 @@
  * Copyright (c) 2008 FUJITSU LIMITED
  *
  * Author: Li Zefan <lizf@cn.fujitsu.com>
- *
+ */
+
+/*\
  * Listen to process events received through the kernel connector
  * and print them.
  */

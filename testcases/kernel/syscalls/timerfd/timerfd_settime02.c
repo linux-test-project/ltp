@@ -111,9 +111,10 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.taint_check = TST_TAINT_W | TST_TAINT_D,
-	.max_runtime = 150,
+	.runtime = 150,
+	.min_runtime = 2,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "1e38da300e1e"},
+		{"linux-git", "1e38da300e1e395a15048b0af1e5305bd91402f6"},
 		{"CVE", "2017-10661"},
 		{}
 	}

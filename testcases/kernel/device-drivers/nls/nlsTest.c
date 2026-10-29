@@ -31,7 +31,9 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/pm.h>
-#include <linux/genhd.h>
+#ifdef HAVE_LINUX_GENHD_H
+# include <linux/genhd.h>
+#endif
 #include <linux/version.h>
 #include <linux/string.h>
 #include <linux/autoconf.h>

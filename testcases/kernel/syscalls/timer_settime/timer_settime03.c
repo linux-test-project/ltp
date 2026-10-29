@@ -67,7 +67,7 @@ static void setup(void)
 	SAFE_CLOCK_GETRES(CLOCK_REALTIME, &realtime_resolution);
 
 	tst_res(TINFO, "CLOCK_REALTIME resolution %lins",
-	        (long)realtime_resolution.tv_nsec);
+		(long)realtime_resolution.tv_nsec);
 }
 
 static void run(void)
@@ -93,7 +93,9 @@ static void run(void)
 	spec.it_interval.tv_nsec = realtime_resolution.tv_nsec;
 
 	SAFE_TIMER_SETTIME(timer, TIMER_ABSTIME, &spec, NULL);
-	while (!handler_called);
+	while (!handler_called)
+		;
+
 	errno = saved_errno;
 
 	if (overrun == -1)
@@ -123,7 +125,7 @@ static struct tst_test test = {
 	.setup = setup,
 	.cleanup = cleanup,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "78c9c4dfbf8c"},
+		{"linux-git", "78c9c4dfbf8c04883941445a195276bb4bb92c76"},
 		{"CVE", "2018-12896"},
 		{}
 	}

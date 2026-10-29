@@ -1,4 +1,5 @@
 /cpuset/cpuset01
+/cpuset/cpuset02
 /hugetlb/hugefallocate/hugefallocate01
 /hugetlb/hugefallocate/hugefallocate02
 /hugetlb/hugefork/hugefork01
@@ -34,6 +35,12 @@
 /hugetlb/hugemmap/hugemmap30
 /hugetlb/hugemmap/hugemmap31
 /hugetlb/hugemmap/hugemmap32
+/hugetlb/hugemmap/hugemmap34
+/hugetlb/hugemmap/hugemmap35
+/hugetlb/hugemmap/hugemmap36
+/hugetlb/hugemmap/hugemmap37
+/hugetlb/hugemmap/hugemmap38
+/hugetlb/hugemmap/hugemmap41
 /hugetlb/hugeshmat/hugeshmat01
 /hugetlb/hugeshmat/hugeshmat02
 /hugetlb/hugeshmat/hugeshmat03
@@ -47,12 +54,14 @@
 /hugetlb/hugeshmget/hugeshmget02
 /hugetlb/hugeshmget/hugeshmget03
 /hugetlb/hugeshmget/hugeshmget05
+/hugetlb/hugeshmget/hugeshmget06
 /ksm/ksm01
 /ksm/ksm02
 /ksm/ksm03
 /ksm/ksm04
 /ksm/ksm05
 /ksm/ksm06
+/ksm/ksm07
 /mem/mem02
 /mmapstress/mmap-corruption01
 /mmapstress/mmapstress01
@@ -85,7 +94,6 @@
 /shmt/shmt03
 /shmt/shmt04
 /shmt/shmt05
-/shmt/shmt06
 /shmt/shmt07
 /shmt/shmt08
 /shmt/shmt09

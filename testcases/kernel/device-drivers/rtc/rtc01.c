@@ -33,7 +33,7 @@
 #include <time.h>
 
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 int rtc_fd = -1;
 char *TCID = "rtc01";

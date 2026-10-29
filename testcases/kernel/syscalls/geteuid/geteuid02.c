@@ -6,8 +6,6 @@
  */
 
 /*\
- *[Description]
- *
  * Check that geteuid() return value matches value from /proc/self/status.
  */
 

@@ -24,6 +24,37 @@ export TST_TOTAL=1
 . test.sh
 . pm_include.sh
 
+check_input() {
+	validity_check=${2:-valid}
+	testfile=$3
+	if [ "${validity_check}" = "invalid" ] ; then
+		PASS="Testcase FAIL - Able to execute"
+		FAIL="Testcase PASS - Unable to execute"
+	else
+		PASS="Testcase PASS"
+		FAIL="Testcase FAIL"
+	fi
+	RC=0
+	for input in ${1}
+	do
+		echo ${input} > ${test_file} 2>/dev/null
+		return_value=$?
+		output=$(cat ${test_file})
+		if [ "${return_value}" = "0" -a "${input}" = "${output}" ] ; then
+			echo "${0}: ${PASS}: echo ${input} > ${test_file}"
+			if [ "${validity_check}" = "invalid" ] ; then
+				RC=1
+			fi
+		else
+			echo "${0}: ${FAIL}: echo ${input} > ${test_file}"
+			if [ "${validity_check}" = "valid" ] ; then
+				RC=1
+			fi
+		fi
+	done
+	return $RC
+}
+
 test_timer_migration() {
 	valid_input="0 1"
 	invalid_input="3 4 5 6 7 8 a abcefg x1999 xffff -1 -00000

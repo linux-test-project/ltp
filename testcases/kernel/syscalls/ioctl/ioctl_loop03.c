@@ -6,9 +6,7 @@
  */
 
 /*\
- * [Description]
- *
- * Tests ioctl() on loopdevice with LOOP_CHANGE_FD flag.
+ * Tests :manpage:`ioctl(2)` on loopdevice with LOOP_CHANGE_FD flag.
  *
  * Tests whether LOOP_CHANGE_FD can not succeed (get EINVAL error)
  * when loop_dev is not read only.
@@ -73,8 +71,8 @@ static struct tst_test test = {
 	.test_all = verify_ioctl_loop,
 	.needs_root = 1,
 	.needs_tmpdir = 1,
-	.needs_drivers = (const char *const []) {
-		"loop",
+	.needs_kconfigs = (const char *const []) {
+		"CONFIG_BLK_DEV_LOOP",
 		NULL
 	}
 };

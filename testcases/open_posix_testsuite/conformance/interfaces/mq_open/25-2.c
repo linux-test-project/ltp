@@ -29,7 +29,7 @@
 
 static int invalid_values[NUMTESTS] = { 0, -1, INT32_MIN };
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

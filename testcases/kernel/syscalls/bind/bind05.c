@@ -3,9 +3,10 @@
  *   Copyright (c) 2019 Martin Doucha <mdoucha@suse.cz>
  */
 
-/*
- * Create and bind socket for various standard datagram protocols.
- * Then connect to it and send some test data.
+/*\
+ * Create and :manpage:`bind(2)` socket for various standard datagram protocols
+ * (UNIX sockets or IPv4/IPv6 sockets over UDP/UDP-Lite).
+ * Connect to the socket and send some test data.
  */
 
 #include <string.h>
@@ -22,14 +23,17 @@ static struct sockaddr_un unix_addr = {
 	.sun_family = AF_UNIX,
 	.sun_path = MAIN_SOCKET_FILE
 };
+
 static struct sockaddr_un abstract_addr = {
 	.sun_family = AF_UNIX,
 	.sun_path = ABSTRACT_SOCKET_PATH
 };
+
 static struct sockaddr_un peer_addr = {
 	.sun_family = AF_UNIX,
 	.sun_path = PEER_SOCKET_FILE
 };
+
 static struct sockaddr_in ipv4_addr;
 static struct sockaddr_in ipv4_any_addr;
 static struct sockaddr_in6 ipv6_addr;
@@ -100,7 +104,7 @@ static void *peer_thread(void *tc_ptr)
 
 	SAFE_CONNECT(sock, tc->address, tc->addrlen);
 	SAFE_WRITE(SAFE_WRITE_ALL, sock, &request, sizeof(request));
-	SAFE_READ(1, sock, &request, sizeof(request));
+	SAFE_READ(SAFE_READ_ALL, sock, &request, sizeof(request));
 
 	if (request < ARRAY_SIZE(testcase_list))
 		response = testcase_list[request].description;
@@ -159,15 +163,15 @@ static void test_bind(unsigned int n)
 	SAFE_SENDTO(1, sock, &rand_index, sizeof(rand_index), 0,
 		(struct sockaddr *)&remote_addr, remote_len);
 
-	size = SAFE_READ(0, sock, buffer, BUFFER_SIZE - 1);
+	size = SAFE_READ(SAFE_READ_ANY, sock, buffer, BUFFER_SIZE - 1);
 	buffer[size] = '\0';
 	exp_data = testcase_list[rand_index].description;
 
 	if (!strcmp(buffer, exp_data))
 		tst_res(TPASS, "Communication successful");
 	else
-		tst_res(TFAIL, "Received invalid data. Expected: \"%s\". "
-			"Received: \"%s\"", exp_data, buffer);
+		tst_res(TFAIL, "Received invalid data. Expected: \"%s\". Received: \"%s\"",
+				exp_data, buffer);
 
 	SAFE_CLOSE(sock);
 	pthread_join(thread_id, NULL);

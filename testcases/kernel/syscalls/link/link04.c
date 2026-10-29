@@ -7,8 +7,6 @@
  */
 
 /*\
- * [Description]
- *
  * Negative test cases for link(2).
  *
  * This test program should contain test cases where link will fail regardless

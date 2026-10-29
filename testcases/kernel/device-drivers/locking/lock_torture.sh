@@ -52,10 +52,6 @@ cleanup()
 	rmmod locktorture > /dev/null 2>&1
 }
 
-if tst_kvcmp -lt "3.18"; then
-	tst_brkm TCONF "test must be run with kernel 3.18 or newer"
-fi
-
 tst_require_root
 
 # check if module is present
@@ -83,7 +79,7 @@ for type in $lock_type; do
 		tst_brkm TBROK "failed to unload module"
 
 	# check module status in dmesg
-	result_str=`dmesg | sed -nE '$s/.*End of test: ([A-Z]+):.*/\1/p'`
+	result_str=`dmesg | sed -nE '$s/.*End of test: ([A-Z]+)([[:space:]]+\[debug\])?:.*/\1/p'`
 	if [ "$result_str" = "SUCCESS" ]; then
 		tst_resm TPASS "$type: completed"
 	else

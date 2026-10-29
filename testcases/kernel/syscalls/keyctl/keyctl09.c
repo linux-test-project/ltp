@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2022 Google, Inc.
+ * Copyright (c) Linux Test Project, 2023
  */
 
 /*\
- * [Description]
- *
  * Test that encrypted keys can be instantiated using user-provided decrypted
  * data that is hex-ascii encoded.
  */

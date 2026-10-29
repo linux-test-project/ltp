@@ -25,7 +25,7 @@
 #   DESCRIPTION:    Performs filesystems tests for RO mount.
 #     For filesystem, like ext2, ext3, reiserfs, jfs & xfs,
 #     This test needs a big block device(>=500MB is ok), and you can specify
-#     it by -z option when running runltp.
+#     it by exporting LTP_BIG_DEV environment variable.
 #        a)  mounts on dir1,
 #        b)  mount --bind dir2
 #        c)  mount -o remount,ro

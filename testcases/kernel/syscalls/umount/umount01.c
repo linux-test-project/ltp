@@ -2,12 +2,13 @@
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * Author: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
- *
- * Phase I test for the umount(2) system call.
- * It is intended to provide a limited exposure of the system call.
+ * Copyright (c) Linux Test Project, 2002-2023
  */
 
-#include <errno.h>
+/*\
+ * Check the basic functionality of the :manpage:`umount(2)` system call.
+ */
+
 #include <sys/mount.h>
 #include "tst_test.h"
 
@@ -23,7 +24,7 @@ static void verify_umount(void)
 		mount_flag = 1;
 	}
 
-	TEST(umount(MNTPOINT));
+	TST_EXP_PASS(umount(MNTPOINT));
 
 	if (TST_RET != 0 && TST_ERR == EBUSY) {
 		tst_res(TINFO, "umount() Failed with EBUSY "
@@ -31,12 +32,6 @@ static void verify_umount(void)
 			"is probing newly mounted dirs");
 	}
 
-	if (TST_RET != 0) {
-		tst_res(TFAIL | TTERRNO, "umount() Failed");
-		return;
-	}
-
-	tst_res(TPASS, "umount() Passed");
 	mount_flag = 0;
 }
 

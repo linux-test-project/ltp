@@ -26,7 +26,7 @@
 #define TEST "7-2"
 #define FUNCTION "mq_unlink"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char mqname[50] = "/123";
 

@@ -5,11 +5,9 @@
  */
 
 /*\
- * [Description]
- *
  * Kernel has bug in mremap for some architecture. mremap() can cause
  * crashes on architectures with holes in the address space (like ia64)
- * and on powerpc with it's distict page size slices.
+ * and on powerpc with it's distinct page size slices.
  *
  * This test perform mremap() with normal and hugepages around powerpc
  * slice boundary.
@@ -30,19 +28,18 @@ static int init_slice_boundary(int fd)
 	unsigned long slice_size;
 	void *p, *heap;
 	int i;
-#if defined(__LP64__) && !defined(__aarch64__)
+#if defined(__powerpc64__) || (defined(__powerpc__) && defined(__LP64__))
 	/* powerpc: 1TB slices starting at 1 TB */
 	slice_boundary = 0x10000000000;
 	slice_size = 0x10000000000;
 #else
-	/* powerpc: 256MB slices up to 4GB */
+	/* powerpc (32-bit) and other arches: 256MB slices up to 4GB */
 	slice_boundary = 0x00000000;
 	slice_size = 0x10000000;
 #endif
 
 	/* dummy malloc so we know where is heap */
 	heap = malloc(1);
-	free(heap);
 
 	 /* Avoid underflow on systems with large huge pages.
 	  * The additionally plus heap address is to reduce the possibility
@@ -50,6 +47,8 @@ static int init_slice_boundary(int fd)
 	  */
 	while (slice_boundary + slice_size < (unsigned long)heap + 2*hpage_size)
 		slice_boundary += slice_size;
+
+	free(heap);
 
 	/* Find 2 neighbour slices with couple huge pages free
 	 * around slice boundary.
@@ -84,7 +83,7 @@ static void run_test(void)
 	long p_size, q_size;
 	int ret;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	ret = init_slice_boundary(fd);
 	if (ret)
 		goto cleanup;

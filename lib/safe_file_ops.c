@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <utime.h>
+#include <errno.h>
 
 #include "test.h"
 #include "safe_file_ops_fn.h"
@@ -159,6 +160,32 @@ void safe_file_scanf(const char *file, const int lineno,
 	}
 }
 
+void safe_file_read_str(const char *file, const int lineno,
+                        const char *path, char *buf, size_t buf_size)
+{
+	FILE *f;
+
+	f = fopen(path, "r");
+	if (!f) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, NULL,
+		          "Failed to open FILE '%s' for reading", path);
+		return;
+	}
+
+	if (!fgets(buf, buf_size, f))
+		buf[0] = 0;
+
+	size_t len = strlen(buf);
+
+	if (len && buf[len-1] == '\n')
+		buf[len-1] = 0;
+
+	if (fclose(f)) {
+		tst_brkm_(file, lineno, TBROK | TERRNO, NULL,
+			"Failed to close FILE '%s'", path);
+		return;
+	}
+}
 
 /*
  * Try to parse each line from file specified by 'path' according
@@ -182,6 +209,9 @@ int file_lines_scanf(const char *file, const int lineno,
 
 	fp = fopen(path, "r");
 	if (fp == NULL) {
+		if (strict == 0 && errno == ENOENT)
+			return 1;
+
 		tst_brkm_(file, lineno, TBROK | TERRNO, cleanup_fn,
 			"Failed to open FILE '%s' for reading", path);
 		return 1;
@@ -250,7 +280,7 @@ err:
 	return 1;
 }
 
-static void safe_file_vprintf(const char *file, const int lineno,
+void safe_file_vprintf(const char *file, const int lineno,
 	void (*cleanup_fn)(void), const char *path, const char *fmt,
 	va_list va)
 {

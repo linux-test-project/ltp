@@ -6,8 +6,6 @@
  *          Dinakar Guniguntala <dino@in.ibm.com>
  */
 /*\
- * [Description]
- *
  * Compare running sequential matrix multiplication routines
  * to running them in parallel to judge multiprocessor
  * performance
@@ -16,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
-#include <libstats.h>
+#include "librttest.h"
+#include "libstats.h"
 
 #define MAX_CPUS	8192
 #define PRIO		43

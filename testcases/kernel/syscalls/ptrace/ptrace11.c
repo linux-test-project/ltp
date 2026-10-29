@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Before kernel 2.6.26 we could not trace init(1) process and ptrace() would
  * fail with EPERM. This case just checks whether we can trace init(1) process
  * successfully.
@@ -16,9 +14,8 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <pwd.h>
-#include <config.h>
 #include <stdlib.h>
-#include "ptrace.h"
+#include <sys/ptrace.h>
 #include "tst_test.h"
 
 static void verify_ptrace(void)

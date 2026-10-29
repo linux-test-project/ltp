@@ -83,6 +83,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 12,
 	.setup = setup,
 	.test_all = verify_fremovexattr,
 	.cleanup = cleanup,

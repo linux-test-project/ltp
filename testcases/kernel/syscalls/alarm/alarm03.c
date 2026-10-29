@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that alarms created by alarm() are not inherited by children
  * created via fork.
  */

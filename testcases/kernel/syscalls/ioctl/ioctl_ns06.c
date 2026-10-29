@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test ioctl_ns with NS_GET_USERNS request.
  *
  * After the call to clone with the CLONE_NEWUSER flag,

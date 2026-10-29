@@ -7,6 +7,10 @@ check_rpc()
 {
 	local services
 
+	if rpcbind -v 2>/dev/null; then
+		tst_res TINFO "$(rpcbind -v 2>&1)"
+	fi
+
 	tst_res TINFO "check registered RPC with rpcinfo"
 
 	services=$(rpcinfo -p)

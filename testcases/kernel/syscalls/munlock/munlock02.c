@@ -1,12 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  * AUTHOR: Nirmala Devi Dhanasekar <nirmala.devi@wipro.com>
  */
 
 /*\
- * [Description]
- *
  * Test for ENOMEM error.
  *
  * munlock(2) fails with ENOMEM if some of the specified address range

@@ -3,9 +3,9 @@
  * Copyright (c) 2020 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * Check that the kernel correctly handles send()/sendto()/sendmsg() calls
- * with MSG_MORE flag
+ * with MSG_MORE flag.
  */
 
 #define _GNU_SOURCE
@@ -128,7 +128,7 @@ static void run(unsigned int n)
 	struct test_case *tc = testcase_list + n;
 	socklen_t len = sizeof(addr);
 
-	tst_res(TINFO, "Tesing %s", tc->name);
+	tst_res(TINFO, "Testing %s", tc->name);
 
 	tst_init_sockaddr_inet_bin(&addr, INADDR_LOOPBACK, 0);
 	listen_sock = SAFE_SOCKET(tc->domain, tc->type, tc->protocol);

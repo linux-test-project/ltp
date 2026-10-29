@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2019 Richard Palethorpe <rpalethorpe@suse.com>
- *
+ */
+
+/*\
  * Trivial Extended Berkeley Packet Filter (eBPF) test.
  *
  * Sanity check creating and updating maps.
  */
-/*
- * If test is executed in a loop and limit for locked memory (ulimit -l) is
+
+ /*
+ * If the test is executed in a loop and limit for locked memory (ulimit -l) is
  * too low bpf() call can fail with EPERM due to deffered freeing.
  */
 
@@ -79,7 +82,7 @@ void run(unsigned int n)
 					break;
 				}
 			}
-			if (i < VAL_SZ)
+			if (i == VAL_SZ)
 				tst_res(TPASS, "Preallocated array map lookup");
 		} else {
 			tst_res(TFAIL | TTERRNO, "Prellocated array map lookup");
@@ -142,7 +145,6 @@ static struct tst_test test = {
 	.tcnt = ARRAY_SIZE(map_types),
 	.test = run,
 	.setup = setup,
-	.min_kver = "3.19",
 	.bufs = (struct tst_buffers []) {
 		{&key4, .size = 4},
 		{&key8, .size = 8},

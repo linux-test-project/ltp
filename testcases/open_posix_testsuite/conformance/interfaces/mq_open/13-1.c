@@ -24,7 +24,7 @@
 #define MAXMSG 10
 #define MSGSIZE 5
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char qname[NAMESIZE];
 	mqd_t queue;

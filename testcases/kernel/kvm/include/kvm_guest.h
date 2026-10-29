@@ -8,6 +8,8 @@
 #ifndef KVM_GUEST_H_
 #define KVM_GUEST_H_
 
+#include <stdarg.h>
+
 /* The main LTP include dir is intentionally excluded during payload build */
 #include "../../../../include/tst_res_flags.h"
 #undef TERRNO
@@ -46,9 +48,16 @@ void *memset(void *dest, int val, size_t size);
 void *memzero(void *dest, size_t size);
 void *memcpy(void *dest, const void *src, size_t size);
 
+int memcmp(const void *a, const void *b, size_t length);
+
 char *strcpy(char *dest, const char *src);
 char *strcat(char *dest, const char *src);
 size_t strlen(const char *str);
+char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
+
+int vsprintf(char *dest, const char *fmt, va_list ap);
+int sprintf(char *dest, const char *fmt, ...);
 
 /* Exit the VM by looping on a HLT instruction forever */
 void kvm_exit(void) __attribute__((noreturn));
@@ -57,12 +66,16 @@ void kvm_exit(void) __attribute__((noreturn));
 void kvm_yield(void);
 
 void tst_res_(const char *file, const int lineno, int result,
-	const char *message);
-#define tst_res(result, msg) tst_res_(__FILE__, __LINE__, (result), (msg))
+	const char *fmt, ...)
+	__attribute__ ((format (printf, 4, 5)));
+#define tst_res(result, fmt, ...) \
+	tst_res_(__FILE__, __LINE__, (result), (fmt), ##__VA_ARGS__)
 
 void tst_brk_(const char *file, const int lineno, int result,
-	const char *message) __attribute__((noreturn));
-#define tst_brk(result, msg) tst_brk_(__FILE__, __LINE__, (result), (msg))
+	const char *fmt, ...) __attribute__((noreturn))
+	__attribute__ ((format (printf, 4, 5)));
+#define tst_brk(result, fmt, ...) \
+	tst_brk_(__FILE__, __LINE__, (result), (fmt), ##__VA_ARGS__)
 
 /*
  * Send asynchronous notification to host without stopping VM execution and

@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Regression test for the crash caused by over-sized SCTP chunk,
  * fixed by upstream commit 07f2c7ab6f8d ("sctp: verify size of a new
  * chunk in _sctp_make_chunk()").
@@ -212,7 +210,7 @@ static struct tst_test test = {
 	},
 	.tags = (const struct tst_tag[]) {
 		{"CVE", "2018-5803"},
-		{"linux-git", "07f2c7ab6f8d"},
+		{"linux-git", "07f2c7ab6f8d0a7e7c5764c4e6cc9c52951b9d9c"},
 		{}
 	}
 };

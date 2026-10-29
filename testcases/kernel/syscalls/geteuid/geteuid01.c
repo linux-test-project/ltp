@@ -8,8 +8,6 @@
  */
 
 /*\
- *[Description]
- *
  * Check the basic functionality of the geteuid() system call.
  */
 

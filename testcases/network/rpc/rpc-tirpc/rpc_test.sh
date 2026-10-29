@@ -53,6 +53,11 @@ setup()
 		fi
 	fi
 
+	if [ "$CLIENT" = 'rpc_pmap_rmtcall' -o "$CLIENT" = 'tirpc_rpcb_rmtcall' ] && \
+		rpcbind -v 2>&1 | grep -q 'remote calls: no'; then
+		tst_brk TCONF "skip due rpcbind compiled without remote calls"
+	fi
+
 	[ -n "$CLIENT" ] || tst_brk TBROK "client program not set"
 	tst_check_cmds $CLIENT $SERVER || tst_brk TCONF "LTP compiled without TI-RPC support?"
 

@@ -46,11 +46,9 @@ extern char fullpath[PATH_MAX];
 extern int FLAG;
 extern volatile int timer_expired;
 extern int retval;
-extern unsigned int num_line;
 extern unsigned int current_shares;
 extern unsigned int total_shares;
 extern unsigned int *shares_pointer;
-extern char target[LINE_MAX];
 extern struct dirent *dir_pointer;
 
 enum{

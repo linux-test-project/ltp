@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that the parent's file descriptors will not be affected by being
  * closed in the child.
  */
@@ -32,7 +30,7 @@ static void run(void)
 	}
 
 	if (!SAFE_FORK()) {
-		SAFE_READ(1, fd, &buf, 1);
+		SAFE_READ(SAFE_READ_ALL, fd, &buf, 1);
 		if (buf != 'a')
 			tst_res(TFAIL, "%6d: read '%c' instead of 'a'",
 				getpid(), buf);

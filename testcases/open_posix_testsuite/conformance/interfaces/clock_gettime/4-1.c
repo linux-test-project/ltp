@@ -27,7 +27,7 @@ static void dosomething()
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #if _POSIX_CPUTIME == -1
 	printf("_POSIX_CPUTIME unsupported\n");

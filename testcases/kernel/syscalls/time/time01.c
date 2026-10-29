@@ -4,10 +4,9 @@
  */
 
 /*\
- * [Description]
- * - Basic test for the time(2) system call. It is intended to provide a
- * limited exposure of the system call.
- * - Verify that time(2) returns the value of time in seconds since the Epoch
+ * Basic test for the time(2) system call.
+ *
+ * Verify that time(2) returns the value of time in seconds since the Epoch
  * and stores this value in the memory pointed to by the parameter.
  */
 
@@ -16,32 +15,32 @@
 
 #include "tst_test.h"
 
-time_t tlocal;
-time_t *targs[] = {
+static time_t tlocal;
+static time_t *targs[] = {
 	NULL, &tlocal,
 };
 
 static void verify_time(unsigned int i)
 {
 	time_t *tloc = targs[i];
+	time_t ret_time = time(tloc);
 
-	TEST(time(tloc));
-
-	if (TST_RET == -1) {
+	if (ret_time == -1) {
 		tst_res(TFAIL | TTERRNO, "time()");
 		return;
 	}
 
-	if (!tloc)
-		tst_res(TPASS, "time() returned value %ld", TST_RET);
-	else if (*tloc == TST_RET)
+	if (!tloc) {
+		tst_res(TPASS, "time() returned value %jd", (intmax_t) ret_time);
+	} else if (*tloc == ret_time) {
 		tst_res(TPASS,
-			"time() returned value %ld, stored value %jd are same",
-			TST_RET, (intmax_t) *tloc);
-	else
+			"time() returned value %jd, stored value %jd are same",
+			(intmax_t) ret_time, (intmax_t) *tloc);
+	} else {
 		tst_res(TFAIL,
-			"time() returned value %ld, stored value %jd are different",
-			TST_RET, (intmax_t) *tloc);
+			"time() returned value %jd, stored value %jd are different",
+			(intmax_t) ret_time, (intmax_t) *tloc);
+	}
 }
 
 static struct tst_test test = {

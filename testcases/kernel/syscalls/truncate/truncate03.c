@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that:
  *
  * - truncate(2) returns -1 and sets errno to EACCES if search/write

@@ -11,14 +11,16 @@
 #include <stdio.h>
 #include <time.h>
 #include "posixtest.h"
+#include "clock.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	struct timespec tssleepfor, tsstorage, tsbefore, tsafter;
 	int sleepnsec = 3;
 	int slepts = 0, sleptns = 0;
+	clockid_t test_clock = pts_get_clock();
 
-	if (clock_gettime(CLOCK_REALTIME, &tsbefore) == -1) {
+	if (clock_gettime(test_clock, &tsbefore) == -1) {
 		perror("Error in clock_gettime()\n");
 		return PTS_UNRESOLVED;
 	}
@@ -30,7 +32,7 @@ int main(void)
 		return PTS_UNRESOLVED;
 	}
 
-	if (clock_gettime(CLOCK_REALTIME, &tsafter) == -1) {
+	if (clock_gettime(test_clock, &tsafter) == -1) {
 		perror("Error in clock_gettime()\n");
 		return PTS_UNRESOLVED;
 	}

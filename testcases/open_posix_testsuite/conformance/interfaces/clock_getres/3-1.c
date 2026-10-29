@@ -15,7 +15,7 @@
 
 #define LARGENUM 100000
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 #ifdef CLOCK_MONOTONIC
 	struct timespec res;

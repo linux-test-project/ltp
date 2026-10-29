@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This testcases checks that quotactl(2) on xfs filesystem succeeds to:
  *
  * - turn off xfs quota and get xfs quota off status for project
@@ -113,9 +111,14 @@ static struct tst_test test = {
 	.test = verify_quota,
 	.tcnt = ARRAY_SIZE(tcases),
 	.mount_device = 1,
-	.dev_fs_type = "xfs",
+	.filesystems = (struct tst_fs []) {
+		{
+			.type = "xfs",
+			.mnt_data = "prjquota",
+		},
+		{}
+	},
 	.mntpoint = MNTPOINT,
-	.mnt_data = "prjquota",
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_variants = QUOTACTL_SYSCALL_VARIANTS,

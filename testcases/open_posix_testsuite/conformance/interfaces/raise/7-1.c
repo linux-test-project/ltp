@@ -18,7 +18,7 @@
 #include <errno.h>
 #include "posixtest.h"
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	if (raise(10000) == 0) {
 		printf("Incorrectly returned 0\n");

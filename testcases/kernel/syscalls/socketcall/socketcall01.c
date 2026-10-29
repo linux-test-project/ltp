@@ -4,8 +4,12 @@
  * Copyright (c) 2016 Cyril Hrubis <chrubis@suse.cz>
  * Copyright (c) Linux Test Project, 2017-2020
  * Author: Sowmya Adiga <sowmya.adiga@wipro.com>
+ */
+
+/*\
+ * Basic test for the socketcall(2) raw syscall.
  *
- * This is a basic test for the socketcall(2) system call.
+ * Test creating TCP, UDP, raw socket and unix domain dgram.
  */
 
 #include <unistd.h>

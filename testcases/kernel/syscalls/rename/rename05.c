@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that rename(2) fails with EISDIR when
  * oldpath is not a directory and newpath is an existing directory.
  */

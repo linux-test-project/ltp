@@ -1,15 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (C) 2010  Red Hat, Inc.
  * Copyright (C) 2022 Cyril Hrubis <chrubis@suse.cz>
  */
 
 /*\
- * [Description]
- *
  * A race in pid generation that causes pids to be reused immediately
  *
- * From the mainline commit 5fdee8c4a5e1800489ce61963208f8cc55e42ea1:
+ * From the mainline commit
+ * 5fdee8c4a5e1 ("pids: fix a race in pid generation that causes pids to be reused immediately")
  *
  * A program that repeatedly forks and waits is susceptible to having
  * the same pid repeated, especially when it competes with another
@@ -17,21 +16,20 @@
  * implementation.  Furthermore, many shell scripts assume that pid
  * numbers will not be used for some length of time.
  *
- * [Race Description]
- * ---------------------------------------------------------------------
- * A                                B
+ * [Race Description] ::
  *
- * // pid == offset == n            // pid == offset == n + 1
- * test_and_set_bit(offset, map->page)
- *                                  test_and_set_bit(offset, map->page);
- *                                  pid_ns->last_pid = pid;
- * pid_ns->last_pid = pid;
- *                                  // pid == n + 1 is freed (wait())
+ *    A                                   B
  *
- *                                  // Next fork()...
- *                                  last = pid_ns->last_pid; // == n
- *                                  pid = last + 1;
- * ---------------------------------------------------------------------
+ *    // pid == offset == n               // pid == offset == n + 1
+ *    test_and_set_bit(offset, map->page)
+ *                                        test_and_set_bit(offset, map->page);
+ *                                        pid_ns->last_pid = pid;
+ *    pid_ns->last_pid = pid;
+ *                                        // pid == n + 1 is freed (wait())
+ *
+ *                                        // Next fork()...
+ *                                        last = pid_ns->last_pid; // == n
+ *                                        pid = last + 1;
  */
 
 #include <sys/types.h>
@@ -110,14 +108,14 @@ static void check(void)
 static struct tst_test test = {
 	.needs_root = 1,
 	.forks_child = 1,
-	.max_runtime = 600,
+	.runtime = 600,
 	.test_all = check,
 	.save_restore = (const struct tst_path_val[]) {
-		{"/proc/sys/kernel/pid_max", PID_MAX_STR, TST_SR_TBROK},
+		{PATH_KERN_PID_MAX, PID_MAX_STR, TST_SR_TBROK},
 		{}
 	},
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "5fdee8c4a5e1"},
+		{"linux-git", "5fdee8c4a5e1800489ce61963208f8cc55e42ea1"},
 		{}
 	}
 };

@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that SIGALRM signal scheduled by alarm() in the parent process
  * is not delivered to the child process.
  */
@@ -47,6 +45,7 @@ static void setup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 4,
 	.test_all = verify_alarm,
 	.setup = setup,
 	.forks_child = 1,

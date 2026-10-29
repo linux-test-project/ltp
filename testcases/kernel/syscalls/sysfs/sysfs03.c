@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * This test is run for option 3 for sysfs(2).
  * Return the total number of filesystem types currently present in the kernel.
  */

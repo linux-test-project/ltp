@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that setfsuid() correctly updates the filesystem uid
  * when caller is a non-root user and provided fsuid matches
  * caller's real user ID.

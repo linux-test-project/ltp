@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (c) 2021 CTERA Networks. All Rights Reserved.
  *
@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Check that dnotify DN_RENAME event is reported only on rename inside same parent.
  */
 

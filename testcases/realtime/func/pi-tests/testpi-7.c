@@ -40,7 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <librttest.h>
+#include "librttest.h"
 
 #define HIGH_PRIO 15
 #define MED_PRIO 10

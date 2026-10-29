@@ -103,6 +103,7 @@ bool tst_have_alg(const char *algtype, const char *algname)
 	case 0:
 		return true;
 	case ENOENT:
+	case EINVAL:
 		tst_res(TCONF, "kernel doesn't have %s algorithm '%s'",
 			algtype, algname);
 		return false;
@@ -197,7 +198,6 @@ void tst_alg_sendmsg(int reqfd, const void *data, size_t datalen,
 	struct msghdr msg = {
 		.msg_iov = &iov,
 		.msg_iovlen = 1,
-		.msg_flags = params->msg_flags,
 	};
 	size_t controllen;
 	uint8_t *control;
@@ -248,5 +248,7 @@ void tst_alg_sendmsg(int reqfd, const void *data, size_t datalen,
 		cmsg = CMSG_NXTHDR(&msg, cmsg);
 	}
 
-	SAFE_SENDMSG(datalen, reqfd, &msg, 0);
+	SAFE_SENDMSG(datalen, reqfd, &msg, params->msg_flags);
+
+	free(control);
 }

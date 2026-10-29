@@ -10,7 +10,7 @@
 
 static void setup(void)
 {
-	SAFE_FILE_PRINTF("/proc/sys/kernel/core_pattern", "changed");
+	SAFE_FILE_PRINTF(PATH_KERN_CORE_PATTERN, "changed");
 	tst_sys_conf_dump();
 }
 
@@ -25,8 +25,8 @@ static struct tst_test test = {
 	.setup = setup,
 	.save_restore = (const struct tst_path_val[]) {
 		{"/proc/nonexistent", NULL, TST_SR_SKIP},
-		{"/proc/sys/kernel/numa_balancing", NULL, TST_SR_TBROK},
-		{"/proc/sys/kernel/core_pattern", NULL, TST_SR_TCONF},
+		{PATH_KERN_NUMA_BALANCING, NULL, TST_SR_TBROK},
+		{PATH_KERN_CORE_PATTERN, NULL, TST_SR_TCONF},
 		{}
 	},
 };

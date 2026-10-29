@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test if SysV IPC shared memory with a specific key is shared between
  * processes and namespaces.
  */
@@ -68,7 +66,6 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.forks_child = 1,
 	.needs_root = 1,
-	.needs_checkpoints = 1,
 	.options = (struct tst_option[]) {
 		{ "m:", &str_op, "Test execution mode <clone|unshare|none>" },
 		{},

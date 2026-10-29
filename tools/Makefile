@@ -24,7 +24,7 @@ top_srcdir		?= ..
 
 include $(top_srcdir)/include/mk/testcases.mk
 
-INSTALL_TARGETS		:= *.awk *.pl *.sh html_report_header.txt
+INSTALL_TARGETS		:= *.sh
 
 INSTALL_DIR		:= bin
 

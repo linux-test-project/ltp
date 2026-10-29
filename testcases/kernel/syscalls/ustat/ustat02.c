@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) Wipro Technologies Ltd, 2002.  All Rights Reserved.
  *
@@ -30,9 +30,7 @@ static struct test_case_t {
 	struct ustat *buf;
 } tc[] = {
 	{"Invalid parameter", EINVAL, "EINVAL", &invalid_dev, &ubuf},
-#ifndef UCLINUX
 	{"Bad address", EFAULT, "EFAULT", &root_dev, (void*)-1}
-#endif
 };
 
 int TST_TOTAL = ARRAY_SIZE(tc);
@@ -63,6 +61,10 @@ static struct tst_test test = {
 	.test = run,
 	.setup = setup,
 	.tcnt = ARRAY_SIZE(tc),
+	.skip_filesystems = (const char *const[]) {
+                "btrfs",
+                NULL
+        },
 	.tags = (const struct tst_tag[]) {
 		{"known-fail", "ustat() is known to fail with EINVAL on Btrfs, see "
 			"https://lore.kernel.org/linux-btrfs/e7e867b8-b57a-7eb2-2432-1627bd3a88fb@toxicpanda.com/"

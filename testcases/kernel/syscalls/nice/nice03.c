@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that any user can successfully increase the nice value of
  * the process by passing an increment value (< max. applicable limits) to
  * nice() system call.

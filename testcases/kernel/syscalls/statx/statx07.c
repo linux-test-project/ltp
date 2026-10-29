@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This code tests the following flags:
  *
  * - AT_STATX_FORCE_SYNC
@@ -54,7 +52,6 @@
 #define SERV_FORCE_SYNC "server/force_sync_file"
 #define SERV_DONT_SYNC "server/dont_sync_file"
 
-static char *cwd;
 static char cmd[BUFF_SIZE];
 static int mounted;
 static int exported;
@@ -116,14 +113,19 @@ static void setup(void)
 	int ret;
 	char server_path[BUFF_SIZE];
 
-	cwd = tst_get_tmpdir();
+	if (access("/var/lib/nfs/etab", F_OK) < 0)
+		tst_brk(TCONF, "nfs-server might not set up");
+
+	mode_t old_umask = umask(0);
 
 	SAFE_MKDIR(SERV_PATH, DEFAULT_MODE);
 	SAFE_MKDIR(CLI_PATH, DEFAULT_MODE);
 	SAFE_CREAT(SERV_FORCE_SYNC, DEFAULT_MODE);
 	SAFE_CREAT(SERV_DONT_SYNC, DEFAULT_MODE);
 
-	snprintf(server_path, sizeof(server_path), ":%s/%s", cwd, SERV_PATH);
+	umask(old_umask);
+
+	snprintf(server_path, sizeof(server_path), ":%s/%s", tst_tmpdir_path(), SERV_PATH);
 
 	snprintf(cmd, sizeof(cmd),
 		 "exportfs -i -o no_root_squash,rw,sync,no_subtree_check,fsid=%d *%.1024s",
@@ -151,7 +153,7 @@ static void cleanup(void)
 	if (!exported)
 		return;
 	snprintf(cmd, sizeof(cmd),
-		 "exportfs -u *:%s/%s", cwd, SERV_PATH);
+		 "exportfs -u *:%s/%s", tst_tmpdir_path(), SERV_PATH);
 
 	if (tst_system(cmd) == -1)
 		tst_res(TWARN | TST_ERR, "failed to clear exportfs");
@@ -164,10 +166,13 @@ static struct tst_test test = {
 	.cleanup = cleanup,
 	.min_kver = "4.16",
 	.needs_tmpdir = 1,
-	.dev_fs_type = "nfs",
+	.filesystems = (struct tst_fs []) {
+		{.type = "nfs"},
+		{}
+	},
 	.needs_root = 1,
-	.needs_cmds = (const char *[]) {
-		"exportfs",
-		NULL
+	.needs_cmds = (struct tst_cmd[]) {
+		{.cmd = "exportfs"},
+		{}
 	}
 };

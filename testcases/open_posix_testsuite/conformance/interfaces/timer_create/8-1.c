@@ -53,7 +53,7 @@ static void handler(int signo PTS_ATTRIBUTE_UNUSED)
 	printf("Not expected - Caught signal\n");
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	timer_t tid;
 	struct sigaction actp;

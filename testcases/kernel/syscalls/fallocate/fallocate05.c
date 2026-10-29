@@ -4,16 +4,18 @@
  * Copyright (c) 2019 SUSE LLC <mdoucha@suse.cz>
  */
 
-/*
+/*\
  * Tests that writing to fallocated file works when filesystem is full.
- * Test scenario:
- * - fallocate() some empty blocks
+ *
+ * [Algorithm]
+ *
+ * - :manpage:`fallocate(2)` some empty blocks
  * - fill the filesystem
- * - write() into the preallocated space
- * - try to fallocate() more blocks until we get ENOSPC
- * - write() into the extra allocated space
+ * - :manpage:`write(2)` into the preallocated space
+ * - try to :manpage:`fallocate(2)` more blocks until we get ENOSPC
+ * - :manpage:`write(2)` into the extra allocated space
  * - deallocate part of the file
- * - write() to the end of file to check that some blocks were freed
+ * - :manpage:`write(2)` to the end of file to check that some blocks were freed
  */
 
 #define _GNU_SOURCE
@@ -55,7 +57,7 @@ static void setup(void)
 static void run(void)
 {
 	int fd;
-	long extsize, tmp;
+	long extsize, holesize, tmp;
 
 	fd = SAFE_OPEN(MNTPOINT "/test_file", O_WRONLY | O_CREAT | O_TRUNC,
 		0644);
@@ -114,12 +116,14 @@ static void run(void)
 	tst_res(TPASS, "fallocate() on full FS");
 
 	/* Btrfs deallocates only complete extents, not individual blocks */
-	if (!strcmp(tst_device->fs_type, "btrfs"))
-		tmp = bufsize + extsize;
+	if (!strcmp(tst_device->fs_type, "btrfs") ||
+		!strcmp(tst_device->fs_type, "bcachefs"))
+		holesize = bufsize + extsize;
 	else
-		tmp = DEALLOCATE_BLOCKS * blocksize;
+		holesize = DEALLOCATE_BLOCKS * blocksize;
 
-	TEST(fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, tmp));
+	TEST(fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0,
+		holesize));
 
 	if (TST_RET == -1) {
 		if (TST_ERR == ENOTSUP)
@@ -135,6 +139,31 @@ static void run(void)
 	else
 		tst_res(TPASS, "write()");
 
+	/* Check that the deallocated file range is marked as a hole */
+	TEST(lseek(fd, 0, SEEK_HOLE));
+
+	if (TST_RET == 0) {
+		tst_res(TPASS, "Test file contains hole at offset 0");
+	} else if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "lseek(SEEK_HOLE) failed");
+	} else {
+		tst_res(TFAIL | TTERRNO,
+			"Unexpected lseek(SEEK_HOLE) return value %ld",
+			TST_RET);
+	}
+
+	TEST(lseek(fd, 0, SEEK_DATA));
+
+	if (TST_RET == holesize) {
+		tst_res(TPASS, "Test file data start at offset %ld", TST_RET);
+	} else if (TST_RET == -1) {
+		tst_res(TFAIL | TTERRNO, "lseek(SEEK_DATA) failed");
+	} else {
+		tst_res(TFAIL | TTERRNO,
+			"Unexpected lseek(SEEK_DATA) return value %ld",
+			TST_RET);
+	}
+
 	SAFE_CLOSE(fd);
 	tst_purge_dir(MNTPOINT);
 }
@@ -145,6 +174,7 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 42,
 	.needs_root = 1,
 	.mount_device = 1,
 	.mntpoint = MNTPOINT,

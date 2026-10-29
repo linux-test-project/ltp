@@ -38,7 +38,7 @@ static void myhandler(int signo, siginfo_t *info, void *context PTS_ATTRIBUTE_UN
 	}
 }
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	int pid;
 

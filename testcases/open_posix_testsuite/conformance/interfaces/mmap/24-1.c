@@ -9,13 +9,20 @@
  * The mmap() function shall fail if:
  * [ENOMEM] MAP_FIXED was specified, and the range [addr,addr+len)
  * exceeds that allowed for the address space of a process;
- * or, if MAP_FIXED was not specified and
- * there is insufficient room in the address space to effect the mapping.
+ * or, if MAP_FIXED was not specified and there is insufficient room
+ * in the address space to effect the mapping;
+ * or, if the process exceeds the maximum number of allowed memory mappings
+ * (as defined by /proc/sys/vm/max_map_count).
  *
  * Test Steps:
- * 1. In a very long loop, keep mapping a shared memory object,
- *    until there this insufficient room in the address space;
- * 3. Should get ENOMEM.
+ * 1. In a very long loop, continuously map a shared memory object without
+ *    unmapping previous ones.
+ * 2. The loop continues until mmap() fails with ENOMEM.
+ *
+ * Note:
+ * This failure may occur due to either exhausting the process's
+ * virtual address space, or hitting the system-wide limit on
+ * the number of memory mappings (especially on systems with large RAM).
  */
 
 #include <stdio.h>
@@ -31,12 +38,42 @@
 #include <stdint.h>
 #include "posixtest.h"
 
-int main(void)
+#define MAX_MAP_COUNT_PATH "/proc/sys/vm/max_map_count"
+#define MAP_COUNT_LIMIT 65530
+
+void proc_write_val(const char *path, size_t val)
+{
+	FILE *procfile;
+
+	procfile = fopen(path, "r+");
+
+	if (!procfile) {
+		printf("Warning: Could not open %s\n", path);
+		return;
+	}
+
+	fprintf(procfile, "%zu", val);
+	fclose(procfile);
+}
+
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 	char tmpfname[256];
 	void *pa;
-	size_t len;
+	size_t len, max_map_count = 0;
 	int fd;
+	FILE *procfile;
+
+	/* Change vm.max_map_count to avoid OOM */
+	procfile = fopen(MAX_MAP_COUNT_PATH, "r");
+
+	if (procfile) {
+		fscanf(procfile, "%zu", &max_map_count);
+		fclose(procfile);
+	}
+
+	if (max_map_count > MAP_COUNT_LIMIT)
+		proc_write_val(MAX_MAP_COUNT_PATH, MAP_COUNT_LIMIT);
 
 	/* Size of the shared memory object */
 	size_t shm_size = 1024;
@@ -78,5 +115,10 @@ int main(void)
 
 	close(fd);
 	printf("Test FAILED: Did not get ENOMEM as expected\n");
+
+	/* Restore original vm.max_map_count */
+	if (max_map_count > MAP_COUNT_LIMIT)
+		proc_write_val(MAX_MAP_COUNT_PATH, max_map_count);
+
 	return PTS_FAIL;
 }

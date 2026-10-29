@@ -6,8 +6,6 @@
  */
 
 /*\
- * [Description]
- *
  * Verify that, mmap() call with 'PROT_NONE' and a file descriptor which is
  * open for read and write, succeeds to map the file creating mapped memory,
  * but any attempt to access the contents of the mapped region causes the

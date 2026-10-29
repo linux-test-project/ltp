@@ -45,7 +45,7 @@
 #include <sys/wait.h>
 #include <inttypes.h>
 #include "test.h"
-#include "safe_macros.h"
+#include "tso_safe_macros.h"
 
 #define STRINGSIZE	27
 #define STRING		"abcdefghijklmnopqrstuvwxyz\n"
@@ -208,7 +208,7 @@ void parent_put(struct flock *l)
 
 void parent_get(struct flock *l)
 {
-	SAFE_READ(cleanup, 1, child_pipe[0], l, sizeof(*l));
+	SAFE_READ(cleanup, SAFE_READ_ALL, child_pipe[0], l, sizeof(*l));
 }
 
 void child_put(struct flock *l)
@@ -218,7 +218,7 @@ void child_put(struct flock *l)
 
 void child_get(struct flock *l)
 {
-	SAFE_READ(NULL, 1, parent_pipe[0], l, sizeof(*l));
+	SAFE_READ(NULL, SAFE_READ_ALL, parent_pipe[0], l, sizeof(*l));
 	if (l->l_type == (short)STOP)
 		exit(0);
 }
@@ -245,10 +245,6 @@ int main(int ac, char **av)
 	int lc;
 
 	tst_parse_opts(ac, av, NULL, NULL);
-#ifdef UCLINUX
-	maybe_run_child(&do_child, "ddddd", &parent_pipe[0],
-			&parent_pipe[1], &child_pipe[0], &child_pipe[1], &fd);
-#endif
 
 	setup();		/* global setup */
 
@@ -257,17 +253,9 @@ int main(int ac, char **av)
 		/* reset tst_count in case we are looping */
 		tst_count = 0;
 
-		if ((child_pid = FORK_OR_VFORK()) == 0) {	/* parent */
-#ifdef UCLINUX
-			if (self_exec(av[0], "ddddd", parent_pipe[0],
-				      parent_pipe[1], child_pipe[0],
-				      child_pipe[1], fd) < 0)
-				tst_brkm(TBROK | TERRNO, cleanup,
-					 "self_exec failed");
-#else
+		if ((child_pid = tst_fork()) == 0) /* parent */
 			do_child();
-#endif
-		} else if (child_pid == -1)
+		else if (child_pid == -1)
 			tst_brkm(TBROK | TERRNO, cleanup, "fork failed");
 
 		SAFE_CLOSE(cleanup, parent_pipe[0]);
@@ -278,7 +266,7 @@ int main(int ac, char **av)
 
 		/*
 		 * Add a write lock to the middle of the file and a read
-		 * at the begining
+		 * at the beginning
 		 */
 		if (do_lock(F_SETLK, (short)F_WRLCK, (short)0, 10, 5) < 0)
 			tst_resm(TFAIL | TERRNO, "fcntl on file failed");

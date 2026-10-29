@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * Tests if sync_file_range() does sync a test file range with a many dirty pages
  * to a block device. Also, it tests all supported filesystems on a test block
  * device.

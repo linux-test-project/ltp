@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+// SPDX-License-Identifier: GPL-2.0-only
 /*
  * Copyright (c) 2000 Silicon Graphics, Inc.  All Rights Reserved.
  * Copyright (c) 2021 Xie Ziyao <xieziyao@huawei.com>
@@ -19,8 +19,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test the basic functionality of the sethostid() and gethostid() system call.
  */
 

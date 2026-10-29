@@ -15,8 +15,6 @@
  */
 
 /*\
- * [Description]
- *
  * Basic test for fcntl(2) using F_GETLK argument.
  *
  * If the lock could be placed, fcntl() does not actually place it, but

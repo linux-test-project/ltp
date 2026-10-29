@@ -5,8 +5,6 @@
  */
 
 /*\
- * [Description]
- *
  * This baseline test validates that a mapping of a certain size can be
  * created, correctly. Once created, all the pages are filled with a
  * pattern and rechecked to test for corruption. The mapping is then
@@ -29,7 +27,7 @@ static void run_test(unsigned int iter)
 	char pattern = 'A';
 	size_t size = NR_HUGEPAGES*hpage_size;
 
-	fd = tst_creat_unlinked(MNTPOINT, 0);
+	fd = tst_creat_unlinked(MNTPOINT, 0, 0600);
 	m = SAFE_MMAP(NULL, size, (PROT_READ|PROT_WRITE), MAP_SHARED, fd, 0);
 
 	for (i = 0; i < NR_HUGEPAGES; i++) {

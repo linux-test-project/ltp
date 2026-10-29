@@ -21,7 +21,7 @@
 
 #define INVALID_PROTOCOL -1
 
-int main(void)
+int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 {
 
 	pthread_mutexattr_t mta;

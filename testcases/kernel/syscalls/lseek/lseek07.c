@@ -61,7 +61,7 @@ static void verify_lseek(unsigned int n)
 
 	*tc->fd = SAFE_OPEN(tc->fname, O_RDWR);
 
-	SAFE_READ(1, *tc->fd, read_buf, tc->exp_size);
+	SAFE_READ(SAFE_READ_ALL, *tc->fd, read_buf, tc->exp_size);
 
 	if (strcmp(read_buf, tc->exp_data)) {
 		tst_res(TFAIL, "lseek(%s, %lld, SEEK_SET) wrote incorrect data %s",

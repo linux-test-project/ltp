@@ -29,7 +29,7 @@ static void verify_pipe(void)
 	}
 
 	wr_size = SAFE_WRITE(SAFE_WRITE_ALL, fds[1], wrbuf, sizeof(wrbuf));
-	rd_size = SAFE_READ(0, fds[0], rdbuf, sizeof(rdbuf));
+	rd_size = SAFE_READ(SAFE_READ_ANY, fds[0], rdbuf, sizeof(rdbuf));
 
 	if (rd_size != wr_size) {
 		tst_res(TFAIL, "read() returned %d, expected %d",

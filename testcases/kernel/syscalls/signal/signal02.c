@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Test that we get an error using illegal signals.
  */
 

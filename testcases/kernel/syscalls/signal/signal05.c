@@ -4,8 +4,6 @@
  */
 
 /*\
- * [Description]
- *
  * Set the signal handler to our own function.
  */
 

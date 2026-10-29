@@ -1,3 +1,0 @@
-#DESCRIPTION:filesystem tests
-# Check the Minix filesystems
-bfs501 ltpfstest /test/growfiles/minix

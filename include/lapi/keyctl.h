@@ -8,16 +8,14 @@
 
 #include "config.h"
 
-#if defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS)
-# include <keyutils.h>
-#else
-# ifdef HAVE_LINUX_KEYCTL_H
-#  include <linux/keyctl.h>
-# endif /* HAVE_LINUX_KEYCTL_H */
+#ifdef HAVE_LINUX_KEYCTL_H
+# include <linux/keyctl.h>
+#endif /* HAVE_LINUX_KEYCTL_H */
 
-# include <stdarg.h>
-# include <stdint.h>
-# include "lapi/syscalls.h"
+#include <stdarg.h>
+#include <stdint.h>
+#include "lapi/syscalls.h"
+
 typedef int32_t key_serial_t;
 
 static inline key_serial_t add_key(const char *type,
@@ -58,7 +56,63 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 	return keyctl(KEYCTL_JOIN_SESSION_KEYRING, name);
 }
 
-#endif /* defined(HAVE_KEYUTILS_H) && defined(HAVE_LIBKEYUTILS) */
+#ifndef HAVE_STRUCT_KEYCTL_DH_PARAMS
+struct keyctl_dh_params {
+	union {
+		int32_t priv;
+		int32_t private;
+	};
+	int32_t prime;
+	int32_t base;
+};
+#endif
+
+/**
+ * KEYCTL_DH_PRIVATE - Access the private key in struct keyctl_dh_params.
+ * @params: Pointer to struct keyctl_dh_params.
+ *
+ * Uses 'private' if the UAPI headers provide it, 'priv' otherwise. UAPI
+ * headers older than 4.20 provide only 'private'. Bionic renames 'private'
+ * (a C++ keyword) to '__linux_private', so only 'priv' is usable there.
+ */
+#ifdef HAVE_STRUCT_KEYCTL_DH_PARAMS_PRIVATE
+# define KEYCTL_DH_PRIVATE(params) ((params)->private)
+#else
+# define KEYCTL_DH_PRIVATE(params) ((params)->priv)
+#endif
+
+#ifndef HAVE_STRUCT_KEYCTL_KDF_PARAMS
+struct keyctl_kdf_params {
+	char *hashname;
+	char *otherinfo;
+	uint32_t otherinfolen;
+	uint32_t __spare[8];
+};
+#endif
+
+#ifndef HAVE_STRUCT_KEYCTL_PKEY_QUERY
+struct keyctl_pkey_query {
+	uint32_t	supported_ops;
+	uint32_t	key_size;
+	uint16_t	max_data_size;
+	uint16_t	max_sig_size;
+	uint16_t	max_enc_size;
+	uint16_t	max_dec_size;
+	uint32_t	__spare[10];
+};
+#endif
+
+#ifndef HAVE_STRUCT_KEYCTL_PKEY_PARAMS
+struct keyctl_pkey_params {
+	int32_t		key_id;
+	uint32_t	in_len;
+	union {
+		uint32_t	out_len;
+		uint32_t	in2_len;
+	};
+	uint32_t	__spare[7];
+};
+#endif
 
 /* special process keyring shortcut IDs */
 #ifndef KEY_SPEC_THREAD_KEYRING
@@ -116,12 +170,24 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEYCTL_SETPERM 5
 #endif
 
+#ifndef KEYCTL_DESCRIBE
+# define KEYCTL_DESCRIBE 6
+#endif
+
 #ifndef KEYCTL_CLEAR
 # define KEYCTL_CLEAR 7
 #endif
 
+#ifndef KEYCTL_LINK
+# define KEYCTL_LINK 8
+#endif
+
 #ifndef KEYCTL_UNLINK
 # define KEYCTL_UNLINK 9
+#endif
+
+#ifndef KEYCTL_SEARCH
+# define KEYCTL_SEARCH 10
 #endif
 
 #ifndef KEYCTL_READ
@@ -136,12 +202,67 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEYCTL_SET_TIMEOUT 15
 #endif
 
+#ifndef KEYCTL_ASSUME_AUTHORITY
+# define KEYCTL_ASSUME_AUTHORITY 16
+#endif
+
+#ifndef KEYCTL_GET_SECURITY
+# define KEYCTL_GET_SECURITY 17
+#endif
+
 #ifndef KEYCTL_INVALIDATE
 # define KEYCTL_INVALIDATE 21
 #endif
 
+#ifndef KEYCTL_GET_PERSISTENT
+# define KEYCTL_GET_PERSISTENT 22
+#endif
+
+#ifndef KEYCTL_DH_COMPUTE
+# define KEYCTL_DH_COMPUTE 23
+#endif
+
 #ifndef KEYCTL_WATCH_KEY
 # define KEYCTL_WATCH_KEY 32
+#endif
+
+#ifndef KEYCTL_RESTRICT_KEYRING
+# define KEYCTL_RESTRICT_KEYRING 29
+#endif
+
+#ifndef KEYCTL_MOVE
+# define KEYCTL_MOVE 30
+#endif
+
+#ifndef KEYCTL_MOVE_EXCL
+# define KEYCTL_MOVE_EXCL 0x00000001 /* do not displace from the to-keyring */
+#endif
+
+#ifndef KEYCTL_PKEY_QUERY
+# define KEYCTL_PKEY_QUERY 24
+#endif
+
+#ifndef KEYCTL_PKEY_ENCRYPT
+# define KEYCTL_PKEY_ENCRYPT 25
+#endif
+
+#ifndef KEYCTL_PKEY_DECRYPT
+# define KEYCTL_PKEY_DECRYPT 26
+#endif
+
+#ifndef KEYCTL_PKEY_SIGN
+# define KEYCTL_PKEY_SIGN 27
+#endif
+
+#ifndef KEYCTL_PKEY_VERIFY
+# define KEYCTL_PKEY_VERIFY 28
+#endif
+
+#ifndef KEYCTL_SUPPORTS_ENCRYPT
+# define KEYCTL_SUPPORTS_ENCRYPT 0x01
+# define KEYCTL_SUPPORTS_DECRYPT 0x02
+# define KEYCTL_SUPPORTS_SIGN    0x04
+# define KEYCTL_SUPPORTS_VERIFY  0x08
 #endif
 
 /* key permissions */
@@ -179,4 +300,86 @@ static inline key_serial_t keyctl_join_session_keyring(const char *name) {
 # define KEY_OTH_ALL     0x0000003f
 #endif /* !KEY_POS_VIEW */
 
+static inline long safe_keyctl(const char *file, const int lineno,
+	int cmd, unsigned long arg2, unsigned long arg3,
+	unsigned long arg4, unsigned long arg5)
+{
+	long rval;
+	int failure = 0;
+
+	rval = keyctl(cmd, arg2, arg3, arg4, arg5);
+	if (rval == -1) {
+		tst_brk_(file, lineno,
+			(errno == EOPNOTSUPP ? TCONF : TBROK) | TERRNO,
+			"keyctl(%d, %lu, %lu, %lu, %lu)",
+			cmd, arg2, arg3, arg4, arg5);
+	}
+
+	switch (cmd) {
+	case KEYCTL_GET_KEYRING_ID:
+	case KEYCTL_JOIN_SESSION_KEYRING:
+	case KEYCTL_DESCRIBE:
+	case KEYCTL_SEARCH:
+	case KEYCTL_READ:
+	case KEYCTL_SET_REQKEY_KEYRING:
+	case KEYCTL_GET_SECURITY:
+	case KEYCTL_GET_PERSISTENT:
+	case KEYCTL_DH_COMPUTE:
+	case KEYCTL_PKEY_QUERY:
+	case KEYCTL_PKEY_ENCRYPT:
+	case KEYCTL_PKEY_DECRYPT:
+	case KEYCTL_PKEY_SIGN:
+	case KEYCTL_PKEY_VERIFY:
+		if (rval < 0)
+			failure = 1;
+		break;
+	case KEYCTL_ASSUME_AUTHORITY:
+		if ((!arg2 && rval) || (arg2 && rval < 0))
+			failure = 1;
+		break;
+	default:
+		if (rval)
+			failure = 1;
+		break;
+	}
+
+	if (failure) {
+		tst_brk_(file, lineno, TBROK,
+			"keyctl(%d, %lu, %lu, %lu, %lu) returned %ld",
+			cmd, arg2, arg3, arg4, arg5, rval);
+	}
+
+	return rval;
+}
+
+#define SAFE_KEYCTL(cmd, arg2, arg3, arg4, arg5) \
+	safe_keyctl(__FILE__, __LINE__, \
+	     (cmd), (arg2), (arg3), (arg4), (arg5))
+
+static inline key_serial_t safe_add_key(const char *file, const int lineno,
+			  const char *type, const char *desc,
+			  const void *payload, size_t size,
+			  key_serial_t keyring)
+{
+
+	int rval;
+
+	rval = add_key(type, desc, payload, size, keyring);
+
+	if (rval == -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "add_key(%s, '%s', %p, %ld, %d) failed",
+			 type, desc, payload, size, keyring);
+	} else if (rval < -1) {
+		tst_brk_(file, lineno, TBROK | TERRNO,
+			 "Invalid add_key(%s, '%s', %p, %ld, %d) return value %d",
+			 type, desc, payload, size, keyring, rval);
+	}
+
+	return rval;
+}
+
+#define SAFE_ADD_KEY(type, desc, payload, size, keyring) \
+	safe_add_key(__FILE__, __LINE__, \
+                            (type), (desc), (payload), (size), (keyring))
 #endif	/* LAPI_KEYCTL_H__ */

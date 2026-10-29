@@ -7,13 +7,12 @@
  */
 
 /*\
- * [Description]
  * Test opening files after receiving IN_DELETE.
  *
  * Kernel v5.13 has a regression allowing files to be open after IN_DELETE.
  *
  * The problem has been fixed by commit:
- *  a37d9a17f099 "fsnotify: invalidate dcache before IN_DELETE event".
+ * a37d9a17f099 ("fsnotify: invalidate dcache before IN_DELETE event").
  */
 
 #include "config.h"
@@ -48,7 +47,7 @@ static void churn(void)
 	char path[10];
 	int i;
 
-	for (i = 0; i <= CHURN_FILES; ++i) {
+	for (i = 0; i < CHURN_FILES; ++i) {
 		snprintf(path, sizeof(path), "%d", i);
 		SAFE_FILE_PRINTF(path, "1");
 		SAFE_UNLINK(path);
@@ -74,7 +73,8 @@ static void verify_inotify(void)
 	while (!opened && nevents < CHURN_FILES) {
 		int i, fd, len;
 
-		len = SAFE_READ(0, inotify_fd, event_buf, EVENT_BUF_LEN);
+		len = SAFE_READ(SAFE_READ_ANY, inotify_fd, event_buf,
+				EVENT_BUF_LEN);
 
 		for (i = 0; i < len; i += EVENT_SIZE + event->len) {
 			event = (struct inotify_event *)&event_buf[i];
@@ -118,12 +118,13 @@ static void cleanup(void)
 }
 
 static struct tst_test test = {
+	.timeout = 12,
 	.needs_tmpdir = 1,
 	.forks_child = 1,
 	.cleanup = cleanup,
 	.test_all = verify_inotify,
 	.tags = (const struct tst_tag[]) {
-		{"linux-git", "a37d9a17f099"},
+		{"linux-git", "a37d9a17f099072fe4d3a9048b0321978707a918"},
 		{}
 	}
 };

@@ -68,7 +68,8 @@ do_test()
 	for p in $pids; do
 		wait $p
 		if [ $? -ne 0 ]; then
-			tst_brk TFAIL "nfs_lock process failed"
+			tst_res TFAIL "nfs_lock process failed"
+			return
 		else
 			tst_res TINFO "$p completed"
 		fi

@@ -6,9 +6,8 @@
  */
 
 /*\
- * [Description]
- * Check fanotify directory entry modification events, events on child and
- * on self with group init flags:
+ * Check :manpage:`fanotify_init(2)` directory entry modification events, events on
+ * child and on self with group init flags:
  *
  * - FAN_REPORT_DFID_NAME (dir fid + name)
  * - FAN_REPORT_DIR_FID   (dir fid)
@@ -70,6 +69,7 @@ static char event_buf[EVENT_BUF_LEN];
 #define TEMP_DIR MOUNT_PATH "/temp_dir"
 
 static int fan_report_target_fid_unsupported;
+static int filesystem_mark_unsupported;
 static int rename_events_unsupported;
 
 static struct test_case_t {
@@ -281,6 +281,16 @@ static void do_test(unsigned int number)
 		return;
 	}
 
+	if (filesystem_mark_unsupported) {
+		if (sub_mark && sub_mark->flag != FAN_MARK_INODE)
+			mark = sub_mark;
+
+		if (mark->flag != FAN_MARK_INODE) {
+			FANOTIFY_MARK_FLAGS_ERR_MSG(mark, filesystem_mark_unsupported);
+			return;
+		}
+	}
+
 	fd_notify = SAFE_FANOTIFY_INIT(group->flag, 0);
 
 	/*
@@ -328,7 +338,15 @@ static void do_test(unsigned int number)
 	tst_count++;
 
 	/* Generate modify events "on child" */
-	fd = SAFE_CREAT(fname1, 0755);
+
+	/*
+	 * Split SAFE_CREAT() into explicit SAFE_MKNOD() and SAFE_OPEN(),
+	 * because with atomic open (e.g. fuse), SAFE_CREAT() generates
+	 * FAN_OPEN before FAN_CREATE and it is inconsistent with the order
+	 * of events expectated from other filesystems.
+	 */
+	SAFE_MKNOD(fname1, S_IFREG | 0644, 0);
+	fd = SAFE_OPEN(fname1, O_WRONLY);
 
 	/* Save the file fid */
 	fanotify_save_fid(fname1, &file_fid);
@@ -345,7 +363,8 @@ static void do_test(unsigned int number)
 	SAFE_UNLINK(fname2);
 
 	/* Read events on files in subdir */
-	len += SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * FAN_CREATE|FAN_DELETE|FAN_MOVE events with the same name are merged.
@@ -473,7 +492,8 @@ static void do_test(unsigned int number)
 	SAFE_RMDIR(dname2);
 
 	/* Read more events on dirs */
-	len += SAFE_READ(0, fd_notify, event_buf + len, EVENT_BUF_LEN - len);
+	len += SAFE_READ(SAFE_READ_ANY, fd_notify, event_buf + len,
+			 EVENT_BUF_LEN - len);
 
 	/*
 	 * FAN_RENAME event is independent of MOVED_FROM/MOVED_TO and not merged
@@ -765,8 +785,12 @@ static void setup(void)
 	REQUIRE_FANOTIFY_INIT_FLAGS_SUPPORTED_ON_FS(FAN_REPORT_DIR_FID, MOUNT_PATH);
 	fan_report_target_fid_unsupported =
 		fanotify_init_flags_supported_on_fs(FAN_REPORT_DFID_NAME_TARGET, MOUNT_PATH);
+	filesystem_mark_unsupported =
+		fanotify_flags_supported_on_fs(FAN_REPORT_FID, FAN_MARK_FILESYSTEM, FAN_OPEN,
+						MOUNT_PATH);
 	rename_events_unsupported =
-		fanotify_events_supported_by_kernel(FAN_RENAME, FAN_REPORT_DFID_NAME, 0);
+		fanotify_flags_supported_on_fs(FAN_REPORT_DFID_NAME, 0,
+					       FAN_RENAME, MOUNT_PATH);
 
 	SAFE_MKDIR(TEMP_DIR, 0755);
 	sprintf(dname1, "%s/%s", MOUNT_PATH, DIR_NAME1);
