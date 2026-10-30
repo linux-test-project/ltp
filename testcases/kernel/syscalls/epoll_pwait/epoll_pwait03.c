@@ -19,7 +19,7 @@
 static int efd, sfd[2];
 static struct epoll_event e;
 
-int sample_fn(int clk_id, long long usec)
+static int sample_fn(int clk_id, long long usec)
 {
 	struct timespec ts;
 
