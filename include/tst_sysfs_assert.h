@@ -655,8 +655,10 @@ unsigned long tst_sysfs_read_lx(const char *file, const int lineno,
 void tst_sysfs_cnt_reset(void);
 
 /**
- * tst_sysfs_cnt_get() - Number of attributes the *_SILENT assertions
+ * tst_sysfs_cnt_get() - Get number of attributes the ``*_SILENT`` assertions
  * found and checked (pass or fail) since the last reset.
+ *
+ * Return: Number of attributes.
  */
 unsigned int tst_sysfs_cnt_get(void);
 
