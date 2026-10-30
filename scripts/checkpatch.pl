@@ -63,6 +63,7 @@ my $env_config_dir = 'CHECKPATCH_CONFIG_DIR';
 my $max_line_length = 100;
 my $ignore_perl_version = 0;
 my $spdx_cxx_comments = 0;
+my $userspace;
 my $minimum_perl_version = 5.10.0;
 my $min_conf_desc_length = 4;
 my $spelling_file = "$D/spelling.txt";
@@ -143,6 +144,7 @@ Options:
                              (required by old toolchains), allow also C++
                              comments (//).
                              NOTE: it should *not* be used for Linux mainline.
+  --userspace                Force rules specific for userspace.
   --codespell                Use the codespell dictionary for spelling/typos
                              (default:$codespellfile)
   --codespellfile            Use this codespell dictionary
@@ -358,6 +360,7 @@ GetOptions(
 	'codespell!'	=> \$codespell,
 	'codespellfile=s'	=> \$user_codespellfile,
 	'typedefsfile=s'	=> \$typedefsfile,
+	'userspace!'	=> \$userspace,
 	'color=s'	=> \$color,
 	'no-color'	=> \$color,	#keep old behaviors of -nocolor
 	'nocolor'	=> \$color,	#keep old behaviors of -nocolor
@@ -655,7 +658,6 @@ our $signature_tags = qr{(?xi:
 	Reviewed-by:|
 	Reported-by:|
 	Suggested-by:|
-	Assisted-by:|
 	To:|
 	Cc:
 )};
@@ -879,8 +881,6 @@ our %deprecated_apis = (
 	"DEFINE_IDR"				=> "DEFINE_XARRAY",
 	"idr_init"				=> "xa_init",
 	"idr_init_base"				=> "xa_init_flags",
-	"rcu_read_lock_trace"			=> "rcu_read_lock_tasks_trace",
-	"rcu_read_unlock_trace"			=> "rcu_read_unlock_tasks_trace",
 );
 
 #Create a search pattern for all these strings to speed up a loop below
@@ -1208,6 +1208,8 @@ sub seed_camelcase_includes {
 		my $git_last_include_commit = `${git_command} log --no-merges --pretty=format:"%h%n" -1 -- include`;
 		chomp $git_last_include_commit;
 		$camelcase_cache = ".checkpatch-camelcase.git.$git_last_include_commit";
+	} elsif (not defined $root) {
+		return;
 	} else {
 		my $last_mod_date = 0;
 		$files = `find $root/include -name "*.h"`;
@@ -2667,7 +2669,12 @@ sub exclude_global_initialisers {
 
 sub is_userspace {
     my ($realfile) = @_;
-    return ($realfile =~ m@^tools/@ || $realfile =~ m@^scripts/@);
+
+    return $userspace if (defined $userspace);
+
+    return ($realfile =~ m@^tools/@ ||
+		$realfile =~ m@^scripts/@ ||
+		$realfile =~ m@^arch/.*/tools/@);
 }
 
 sub process {
@@ -3126,15 +3133,6 @@ sub process {
 				}
 			}
 
-			# Assisted-by uses AGENT_NAME:MODEL_VERSION format, not email
-			if ($sign_off =~ /^Assisted-by:/i) {
-				if ($email !~ /^\S+:\S+/) {
-					WARN("BAD_SIGN_OFF",
-					     "Assisted-by expects 'AGENT_NAME:MODEL_VERSION [TOOL1] [TOOL2]' format\n" . $herecurr);
-				}
-				next;
-			}
-
 			my ($email_name, $name_comment, $email_address, $comment) = parse_email($email);
 			my $suggested_email = format_email(($email_name, $name_comment, $email_address, $comment));
 			if ($suggested_email eq "") {
@@ -3253,10 +3251,10 @@ sub process {
 			if ($sign_off =~ /^reported(?:|-and-tested)-by:$/i) {
 				if (!defined $lines[$linenr]) {
 					WARN("BAD_REPORTED_BY_LINK",
-					     "Reported-by: should be immediately followed by Closes: with a URL to the report\n" . $herecurr . "\n");
-				} elsif ($rawlines[$linenr] !~ /^closes:\s*/i) {
+					     "Reported-by: should be immediately followed by Closes: or Link: with a URL to the report\n" . $herecurr . "\n");
+				} elsif ($rawlines[$linenr] !~ /^(closes|link):\s*/i) {
 					WARN("BAD_REPORTED_BY_LINK",
-					     "Reported-by: should be immediately followed by Closes: with a URL to the report\n" . $herecurr . $rawlines[$linenr] . "\n");
+					     "Reported-by: should be immediately followed by Closes: or Link: with a URL to the report\n" . $herecurr . $rawlines[$linenr] . "\n");
 				}
 			}
 		}
@@ -3783,6 +3781,12 @@ sub process {
 			my $vp_file = $dt_path . "vendor-prefixes.yaml";
 
 			foreach my $compat (@compats) {
+				# Skip ID-based PCI and USB compatible patterns.
+				# DT validation will check them properly.
+				next if $compat =~ /^pciclass,/;
+				next if $compat =~ /^pci[a-f0-9]{2,4},/;
+				next if $compat =~ /^usb(if)?[a-f0-9]{1,4},/;
+
 				my $compat2 = $compat;
 				$compat2 =~ s/\,[a-zA-Z0-9]*\-/\,<\.\*>\-/;
 				my $compat3 = $compat;
@@ -4150,6 +4154,7 @@ sub process {
 		      $line =~ /^\+[a-z_]*init/ ||
 		      $line =~ /^\+\s*(?:static\s+)?[A-Z_]*ATTR/ ||
 		      $line =~ /^\+\s*DECLARE/ ||
+		      $line =~ /^\+\s*NOKPROBE_SYMBOL/ ||
 		      $line =~ /^\+\s*builtin_[\w_]*driver/ ||
 		      $line =~ /^\+\s*__setup/)) {
 			if (CHK("LINE_SPACING",
@@ -4183,7 +4188,7 @@ sub process {
 			$pl =~ s/\b(?:$Attribute|$Sparse)\b//g;
 			if (($pl =~ /^\+\s+$Declare\s*$Ident\s*[=,;:\[]/ ||
 			# function pointer declarations
-			     $pl =~ /^\+\s+$Declare\s*\(\s*\*\s*$Ident\s*\)\s*[=,;:\[\(]/ ||
+			     $pl =~ /^\+\s+$Declare\s*\(\s*\*\s*$Ident(?:\s*\[\s*(?:$Ident|$Constant)?\s*\])?\s*\)\s*[=,;:\[\(]/ ||
 			# foo bar; where foo is some local typedef or #define
 			     $pl =~ /^\+\s+$Ident(?:\s+|\s*\*\s*)$Ident\s*[=,;\[]/ ||
 			# known declaration macros
@@ -4197,7 +4202,7 @@ sub process {
 			# looks like a declaration
 			    !($sl =~ /^\+\s+$Declare\s*$Ident\s*[=,;:\[]/ ||
 			# function pointer declarations
-			      $sl =~ /^\+\s+$Declare\s*\(\s*\*\s*$Ident\s*\)\s*[=,;:\[\(]/ ||
+			      $sl =~ /^\+\s+$Declare\s*\(\s*\*\s*$Ident(?:\s*\[\s*(?:$Ident|$Constant)?\s*\])?\s*\)\s*[=,;:\[\(]/ ||
 			# foo bar; where foo is some local typedef or #define
 			      $sl =~ /^\+\s+$Ident(?:\s+|\s*\*\s*)$Ident\s*[=,;\[]/ ||
 			# known declaration macros
@@ -5771,7 +5776,21 @@ sub process {
 			my ($s, $c) = ($stat, $cond);
 			my $fixed_assign_in_if = 0;
 
+			# ACQUIRE_ERR() and its wrappers, e.g. PM_RUNTIME_ACQUIRE_ERR()
+			# and IIO_DEV_ACQUIRE_FAILED(), are meant to be evaluated in an
+			# if condition, with the error assigned in the condition:
+			#	if ((rc = ACQUIRE_ERR(name, &lock)))
+			# Allow that only when every assignment in the condition assigns
+			# the result of such a call, so that a mixed condition keeps
+			# getting flagged:
+			#	if ((rc = regular_function()) || (ret = ACQUIRE_ERR(name, &lock)))
+			my $assign_in_if = 0;
 			if ($c =~ /\bif\s*\(.*[^<>!=]=[^=].*/s) {
+				my $has_assignment = $c =~ /\b$Lval\s*=\s*[^,)&|=]+/;
+				my $has_other_assignment = $c =~ /\b$Lval\s*=\s*(?!\s*\w*ACQUIRE_(?:ERR|FAILED)\s*\()[^,)&|=]+/;
+				$assign_in_if = !$has_assignment || $has_other_assignment;
+			}
+			if ($assign_in_if) {
 				if (ERROR("ASSIGN_IN_IF",
 					  "do not use assignment in if condition\n" . $herecurr) &&
 				    $fix && $perl_version_ok) {
@@ -5940,6 +5959,8 @@ sub process {
 #Ignore SI style variants like nS, mV and dB
 #(ie: max_uV, regulator_min_uA_show, RANGE_mA_VALUE)
 			    $var !~ /^(?:[a-z0-9_]*|[A-Z0-9_]*)?_?[a-z][A-Z](?:_[a-z0-9_]+|_[A-Z0-9_]+)?$/ &&
+#Ignore <inttypes.h> format macros (e.g. PRIu64, SCNu64)
+			    (is_userspace($realfile) ? $var !~ /^(?:PRI|SCN)[dioux][A-Z0-9]+$/ : 1) &&
 #Ignore some three character SI units explicitly, like MiB and KHz
 			    $var !~ /^(?:[a-z_]*?)_?(?:[KMGT]iB|[KMGT]?Hz)(?:_[a-z_]+)?$/) {
 				while ($var =~ m{\b($Ident)}g) {
@@ -6678,7 +6699,8 @@ sub process {
 		}
 
 # prefer usleep_range over udelay
-		if ($line =~ /\budelay\s*\(\s*(\d+)\s*\)/) {
+		if (!is_userspace($realfile) &&
+			$line =~ /\budelay\s*\(\s*(\d+)\s*\)/) {
 			my $delay = $1;
 			# ignore udelay's < 10, however
 			if (! ($delay < 10) ) {
@@ -6692,7 +6714,8 @@ sub process {
 		}
 
 # warn about unexpectedly long msleep's
-		if ($line =~ /\bmsleep\s*\((\d+)\);/) {
+		if (!is_userspace($realfile) &&
+			$line =~ /\bmsleep\s*\((\d+)\);/) {
 			if ($1 < 20) {
 				WARN("MSLEEP",
 				     "msleep < 20ms can sleep for up to 20ms; see function description of msleep().\n" . $herecurr);
@@ -6861,10 +6884,12 @@ sub process {
 				"no_caller_saved_registers"	=> "__no_caller_saved_registers",
 				"noclone"			=> "__noclone",
 				"noinline"			=> "noinline",
+				"nonnull"			=> "__nonnull_args",
 				"nonstring"			=> "__nonstring",
 				"noreturn"			=> "__noreturn",
 				"packed"			=> "__packed",
 				"pure"				=> "__pure",
+				"require_explicit_initialization" => "__require_explicit_initialization",
 				"section"			=> "__section",
 				"used"				=> "__used",
 				"weak"				=> "__weak"
@@ -6881,6 +6906,8 @@ sub process {
 					if ($curr_attr eq "format" && $params) {
 						$params =~ /^\s*\(\s*(\w+)\s*,\s*(.*)/;
 						$new = "__$1\($2";
+					} elsif ($curr_attr eq "nonnull" && $params eq "") {
+						$new = "$new()";
 					} else {
 						$new = "$new$params";
 					}
@@ -6914,7 +6941,7 @@ sub process {
 
 # check for c99 types like uint8_t used outside of uapi/ and tools/
 		if ($realfile !~ m@\binclude/uapi/@ &&
-		    $realfile !~ m@\btools/@ &&
+		    !is_userspace($realfile) &&
 		    $line =~ /\b($Declare)\s*$Ident\s*[=;,\[]/) {
 			my $type = $1;
 			if ($type =~ /\b($typeC99Typedefs)\b/) {
@@ -7164,6 +7191,7 @@ sub process {
 # check usleep_range arguments
 		if ($perl_version_ok &&
 		    defined $stat &&
+		    !is_userspace($realfile) &&
 		    $stat =~ /^\+(?:.*?)\busleep_range\s*\(\s*($FuncArg)\s*,\s*($FuncArg)\s*\)/) {
 			my $min = $1;
 			my $max = $7;
@@ -7407,6 +7435,7 @@ sub process {
 
 # check for #defines like: 1 << <digit> that could be BIT(digit), it is not exported to uapi
 		if ($realfile !~ m@^include/uapi/@ &&
+		    !is_userspace($realfile) &&
 		    $line =~ /#\s*define\s+\w+\s+\(?\s*1\s*([ulUL]*)\s*\<\<\s*(?:\d+|$Ident)\s*\)?/) {
 			my $ull = "";
 			$ull = "_ULL" if (defined($1) && $1 =~ /ll/i);
@@ -7623,12 +7652,15 @@ sub process {
 
 # Complain about RCU Tasks Trace used outside of BPF (and of course, RCU).
 		our $rcu_trace_funcs = qr{(?x:
+			rcu_read_lock_tasks_trace |
 			rcu_read_lock_trace |
 			rcu_read_lock_trace_held |
 			rcu_read_unlock_trace |
+			rcu_read_unlock_tasks_trace |
 			call_rcu_tasks_trace |
 			synchronize_rcu_tasks_trace |
 			rcu_barrier_tasks_trace |
+			rcu_tasks_trace_expedite_current |
 			rcu_request_urgent_qs_task
 		)};
 		our $rcu_trace_paths = qr{(?x:
