@@ -3,6 +3,7 @@
 # Copyright (c) 2024 SUSE LLC <mdoucha@suse.cz>
 
 TST_TESTFUNC="do_test"
+TST_NET_FORCE_NETNS=1
 
 # PURPOSE:  Check that /proc/net/rpc/nfs exists in nested network namespaces
 # d47151b79e32 ("nfs: expose /proc/net/sunrpc/nfs in net namespaces")
@@ -18,9 +19,6 @@ do_test()
 		tst_res TFAIL "$procfile missing in net namespaces"
 	fi
 }
-
-# Force use of nested net namespace
-unset RHOST
 
 . nfs_lib.sh
 tst_run
