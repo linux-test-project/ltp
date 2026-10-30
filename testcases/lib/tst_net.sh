@@ -1144,6 +1144,13 @@ tst_net_detect_ipv6
 
 [ -n "$TST_NET_SKIP_VARIABLE_INIT" ] && return 0
 
+
+# Force use of nested net namespace
+if [ "$TST_NET_FORCE_NETNS" = 1 ]; then
+	unset IPV4_LHOST IPV4_RHOST IPV6_LHOST IPV6_RHOST LHOST_HWADDRS \
+		LHOST_IFACES RHOST RHOST_HWADDRS RHOST_IFACES
+fi
+
 # Management Link
 [ -z "$RHOST" ] && TST_USE_NETNS="yes"
 export RHOST="$RHOST"
