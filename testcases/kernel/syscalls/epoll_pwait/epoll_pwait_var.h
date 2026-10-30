@@ -13,21 +13,35 @@
 #define MSEC_PER_SEC (1000L)
 #define NSEC_PER_MSEC (1000000L)
 
-static int do_epoll_pwait(int epfd, struct epoll_event *events, int
-	maxevents, struct timespec *timeout, const sigset_t *sigmask)
+static inline int epoll_timeout_ms(const struct timespec *timeout)
+{
+	if (!timeout)
+		return -1;
+
+	return timeout->tv_sec * MSEC_PER_SEC +
+		(timeout->tv_nsec + NSEC_PER_MSEC - 1) / NSEC_PER_MSEC;
+}
+
+static inline int do_epoll_pwait(int epfd, struct epoll_event *events,
+	int maxevents, struct timespec *timeout, const sigset_t *sigmask)
 {
 	if (tst_variant == 1)
 		return epoll_pwait2(epfd, events, maxevents, timeout, sigmask);
 
-	int timeout_ms = -1;
+	return epoll_pwait(epfd, events, maxevents, epoll_timeout_ms(timeout),
+			   sigmask);
+}
 
-	if (timeout) {
-		timeout_ms = timeout->tv_sec * MSEC_PER_SEC;
-		timeout_ms += (timeout->tv_nsec + NSEC_PER_MSEC - 1) /
-			NSEC_PER_MSEC;
+static inline int do_sys_epoll_pwait(int epfd, struct epoll_event *events,
+	int maxevents, struct timespec *timeout, const sigset_t *sigmask)
+{
+	if (tst_variant == 1) {
+		return sys_epoll_pwait2(epfd, events, maxevents, timeout,
+					sigmask);
 	}
 
-	return epoll_pwait(epfd, events, maxevents, timeout_ms, sigmask);
+	return sys_epoll_pwait(epfd, events, maxevents,
+			       epoll_timeout_ms(timeout), sigmask);
 }
 
 static void epoll_pwait_init(void)

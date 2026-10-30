@@ -24,13 +24,24 @@ static inline void epoll_pwait_supported(void)
 	tst_syscall(__NR_epoll_pwait);
 }
 
+/*
+ * Note: The kernel expects an _NSIG / 8 bytes signal set, which may be larger
+ * than sizeof(sigset_t) on some 32-bit libcs (e.g. 4 bytes on 32-bit Bionic).
+ */
+static inline int sys_epoll_pwait(int epfd, struct epoll_event *events,
+				  int maxevents, int timeout,
+				  const sigset_t *sigmask)
+{
+	return tst_syscall(__NR_epoll_pwait, epfd, events, maxevents,
+			   timeout, sigmask, _NSIG / 8);
+}
+
 #ifndef HAVE_EPOLL_PWAIT
 static inline int epoll_pwait(int epfd, struct epoll_event *events,
 			      int maxevents, int timeout,
 			      const sigset_t *sigmask)
 {
-	return tst_syscall(__NR_epoll_pwait, epfd, events, maxevents,
-			   timeout, sigmask, _NSIG / 8);
+	return sys_epoll_pwait(epfd, events, maxevents, timeout, sigmask);
 }
 #endif
 
@@ -40,22 +51,31 @@ static inline void epoll_pwait2_supported(void)
 	tst_syscall(__NR_epoll_pwait2);
 }
 
-#ifndef HAVE_EPOLL_PWAIT2
-static inline int epoll_pwait2(int epfd, struct epoll_event *events,
-			       int maxevents, const struct timespec *timeout,
-			       const sigset_t *sigmask)
+static inline int sys_epoll_pwait2(int epfd, struct epoll_event *events,
+				   int maxevents,
+				   const struct timespec *timeout,
+				   const sigset_t *sigmask)
 {
-	if (timeout == NULL)
+	struct __kernel_timespec ts;
+
+	if (!timeout) {
 		return tst_syscall(__NR_epoll_pwait2, epfd, events, maxevents,
 				   NULL, sigmask, _NSIG / 8);
-
-	struct __kernel_timespec ts;
+	}
 
 	ts.tv_sec = timeout->tv_sec;
 	ts.tv_nsec = timeout->tv_nsec;
 
 	return tst_syscall(__NR_epoll_pwait2, epfd, events, maxevents,
 			   &ts, sigmask, _NSIG / 8);
+}
+
+#ifndef HAVE_EPOLL_PWAIT2
+static inline int epoll_pwait2(int epfd, struct epoll_event *events,
+			       int maxevents, const struct timespec *timeout,
+			       const sigset_t *sigmask)
+{
+	return sys_epoll_pwait2(epfd, events, maxevents, timeout, sigmask);
 }
 #endif
 

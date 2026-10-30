@@ -20,7 +20,11 @@ static void *bad_addr;
 
 static void run(void)
 {
-	TST_EXP_FAIL(do_epoll_pwait(efd, &e, 1, NULL, bad_addr),
+	/*
+	 * Use raw syscalls, libc wrappers may dereference sigmask in
+	 * userspace (e.g. 32-bit Bionic) and crash with SIGSEGV.
+	 */
+	TST_EXP_FAIL(do_sys_epoll_pwait(efd, &e, 1, NULL, bad_addr),
 		     EFAULT, "with an invalid sigmask pointer");
 }
 
