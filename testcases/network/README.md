@@ -6,7 +6,7 @@ It's the default configuration (if the `RHOST` environment variable is not
 defined). LTP adds `ltp_ns` network namespace and auto-configure `veth` pair
 according to LTP network environment variables.
 
-## Two Host Configuration
+## Two Hosts Configuration
 
 This setup requires the `RHOST` environment variable to be set properly and
 configured SSH access to a remote host.
