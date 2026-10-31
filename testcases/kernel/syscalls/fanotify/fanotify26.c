@@ -17,9 +17,11 @@
  * listener that reads with a single thread never returns, and every task that
  * touches a watched filesystem queues up behind it.
  *
- * The first test case marks the overlay only and must pass on any kernel. The
- * second one marks the backing filesystem as well, which is the shape an
- * anti-malware scanner uses on an overlayfs root.
+ * Regular files and directories reach their real file through different
+ * paths in overlayfs, so both are tested. For each, the first test case marks
+ * the overlay only and must pass on any kernel, the second one marks the
+ * backing filesystem as well, which is the shape an anti-malware scanner uses
+ * on an overlayfs root.
  *
  * The test needs root to create permission events and to mount overlayfs.
  */
@@ -39,8 +41,11 @@
 
 #define BACKING_MNT	OVL_BASE_MNTPOINT
 #define FNAME		"test_file"
+#define DNAME		"test_dir"
 #define OVL_FILE	OVL_MNT "/" FNAME
+#define OVL_DIR		OVL_MNT "/" DNAME
 #define LOWER_FILE	OVL_LOWER "/" FNAME
+#define LOWER_DIR	OVL_LOWER "/" DNAME
 
 /*
  * The listener either answers the event at once or is blocked for good, so
@@ -55,9 +60,12 @@ static int fd_notify = -1;
 static struct tcase {
 	const char *tname;
 	int mark_backing;
+	int ondir;
 } tcases[] = {
-	{"Mark on the overlay", 0},
-	{"Mark on the overlay and on the backing filesystem", 1},
+	{"Overlay mark, file", 0, 0},
+	{"Overlay and backing mark, file", 1, 0},
+	{"Overlay mark, directory", 0, 1},
+	{"Overlay and backing mark, directory", 1, 1},
 };
 
 static void answer_one_event(pid_t opener)
@@ -71,7 +79,9 @@ static void answer_one_event(pid_t opener)
 	/*
 	 * A wrong mask or a stranger's event is a result, not harness
 	 * breakage, so report and still answer: the opener stays parked in
-	 * the kernel until something does.
+	 * the kernel until something does. FAN_ONDIR is not reported to a
+	 * group without FAN_REPORT_FID, so a directory open arrives as a
+	 * plain FAN_OPEN_PERM as well.
 	 */
 	if (event.mask != FAN_OPEN_PERM) {
 		tst_res(TFAIL, "Got event mask %llx, expected %llx",
@@ -95,6 +105,7 @@ static void answer_one_event(pid_t opener)
 static void run(unsigned int n)
 {
 	struct tcase *tc = &tcases[n];
+	uint64_t mask = FAN_OPEN_PERM | (tc->ondir ? FAN_ONDIR : 0);
 	pid_t opener, reader;
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
@@ -102,12 +113,12 @@ static void run(unsigned int n)
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | FAN_MARK_FILESYSTEM,
-			   FAN_OPEN_PERM, AT_FDCWD, OVL_MNT);
+			   mask, AT_FDCWD, OVL_MNT);
 
 	if (tc->mark_backing) {
 		SAFE_FANOTIFY_MARK(fd_notify,
 				   FAN_MARK_ADD | FAN_MARK_FILESYSTEM,
-				   FAN_OPEN_PERM, AT_FDCWD, BACKING_MNT);
+				   mask, AT_FDCWD, BACKING_MNT);
 	}
 
 	opener = SAFE_FORK();
@@ -121,7 +132,10 @@ static void run(unsigned int n)
 		 * answered it goes away, so a failure here is the fallout of
 		 * the test tearing a blocked listener down, not a result.
 		 */
-		fd = open(OVL_FILE, O_RDONLY);
+		if (tc->ondir)
+			fd = open(OVL_DIR, O_RDONLY | O_DIRECTORY);
+		else
+			fd = open(OVL_FILE, O_RDONLY);
 		if (fd != -1)
 			SAFE_CLOSE(fd);
 		exit(0);
@@ -161,18 +175,21 @@ static void run(unsigned int n)
 
 static void setup(void)
 {
-	/* The file has to exist in the lower layer to be opened through it. */
+	/* Both have to exist in the lower layer to be opened through it. */
 	SAFE_UMOUNT(OVL_MNT);
 	SAFE_TOUCH(LOWER_FILE, 0644, NULL);
+	SAFE_MKDIR(LOWER_DIR, 0755);
 	SAFE_MOUNT_OVERLAY();
 
 	/*
-	 * Probe the combination run() uses, not a weaker proxy for it. Every
-	 * case marks the overlay; the second also marks the base.
+	 * Probe the widest combination run() uses, not a weaker proxy for
+	 * it. Every case marks the overlay; the second of each pair also
+	 * marks the base.
 	 */
 	REQUIRE_FANOTIFY_EVENTS_SUPPORTED_ON_FS(FAN_CLASS_CONTENT,
 						FAN_MARK_FILESYSTEM,
-						FAN_OPEN_PERM, OVL_MNT);
+						FAN_OPEN_PERM | FAN_ONDIR,
+						OVL_MNT);
 	REQUIRE_MARK_TYPE_SUPPORTED_ON_FS(FAN_MARK_FILESYSTEM, BACKING_MNT);
 }
 
