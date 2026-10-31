@@ -280,6 +280,10 @@ static struct tst_test test = {
 		{.type = "ext4"},
 		{}
 	},
+	.tags = (const struct tst_tag[]) {
+		{"linux-git", "c3d355f427cea70fbe31b49e21f1915dbf37f2e6"},
+		{}
+	}
 };
 
 #else
