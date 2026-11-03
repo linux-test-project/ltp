@@ -23,6 +23,11 @@
  * backing filesystem as well, which is the shape an anti-malware scanner uses
  * on an overlayfs root.
  *
+ * Listing a directory through the event file descriptor can make overlayfs
+ * open its layers again: every layer of a merged directory, and the upper
+ * directory of an impure one, which holds entries moved in from below. The
+ * last two test cases have the listener do that before it answers.
+ *
  * The test needs root to create permission events and to mount overlayfs.
  */
 
@@ -34,7 +39,9 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/xattr.h>
 #include "tst_test.h"
+#include "lapi/syscalls.h"
 
 #ifdef HAVE_SYS_FANOTIFY_H
 #include "fanotify.h"
@@ -42,10 +49,21 @@
 #define BACKING_MNT	OVL_BASE_MNTPOINT
 #define FNAME		"test_file"
 #define DNAME		"test_dir"
+#define MNAME		"merged_dir"
+#define INAME		"impure_dir"
+#define MOVED		"moved_file"
 #define OVL_FILE	OVL_MNT "/" FNAME
 #define OVL_DIR		OVL_MNT "/" DNAME
+#define OVL_MDIR	OVL_MNT "/" MNAME
+#define OVL_IDIR	OVL_MNT "/" INAME
+#define OVL_MOVED	OVL_MNT "/" MOVED
+#define OVL_IDIR_MOVED	OVL_IDIR "/" MOVED
 #define LOWER_FILE	OVL_LOWER "/" FNAME
 #define LOWER_DIR	OVL_LOWER "/" DNAME
+#define LOWER_MDIR	OVL_LOWER "/" MNAME
+#define LOWER_MOVED	OVL_LOWER "/" MOVED
+#define UPPER_MDIR	OVL_UPPER "/" MNAME
+#define UPPER_IDIR	OVL_UPPER "/" INAME
 
 /*
  * The listener either answers the event at once or is blocked for good, so
@@ -56,25 +74,50 @@
 #define WAIT_MSEC	5000
 
 static int fd_notify = -1;
+static int idir_is_impure;
 
 static struct tcase {
 	const char *tname;
+	const char *path;
 	int mark_backing;
 	int ondir;
+	int list;
+	int impure;
 } tcases[] = {
-	{"Overlay mark, file", 0, 0},
-	{"Overlay and backing mark, file", 1, 0},
-	{"Overlay mark, directory", 0, 1},
-	{"Overlay and backing mark, directory", 1, 1},
+	{"Overlay mark, file", OVL_FILE, 0, 0, 0, 0},
+	{"Overlay and backing mark, file", OVL_FILE, 1, 0, 0, 0},
+	{"Overlay mark, directory", OVL_DIR, 0, 1, 0, 0},
+	{"Overlay and backing mark, directory", OVL_DIR, 1, 1, 0, 0},
+	{"Overlay and backing mark, merged directory, listed",
+	 OVL_MDIR, 1, 1, 1, 0},
+	{"Overlay and backing mark, impure directory, listed",
+	 OVL_IDIR, 1, 1, 1, 1},
 };
 
-static void answer_one_event(pid_t opener)
+static void list_dir(int fd)
+{
+	char buf[1024];
+	long ret;
+
+	/* Blocks for good if reading a layer generates a nested event. */
+	do {
+		ret = tst_syscall(__NR_getdents64, fd, buf, sizeof(buf));
+	} while (ret > 0);
+
+	if (ret == -1)
+		tst_brk(TBROK | TERRNO, "getdents64() on the event fd failed");
+}
+
+static void answer_one_event(pid_t opener, int list)
 {
 	struct fanotify_event_metadata event;
 	struct fanotify_response resp;
 
 	/* Blocks for good if the event fd generates a nested event. */
 	SAFE_READ(SAFE_READ_ALL, fd_notify, &event, sizeof(event));
+
+	if (list && event.fd != FAN_NOFD)
+		list_dir(event.fd);
 
 	/*
 	 * A wrong mask or a stranger's event is a result, not harness
@@ -110,6 +153,20 @@ static void run(unsigned int n)
 
 	tst_res(TINFO, "Test #%d: %s", n, tc->tname);
 
+	if (tc->impure) {
+		if (!idir_is_impure) {
+			tst_res(TCONF, "Overlay did not mark the directory impure");
+			return;
+		}
+		/*
+		 * The impure listing is cached with the inode and reused, so
+		 * a later iteration would not open the layer at all. Moving
+		 * an entry with an origin out and back invalidates it.
+		 */
+		SAFE_RENAME(OVL_IDIR_MOVED, OVL_MOVED);
+		SAFE_RENAME(OVL_MOVED, OVL_IDIR_MOVED);
+	}
+
 	fd_notify = SAFE_FANOTIFY_INIT(FAN_CLASS_CONTENT, O_RDONLY);
 
 	SAFE_FANOTIFY_MARK(fd_notify, FAN_MARK_ADD | FAN_MARK_FILESYSTEM,
@@ -132,10 +189,7 @@ static void run(unsigned int n)
 		 * answered it goes away, so a failure here is the fallout of
 		 * the test tearing a blocked listener down, not a result.
 		 */
-		if (tc->ondir)
-			fd = open(OVL_DIR, O_RDONLY | O_DIRECTORY);
-		else
-			fd = open(OVL_FILE, O_RDONLY);
+		fd = open(tc->path, O_RDONLY | (tc->ondir ? O_DIRECTORY : 0));
 		if (fd != -1)
 			SAFE_CLOSE(fd);
 		exit(0);
@@ -148,7 +202,7 @@ static void run(unsigned int n)
 
 	reader = SAFE_FORK();
 	if (!reader) {
-		answer_one_event(opener);
+		answer_one_event(opener, tc->list);
 		exit(0);
 	}
 
@@ -160,8 +214,7 @@ static void run(unsigned int n)
 	 */
 	if (TST_PROCESS_STATE_WAIT(reader, 'Z',
 				   tst_multiply_timeout(WAIT_MSEC))) {
-		tst_res(TFAIL,
-			"Listener blocked in read() by a nested event");
+		tst_res(TFAIL, "Listener blocked by a nested event");
 		SAFE_KILL(reader, SIGKILL);
 		SAFE_WAITPID(reader, NULL, 0);
 	}
@@ -175,11 +228,24 @@ static void run(unsigned int n)
 
 static void setup(void)
 {
-	/* Both have to exist in the lower layer to be opened through it. */
+	/* These have to exist in the layers to be opened through them. */
 	SAFE_UMOUNT(OVL_MNT);
 	SAFE_TOUCH(LOWER_FILE, 0644, NULL);
 	SAFE_MKDIR(LOWER_DIR, 0755);
+	SAFE_MKDIR(LOWER_MDIR, 0755);
+	SAFE_MKDIR(UPPER_MDIR, 0755);
+	SAFE_TOUCH(LOWER_MOVED, 0644, NULL);
 	SAFE_MOUNT_OVERLAY();
+
+	/*
+	 * A directory made through the overlay is upper only. Moving a lower
+	 * file into it records the file's origin and marks the directory
+	 * impure, unless the layers cannot carry an origin.
+	 */
+	SAFE_MKDIR(OVL_IDIR, 0755);
+	SAFE_RENAME(OVL_MOVED, OVL_IDIR_MOVED);
+	idir_is_impure =
+		getxattr(UPPER_IDIR, "trusted.overlay.impure", NULL, 0) != -1;
 
 	/*
 	 * Probe the widest combination run() uses, not a weaker proxy for
@@ -209,6 +275,11 @@ static struct tst_test test = {
 	.mount_device = 1,
 	.needs_overlay = 1,
 	.mntpoint = OVL_BASE_MNTPOINT,
+	/* Test requires a base filesystem that supports RENAME_WHITEOUT */
+	.filesystems = (struct tst_fs[]) {
+		{.type = "ext4"},
+		{}
+	},
 };
 
 #else
