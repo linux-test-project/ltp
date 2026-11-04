@@ -10,6 +10,10 @@
  *
  * Tests whether LOOP_CHANGE_FD can not succeed (get EINVAL error)
  * when loop_dev is not read only.
+ *
+ * The ioctl was removed in Linux v7.4-rc1 by commit d4fabede1da0 ("loop:
+ * remove support for swapping loop fds") and fails with EOPNOTSUPP since then.
+ * The test reports TCONF on such kernels.
  */
 
 #include <stdio.h>
@@ -28,6 +32,8 @@ static void verify_ioctl_loop(void)
 		tst_res(TFAIL, "LOOP_CHANGE_FD succeeded unexpectedly");
 		return;
 	}
+	if (TST_ERR == EOPNOTSUPP)
+		tst_brk(TCONF | TTERRNO, "LOOP_CHANGE_FD is not supported");
 	if (TST_ERR == EINVAL)
 		tst_res(TPASS | TTERRNO, "LOOP_CHANGE_FD failed as expected");
 	else

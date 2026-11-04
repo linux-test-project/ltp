@@ -11,7 +11,9 @@
  *
  * For LOOP_CHANGE_FD, this operation is possible only if the loop device
  * is read-only and the new backing store is the same size and type as the
- * old backing store.
+ * old backing store. The ioctl was removed in Linux v7.4-rc1 by commit
+ * d4fabede1da0 ("loop: remove support for swapping loop fds") and fails with
+ * EOPNOTSUPP since then. The LOOP_CHANGE_FD checks are skipped on such kernels.
  *
  * When using LOOP_CONFIGURE :manpage:`ioctl(2)`, it can set LO_FLAGS_READ_ONLY
  * flag even though backing file with write mode.
@@ -28,7 +30,7 @@ static int file_fd, file_change_fd, file_fd_invalid;
 static char backing_path[1024];
 static char *backing_file_path;
 static char *backing_file_change_path;
-static int attach_flag, dev_fd, loop_configure_sup = 1;
+static int attach_flag, dev_fd, loop_configure_sup = 1, loop_change_fd_sup = 1;
 static char loop_ro_path[1024], dev_path[1024];
 static struct loop_config loopconfig;
 
@@ -80,23 +82,27 @@ static void verify_ioctl_loop(unsigned int n)
 	else
 		tst_res(TPASS | TTERRNO, "Can not write data in RO mode");
 
-	TEST(ioctl(dev_fd, LOOP_CHANGE_FD, file_change_fd));
-	if (TST_RET) {
-		tst_res(TFAIL | TTERRNO, "LOOP_CHANGE_FD failed");
+	if (!loop_change_fd_sup) {
+		tst_res(TCONF, "LOOP_CHANGE_FD ioctl not supported");
 	} else {
-		tst_res(TPASS, "LOOP_CHANGE_FD succeeded");
-		TST_ASSERT_INT(loop_ro_path, 1);
-		TST_ASSERT_STR(backing_path, backing_file_change_path);
-	}
+		TEST(ioctl(dev_fd, LOOP_CHANGE_FD, file_change_fd));
+		if (TST_RET) {
+			tst_res(TFAIL | TTERRNO, "LOOP_CHANGE_FD failed");
+		} else {
+			tst_res(TPASS, "LOOP_CHANGE_FD succeeded");
+			TST_ASSERT_INT(loop_ro_path, 1);
+			TST_ASSERT_STR(backing_path, backing_file_change_path);
+		}
 
-	TEST(ioctl(dev_fd, LOOP_CHANGE_FD, file_fd_invalid));
-	if (TST_RET) {
-		if (TST_ERR == EINVAL)
-			tst_res(TPASS | TTERRNO, "LOOP_CHANGE_FD failed as expected");
-		else
-			tst_res(TFAIL | TTERRNO, "LOOP_CHANGE_FD failed expected EINVAL got");
-	} else {
-		tst_res(TFAIL, "LOOP_CHANGE_FD succeeded");
+		TEST(ioctl(dev_fd, LOOP_CHANGE_FD, file_fd_invalid));
+		if (TST_RET) {
+			if (TST_ERR == EINVAL)
+				tst_res(TPASS | TTERRNO, "LOOP_CHANGE_FD failed as expected");
+			else
+				tst_res(TFAIL | TTERRNO, "LOOP_CHANGE_FD failed expected EINVAL got");
+		} else {
+			tst_res(TFAIL, "LOOP_CHANGE_FD succeeded");
+		}
 	}
 
 	SAFE_CLOSE(file_fd);
@@ -134,6 +140,11 @@ static void setup(void)
 		tst_res(TINFO | TERRNO, "LOOP_CONFIGURE is not supported");
 		loop_configure_sup = 0;
 	}
+
+	ret = ioctl(dev_fd, LOOP_CHANGE_FD, -1);
+	if (ret && errno == EOPNOTSUPP)
+		loop_change_fd_sup = 0;
+
 	loopconfig.info.lo_flags = LO_FLAGS_READ_ONLY;
 }
 
