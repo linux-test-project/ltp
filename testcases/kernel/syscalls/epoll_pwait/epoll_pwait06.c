@@ -78,6 +78,7 @@ static void cleanup(void)
 
 static struct tst_test test = {
 	.test_all = run,
+	.needs_tmpdir = 1,
 	.setup = setup,
 	.cleanup = cleanup,
 	.test_variants = TEST_VARIANTS,

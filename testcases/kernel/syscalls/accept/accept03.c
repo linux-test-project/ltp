@@ -55,4 +55,5 @@ static void verify_accept(void)
 
 static struct tst_test test = {
 	.test_all = verify_accept,
+	.needs_tmpdir = 1,
 };

@@ -56,6 +56,7 @@ static void setup(void)
 
 static struct tst_test test = {
 	.test_all = run,
+	.needs_tmpdir = 1,
 	.setup = setup,
 	.forks_child = 1,
 	.bufs = (struct tst_buffers []) {

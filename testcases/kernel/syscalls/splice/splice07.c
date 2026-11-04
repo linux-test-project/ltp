@@ -69,4 +69,5 @@ static void verify_splice(void)
 
 static struct tst_test test = {
 	.test_all = verify_splice,
+	.needs_tmpdir = 1,
 };
