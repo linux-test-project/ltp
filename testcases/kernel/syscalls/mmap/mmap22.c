@@ -26,6 +26,7 @@
 
 #define MEM_LIMIT (256 * TST_MB)
 #define ALLOC_SIZE (128 * TST_MB)
+#define CHILD_ALLOC_MAX (MEM_LIMIT - ALLOC_SIZE + 32 * TST_MB)
 
 static struct tst_cg_group *cg_child;
 static pid_t child;
@@ -33,13 +34,15 @@ static int page_size;
 
 static void stress_child(void)
 {
-	for (;;) {
+	for (size_t sz = 0; sz < CHILD_ALLOC_MAX; sz += page_size) {
 		char *buf = malloc(page_size);
 
 		if (!buf)
-			exit(1);
+			break;
 		memset(buf, 'B', page_size);
 	}
+
+	pause();
 }
 
 static void test_mmap(void)
