@@ -25,7 +25,7 @@
 #include <string.h>
 #include "posixtest.h"
 
-#define SHM_NAME "posixtest_34-1"
+#define SHM_NAME "/posixtest_34-1"
 
 /** Set the euid of this process to a non-root uid */
 static int set_nonroot()
