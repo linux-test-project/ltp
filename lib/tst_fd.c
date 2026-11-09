@@ -22,6 +22,8 @@
 #include "lapi/bpf.h"
 #include "lapi/fsmount.h"
 
+#include "tso_tmpdir.h"
+
 #include "tst_fd.h"
 
 struct tst_fd_desc {
@@ -30,8 +32,18 @@ struct tst_fd_desc {
 	const char *desc;
 };
 
+static void require_tmpdir(struct tst_fd *fd)
+{
+	if (tst_tmpdir_created())
+		return;
+
+	tst_brk(TBROK, "%s fd requires .needs_tmpdir = 1 (test bug, report to LTP ML)",
+		tst_fd_desc(fd));
+}
+
 static void open_file(struct tst_fd *fd)
 {
+	require_tmpdir(fd);
 	fd->fd = SAFE_OPEN("fd_file", O_RDWR | O_CREAT, 0666);
 	SAFE_UNLINK("fd_file");
 }
@@ -40,6 +52,7 @@ static void open_path(struct tst_fd *fd)
 {
 	int tfd;
 
+	require_tmpdir(fd);
 	tfd = SAFE_CREAT("fd_file", 0666);
 	SAFE_CLOSE(tfd);
 
@@ -50,6 +63,7 @@ static void open_path(struct tst_fd *fd)
 
 static void open_dir(struct tst_fd *fd)
 {
+	require_tmpdir(fd);
 	SAFE_MKDIR("fd_dir", 0700);
 	fd->fd = SAFE_OPEN("fd_dir", O_DIRECTORY);
 	SAFE_RMDIR("fd_dir");
