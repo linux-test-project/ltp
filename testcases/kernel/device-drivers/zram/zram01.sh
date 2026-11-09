@@ -135,13 +135,11 @@ zram_fill_fs()
 
 	for i in $(seq $dev_start $dev_end); do
 		tst_res TINFO "filling zram$i (it can take long time)"
+		# dd is expected to fail with ENOSPC once the device is full
+		dd if=/dev/zero of="zram$i/file" bs=1024 status=none \
+			>/dev/null 2>err.txt
 		b=0
-		while true; do
-			dd conv=notrunc if=/dev/zero of=zram${i}/file \
-				oflag=append count=1 bs=1024 status=none \
-				>/dev/null 2>err.txt || break
-			b=$(($b + 1))
-		done
+		[ -f "zram$i/file" ] && b=$(($(wc -c < "zram$i/file") / 1024))
 		if [ $b -eq 0 ]; then
 			[ -s err.txt ] && tst_res TWARN "dd error: $(cat err.txt)"
 			tst_brk TBROK "cannot fill zram $i"
