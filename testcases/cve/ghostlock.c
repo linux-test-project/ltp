@@ -240,7 +240,9 @@ static void run(void)
 		if (TST_ERR == ENOSYS)
 			tst_brk(TCONF, "FUTEX_CMP_REQUEUE_PI not supported");
 		if (TST_RET != -1 || TST_ERR != EDEADLK)
-			tst_brk(TBROK | TTERRNO, "FUTEX_CMP_REQUEUE_PI did not return -EDEADLK");
+			tst_brk(TBROK | TTERRNO,
+				"FUTEX_CMP_REQUEUE_PI returned %ld on attempt %d/%d, expected -EDEADLK",
+				TST_RET, i + 1, ATTEMPTS);
 
 		TST_CHECKPOINT_WAIT2(CP_SPRAYED, 18000);
 
