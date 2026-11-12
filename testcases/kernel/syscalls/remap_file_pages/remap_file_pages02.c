@@ -43,8 +43,6 @@
 #include "tst_test.h"
 #include "lapi/syscalls.h"
 
-#define WINDOW_START 0x48000000
-
 static unsigned int page_sz;
 
 static int fd;
@@ -126,11 +124,17 @@ static void setup(void)
 	fd = SAFE_OPEN("cache", O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 	SAFE_FTRUNCATE(fd, page_sz);
 
-	data = SAFE_MMAP((void *)WINDOW_START, page_sz, PROT_READ | PROT_WRITE,
-			 MAP_SHARED, fd, 0);
-
 	data01 = SAFE_MMAP(NULL, page_sz, PROT_READ | PROT_WRITE, MAP_PRIVATE,
 			   fd, 0);
+
+	/*
+	 * Map two pages and unmap the second one so that data + page_sz is
+	 * guaranteed to be unmapped. Nothing is mapped afterwards, so the
+	 * hole can't be reused.
+	 */
+	data = SAFE_MMAP(NULL, 2 * page_sz, PROT_READ | PROT_WRITE,
+			 MAP_SHARED, fd, 0);
+	SAFE_MUNMAP(data + page_sz, page_sz);
 
 	for (i = 0; i < ARRAY_SIZE(tcases); i++) {
 		if (tcases[i].setup)
