@@ -759,33 +759,37 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
        tst_res_(__FILE__, __LINE__, (EXPR) ? TPASS : TFAIL, "Expect: "       \
                 TST_FMT_(TST_2_(dummy, ##__VA_ARGS__, #EXPR), __VA_ARGS__));
 
-#define TST_EXP_EQ_SILENT_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {       \
+#define TST_EXP_EQ_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS, SILENT) do {      \
 	TYPE tst_tmp_a__ = VAL_A;                                              \
 	TYPE tst_tmp_b__ = VAL_B;                                              \
                                                                                \
-	TST_PASS = 0;                                                          \
+	TST_PASS = tst_tmp_a__ == tst_tmp_b__;                                 \
                                                                                \
-	if (tst_tmp_a__ != tst_tmp_b__) {                                      \
+	if (!TST_PASS) {                                                       \
 		tst_res_(__FILE__, __LINE__, TFAIL,                            \
 			SVAL_A " (" PFS ") != " SVAL_B " (" PFS ")",           \
 			tst_tmp_a__, tst_tmp_b__);                             \
-	} else {                                                               \
-		TST_PASS = 1;                                                  \
+	} else if (!(SILENT)) {                                                \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			SVAL_A " == " SVAL_B " (" PFS ")",                     \
+			tst_tmp_a__);                                          \
 	}                                                                      \
 } while (0)
 
-#define TST_EXP_LE_SILENT_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS) do {       \
+#define TST_EXP_LE_(VAL_A, SVAL_A, VAL_B, SVAL_B, TYPE, PFS, SILENT) do {      \
 	TYPE tst_tmp_a__ = VAL_A;                                              \
 	TYPE tst_tmp_b__ = VAL_B;                                              \
                                                                                \
-	TST_PASS = 0;                                                          \
+	TST_PASS = tst_tmp_a__ <= tst_tmp_b__;                                 \
                                                                                \
-	if (tst_tmp_a__ > tst_tmp_b__) {                                       \
+	if (!TST_PASS) {                                                       \
 		tst_res_(__FILE__, __LINE__, TFAIL,                            \
 			SVAL_A " (" PFS ") > " SVAL_B " (" PFS ")",            \
 			tst_tmp_a__, tst_tmp_b__);                             \
-	} else {                                                               \
-		TST_PASS = 1;                                                  \
+	} else if (!(SILENT)) {                                                \
+		tst_res_(__FILE__, __LINE__, TPASS,                            \
+			SVAL_A " <= " SVAL_B " (" PFS " <= " PFS ")",          \
+			tst_tmp_a__, tst_tmp_b__);                             \
 	}                                                                      \
 } while (0)
 
@@ -797,15 +801,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * Reports a pass if A <= B and a fail otherwise.
  */
-#define TST_EXP_LE_LU(VAL_A, VAL_B) do {                                              \
-	TST_EXP_LE_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu"); \
-									              \
-	if (TST_PASS) {                                                               \
-		tst_res_(__FILE__, __LINE__, TPASS,                                   \
-			#VAL_A " <= " #VAL_B " (%llu <= %llu)",                       \
-			(unsigned long long)VAL_A, (unsigned long long)VAL_B);        \
-	}                                                                             \
-} while (0)
+#define TST_EXP_LE_LU(VAL_A, VAL_B) \
+	TST_EXP_LE_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu", 0)
 
 /**
  * TST_EXP_LE_LU_SILENT() - Compare two unsigned long long values, silent variant.
@@ -817,7 +814,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
  */
 #define TST_EXP_LE_LU_SILENT(VAL_A, VAL_B) \
-	TST_EXP_LE_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+	TST_EXP_LE_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu", 1)
 
 /**
  * TST_EXP_EQ_LI() - Compare two long long values.
@@ -827,15 +824,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
-#define TST_EXP_EQ_LI(VAL_A, VAL_B) do {                                       \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli");   \
-								               \
-	if (TST_PASS) {                                                        \
-		tst_res_(__FILE__, __LINE__, TPASS,                            \
-			#VAL_A " == " #VAL_B " (%lli)",                        \
-			(long long)VAL_A);                                     \
-	}                                                                      \
-} while (0)
+#define TST_EXP_EQ_LI(VAL_A, VAL_B) \
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli", 0)
 
 /**
  * TST_EXP_EQ_LI_SILENT() - Compare two long long values, silent variant.
@@ -847,7 +837,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
  */
 #define TST_EXP_EQ_LI_SILENT(VAL_A, VAL_B) \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli")
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, long long, "%lli", 1)
 
 /**
  * TST_EXP_EQ_LU() - Compare two unsigned long long values.
@@ -857,15 +847,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
-#define TST_EXP_EQ_LU(VAL_A, VAL_B) do {                                       \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu"); \
-								               \
-	if (TST_PASS) {                                                        \
-		tst_res_(__FILE__, __LINE__, TPASS,                            \
-			#VAL_A " == " #VAL_B " (%llu)",                        \
-			(unsigned long long)VAL_A);                            \
-	}                                                                      \
-} while (0)
+#define TST_EXP_EQ_LU(VAL_A, VAL_B) \
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu", 0)
 
 /**
  * TST_EXP_EQ_LU_SILENT() - Compare two unsigned long long values, silent variant.
@@ -877,7 +860,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
  */
 #define TST_EXP_EQ_LU_SILENT(VAL_A, VAL_B) \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu")
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, unsigned long long, "%llu", 1)
 
 /**
  * TST_EXP_EQ_SZ() - Compare two size_t values.
@@ -887,15 +870,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
-#define TST_EXP_EQ_SZ(VAL_A, VAL_B) do {                                       \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu");       \
-								               \
-	if (TST_PASS) {                                                        \
-		tst_res_(__FILE__, __LINE__, TPASS,                            \
-			#VAL_A " == " #VAL_B " (%zu)",                         \
-			(size_t)VAL_A);                                        \
-	}                                                                      \
-} while (0)
+#define TST_EXP_EQ_SZ(VAL_A, VAL_B) \
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu", 0)
 
 /**
  * TST_EXP_EQ_SZ_SILENT() - Compare two size_t values, silent variant.
@@ -907,7 +883,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
  */
 #define TST_EXP_EQ_SZ_SILENT(VAL_A, VAL_B) \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu")
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zu", 1)
 
 /**
  * TST_EXP_EQ_SSZ() - Compare two ssize_t values.
@@ -917,15 +893,8 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  *
  * Reports a pass if values are equal and a fail otherwise.
  */
-#define TST_EXP_EQ_SSZ(VAL_A, VAL_B) do {                                      \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, size_t, "%zi");       \
-								               \
-	if (TST_PASS) {                                                        \
-		tst_res_(__FILE__, __LINE__, TPASS,                            \
-			#VAL_A " == " #VAL_B " (%zi)",                         \
-			(ssize_t)VAL_A);                                        \
-	}                                                                      \
-} while (0)
+#define TST_EXP_EQ_SSZ(VAL_A, VAL_B) \
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi", 0)
 
 /**
  * TST_EXP_EQ_SSZ_SILENT() - Compare two ssize_t values, silent variant.
@@ -937,7 +906,7 @@ const char *tst_errno_names(char *buf, const int *exp_errs, int exp_errs_cnt);
  * success, only prints :c:enum:`TFAIL <tst_res_flags>` on failure.
  */
 #define TST_EXP_EQ_SSZ_SILENT(VAL_A, VAL_B) \
-	TST_EXP_EQ_SILENT_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi")
+	TST_EXP_EQ_(VAL_A, #VAL_A, VAL_B, #VAL_B, ssize_t, "%zi", 1)
 
 /**
  * TST_EXP_EQ_STR() - Compare two strings.
