@@ -138,6 +138,7 @@ static void verify_swapon(unsigned int n)
 	struct stat st;
 	blkcnt_t blocks_before, blocks_after;
 	const char *const mkswap_argv[] = {"mkswap", loop_dev, NULL};
+	const char *const udevadm_argv[] = {"udevadm", "settle", NULL};
 
 	tst_res(TINFO, "Testing swapon(%s, %s)", loop_dev, tc->desc);
 
@@ -148,6 +149,8 @@ static void verify_swapon(unsigned int n)
 	SAFE_CLOSE(fd);
 
 	tst_cmd(mkswap_argv, "/dev/null", "/dev/null", 0);
+	if (tst_kvercmp(5, 18, 0) < 0)
+		tst_cmd(udevadm_argv, "/dev/null", "/dev/null", 0);
 
 	SAFE_STAT(BACKING_FILE, &st);
 	blocks_before = st.st_blocks;
@@ -195,6 +198,7 @@ static struct tst_test test = {
 	},
 	.needs_cmds = (struct tst_cmd[]) {
 		{.cmd = "mkswap"},
+		{.cmd = "udevadm"},
 		{}
 	},
 	.needs_kconfigs = (const char *[]) {
