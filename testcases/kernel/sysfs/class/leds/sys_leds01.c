@@ -30,7 +30,7 @@ static void check_led(const char *name)
 
 	tst_res(TINFO, "Checking led '%s'", name);
 
-	TST_SYSFS_ASSERT_RANGELL(1, LONG_MAX, PATH_CLASS_LEDS "/%s/max_brightness", name);
+	TST_SYSFS_ASSERT_RANGEUU(1, UINT_MAX, PATH_CLASS_LEDS "/%s/max_brightness", name);
 
 	TST_SYSFS_ASSERT_RANGELF(0, "brightness", "max_brightness",
 				  PATH_CLASS_LEDS "/%s/", name);
