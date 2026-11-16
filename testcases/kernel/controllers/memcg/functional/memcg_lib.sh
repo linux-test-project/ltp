@@ -160,21 +160,33 @@ shmmax_cleanup()
 check_mem_stat()
 {
 	local item_size
+	local loops=30
 
-	if [ -e $1 ]; then
-		item_size=$(cat $1)
-	else
-		item_size=$(grep -w $1 memory.stat | cut -d " " -f 2)
-	fi
+	while [ $loops -gt 0 ]; do
+		if [ -e $1 ]; then
+			item_size=$(cat $1)
+		else
+			item_size=$(grep -w $1 memory.stat | cut -d " " -f 2)
+		fi
+
+		[ -z "$item_size" ] && break
+
+		if [ "$3" ]; then
+			if [ $item_size -ge $2 ] && [ $item_size -le $3 ]; then
+				tst_res TPASS "$1 is ${2}-${3} as expected"
+				return
+			fi
+		elif [ "$2" = "$item_size" ]; then
+			tst_res TPASS "$1 is $2 as expected"
+			return
+		fi
+
+		loops=$((loops - 1))
+		[ $loops -gt 0 ] && tst_sleep 100ms
+	done
 
 	if [ "$3" ]; then
-		if [ $item_size -ge $2 ] && [ $item_size -le $3 ]; then
-			tst_res TPASS "$1 is ${2}-${3} as expected"
-		else
-			tst_res TFAIL "$1 is $item_size, ${2}-${3} expected"
-		fi
-	elif [ "$2" = "$item_size" ]; then
-		tst_res TPASS "$1 is $2 as expected"
+		tst_res TFAIL "$1 is $item_size, ${2}-${3} expected"
 	else
 		tst_res TFAIL "$1 is $item_size, $2 expected"
 	fi
