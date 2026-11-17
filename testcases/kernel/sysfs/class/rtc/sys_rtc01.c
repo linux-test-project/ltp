@@ -43,9 +43,12 @@
  * test performs, so on a long-running system a purely fixed slack would
  * eventually produce false failures even on perfectly healthy hardware.
  *
- * The check may still fail if the system was booted with RTC that is fairly
- * off the current time and the system was later synced with NTP. This is out
- * of scope of this test.
+ * If the system was booted with an RTC that was off the current time and the
+ * system clock was later stepped in userspace via :manpage:`clock_settime(2)`
+ * or :manpage:`settimeofday(2)` without updating the RTC, the kernel sets
+ * STA_UNSYNC and CONFIG_RTC_SYSTOHC does not write the system clock back to
+ * the RTC while hctosys remains 1. Report TCONF instead of TFAIL when
+ * since_epoch diverges from system time while STA_UNSYNC is set.
  *
  * Under virtualization the slack is additionally multiplied, since a VM's
  * clock (and thus its emulated RTC) commonly lags real time by tens of
@@ -61,6 +64,7 @@
 #include <limits.h>
 #include <time.h>
 #include <sys/sysinfo.h>
+#include <sys/timex.h>
 #include "tst_test.h"
 #include "tst_sysfs_assert.h"
 #include "tst_path_defs.h"
@@ -106,6 +110,16 @@ static long sys_time_slack_sec(void)
 static long read_hctosys(const char *name)
 {
 	return TST_SYSFS_READ_LI(PATH_CLASS_RTC "/%s/hctosys", name);
+}
+
+static int is_clock_unsynced(void)
+{
+	struct timex tx = { .modes = 0 };
+
+	if (adjtimex(&tx) == -1)
+		tst_brk(TBROK | TERRNO, "adjtimex() failed");
+
+	return !!(tx.status & STA_UNSYNC);
 }
 
 static void read_rtc_snapshot(const char *name, char *date, size_t date_size,
@@ -201,6 +215,11 @@ static void check_rtc(const char *name, int any_hctosys)
 	if (diff <= slack) {
 		tst_res(TPASS,
 			"%s: since_epoch (%lld), system time (%lld), diff %llds <= slack %lds",
+			name, (long long)since_epoch, (long long)sys_epoch,
+			diff, slack);
+	} else if (is_clock_unsynced()) {
+		tst_res(TCONF,
+			"%s: since_epoch (%lld), system time (%lld), diff %llds > slack %lds (STA_UNSYNC is set)",
 			name, (long long)since_epoch, (long long)sys_epoch,
 			diff, slack);
 	} else {
