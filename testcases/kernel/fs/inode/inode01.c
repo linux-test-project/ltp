@@ -260,7 +260,6 @@ static struct tst_test test = {
 		{}
 	},
 	.needs_root = 1,
-	.dev_min_size = 512,
 	.forks_child = 1,
 	.needs_checkpoints = 1,
 	.timeout = 300,
