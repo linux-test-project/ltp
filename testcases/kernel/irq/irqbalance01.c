@@ -327,5 +327,5 @@ static void run(void)
 static struct tst_test test = {
 	.test_all = run,
 	.setup = setup,
-	.min_cpus = 2,
+	.min_cpus = 4,
 };
