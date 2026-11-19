@@ -21,11 +21,16 @@
  * The test loads the tun module when run as root and runs inside a
  * private network namespace so that it needs no other privileges.
  *
- * The frames carry two VID 0 VLAN tags because the TAP driver rejects
- * checksum metadata starting less than ``sizeof(struct iphdr)`` bytes into
- * the frame. Without the tags the IPv4 header would start at frame offset
- * 14, so ``csum_start`` could not point at it. With the tags it starts at
- * offset 22.
+ * The frames carry two VID 0 VLAN tags because TAP drivers with the
+ * csum_start check (added in v6.12) reject checksum metadata starting less
+ * than ``sizeof(struct iphdr)`` bytes into the frame. Without the tags the
+ * IPv4 header would start at frame offset 14, so ``csum_start`` could not
+ * point at it. With the tags it starts at offset 22.
+ *
+ * Kernels without the nested VID 0 tag handling (added in v5.2) drop such
+ * frames before they reach the IPv4 layer. They typically lack the
+ * csum_start check in the TAP driver as well, so the test sends the frames
+ * without the VLAN tags there, with the IPv4 header at frame offset 14.
  *
  * [Algorithm]
  *
@@ -37,12 +42,16 @@
  *   device
  * - send a 320 byte control IPv4 datagram behind two VID 0 VLAN tags
  *   with checksum metadata at the transport header (frame offset 42)
- *   and verify its fragments are forwarded with an intact header
+ *   and verify its fragments are forwarded; if they are not, retry
+ *   without the VLAN tags (frame offset 34) and send all following frames
+ *   without them
+ * - send the control datagram again and verify its fragments carry an
+ *   intact header
  * - send the test datagram with csum_start on the IPv4 header (frame
- *   offset 22) and a payload word chosen so that completing the bogus
- *   checksum writes 0x4f (version 4, IHL 15) at the start of the IPv4
- *   header, then check whether the emitted fragments carry the
- *   corrupted header
+ *   offset 22, or 14 without VLAN tags) and a payload word chosen so
+ *   that completing the bogus checksum writes 0x4f (version 4, IHL 15)
+ *   at the start of the IPv4 header, then check whether the emitted
+ *   fragments carry the corrupted header
  */
 
 #include <stddef.h>
@@ -79,7 +88,6 @@ struct vlan_tag {
 
 struct pkt_frame {
 	struct ethhdr eth;
-	struct vlan_tag vlan[2];
 	struct iphdr ip;
 	uint16_t csum_adj;
 	uint8_t payload[PAYLOAD_LEN - sizeof(uint16_t)];
@@ -87,6 +95,7 @@ struct pkt_frame {
 
 static int tap_fd = -1;
 static int cap_fd = -1;
+static int vlan_tagged;
 
 static struct pkt_frame ctrl_frame;
 static struct pkt_frame test_frame;
@@ -115,9 +124,7 @@ static void build_frame(struct pkt_frame *fr, uint16_t id, int corrupt_iph)
 
 	memcpy(fr->eth.h_dest, tap_mac, ETH_ALEN);
 	memcpy(fr->eth.h_source, src_mac, ETH_ALEN);
-	fr->eth.h_proto = htons(ETH_P_8021Q);
-	fr->vlan[0].proto = htons(ETH_P_8021Q);
-	fr->vlan[1].proto = htons(ETH_P_IP);
+	fr->eth.h_proto = htons(ETH_P_IP);
 
 	fr->ip.version = 4;
 	fr->ip.ihl = GOOD_IHL;
@@ -139,19 +146,31 @@ static void build_frame(struct pkt_frame *fr, uint16_t id, int corrupt_iph)
 }
 
 /* write a frame to the TAP device with a virtio_net_hdr that asks
- * for checksum completion at the given frame-relative csum_start
+ * for checksum completion at the given csum_start, which is relative
+ * to the start of the frame without VLAN tags
  */
 static void send_datagram(struct pkt_frame *fr, uint16_t csum_start)
 {
+	struct vlan_tag vlan[] = {
+		{.proto = htons(ETH_P_8021Q)},
+		{.proto = htons(ETH_P_IP)},
+	};
+	size_t vlan_len = vlan_tagged ? sizeof(vlan) : 0;
+	struct ethhdr eth = fr->eth;
 	struct virtio_net_hdr vnet_hdr = {
 		.flags = VIRTIO_NET_HDR_F_NEEDS_CSUM,
-		.csum_start = csum_start,
+		.csum_start = csum_start + vlan_len,
 		.csum_offset = 0,
 	};
 	struct iovec iov[] = {
 		{.iov_base = &vnet_hdr, .iov_len = sizeof(vnet_hdr)},
-		{.iov_base = fr, .iov_len = sizeof(*fr)},
+		{.iov_base = &eth, .iov_len = sizeof(eth)},
+		{.iov_base = vlan, .iov_len = vlan_len},
+		{.iov_base = &fr->ip, .iov_len = sizeof(*fr) - sizeof(eth)},
 	};
+
+	if (vlan_tagged)
+		eth.h_proto = htons(ETH_P_8021Q);
 
 	SAFE_WRITEV(SAFE_WRITE_ALL, tap_fd, iov, ARRAY_SIZE(iov));
 }
@@ -208,14 +227,39 @@ static int capture_fragment(uint16_t id, unsigned int *ihl)
 	return 0;
 }
 
+static int send_control(unsigned int *ihl)
+{
+	send_datagram(&ctrl_frame, offsetof(struct pkt_frame, csum_adj));
+
+	return capture_fragment(CTRL_ID, ihl);
+}
+
+/* kernels older than v5.2 drop the frames with nested VID 0 tags, so send
+ * the frames without the tags if the control datagram does not make it
+ * through with them
+ */
+static void select_framing(void)
+{
+	unsigned int ihl;
+
+	vlan_tagged = 1;
+	if (send_control(&ihl))
+		return;
+
+	tst_res(TINFO, "VLAN tagged control datagram was not forwarded back, retrying without VLAN tags");
+
+	vlan_tagged = 0;
+	if (!send_control(&ihl))
+		tst_brk(TBROK, "control datagram was not forwarded back with or without VLAN tags");
+}
+
 static void run(void)
 {
 	unsigned int ihl;
 
 	drain_capture();
 
-	send_datagram(&ctrl_frame, offsetof(struct pkt_frame, csum_adj));
-	if (!capture_fragment(CTRL_ID, &ihl))
+	if (!send_control(&ihl))
 		tst_brk(TBROK, "control datagram was not forwarded back");
 	if (ihl != GOOD_IHL)
 		tst_brk(TBROK, "control datagram IHL corrupted (%u)", ihl);
@@ -293,6 +337,8 @@ static void setup(void)
 
 	build_frame(&ctrl_frame, CTRL_ID, 0);
 	build_frame(&test_frame, TEST_ID, 1);
+
+	select_framing();
 }
 
 static void cleanup(void)
