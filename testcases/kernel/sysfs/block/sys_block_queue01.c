@@ -16,11 +16,22 @@
  * - read_ahead_kb, nr_requests and discard_max_bytes are non-negative
  * - nr_requests is greater than zero
  * - rotational, add_random, iostats are boolean (0 or 1)
- * - scheduler is a valid bracketed-choice file with exactly one active scheduler
+ * - scheduler is a valid bracketed-choice file with exactly one active
+ *   scheduler, or plain ``none`` without brackets on kernels older than 6.14
  *
  * All checks skip gracefully with TCONF when a particular attribute is not
  * present, since the set of exported queue attributes differs between kernel
  * versions and device types.
+ *
+ * Kernels older than 6.14 report plain ``none`` in scheduler for queues that
+ * do not support I/O schedulers:
+ *
+ * - bio-based devices (dm, ram, zram, pmem), until commit 6d85ebf95c44
+ *   (``blk-sysfs: add a new attr_group for blk_mq``) in kernel 6.5 stopped
+ *   exporting scheduler for them
+ * - blk-mq queues with BLK_MQ_F_NO_SCHED since kernel 6.2, until commit
+ *   e7602bb4f3a1 (``block: remove BLK_MQ_F_NO_SCHED``) in kernel 6.14 removed
+ *   the flag
  */
 
 #include <string.h>
@@ -30,11 +41,29 @@
 #include "tst_sysfs_assert.h"
 #include "tst_path_defs.h"
 
+static int allow_plain_none;
+
 /* schedulers that have existed in mainline over time */
 static const char *const sched_allowed[] = {
 	"none", "noop", "deadline", "mq-deadline", "cfq",
 	"kyber", "bfq", "anticipatory", NULL
 };
+
+static void check_scheduler(const char *dev)
+{
+	char sched[64];
+
+	if (allow_plain_none &&
+	    TST_SYSFS_READ_STR(sched, sizeof(sched),
+			       PATH_SYS_BLOCK "/%s/queue/scheduler", dev) &&
+	    !strcmp(sched, "none")) {
+		tst_res(TPASS, PATH_SYS_BLOCK "/%s/queue/scheduler = 'none'", dev);
+		return;
+	}
+
+	TST_SYSFS_ASSERT_CHOICE(sched_allowed, NULL, 0,
+				PATH_SYS_BLOCK "/%s/queue/scheduler", dev);
+}
 
 static void check_cross(const char *dev)
 {
@@ -50,8 +79,6 @@ static void check_cross(const char *dev)
 
 static void check_device(const char *dev)
 {
-	char sched[64];
-
 	tst_res(TINFO, "Checking block device '%s'", dev);
 
 	TST_SYSFS_ASSERT_POW2(PATH_SYS_BLOCK "/%s/queue/logical_block_size", dev);
@@ -68,10 +95,14 @@ static void check_device(const char *dev)
 	TST_SYSFS_ASSERT_BOOL(PATH_SYS_BLOCK "/%s/queue/add_random", dev);
 	TST_SYSFS_ASSERT_BOOL(PATH_SYS_BLOCK "/%s/queue/iostats", dev);
 
-	TST_SYSFS_ASSERT_CHOICE(sched_allowed, sched, sizeof(sched),
-				PATH_SYS_BLOCK "/%s/queue/scheduler", dev);
+	check_scheduler(dev);
 
 	check_cross(dev);
+}
+
+static void setup(void)
+{
+	allow_plain_none = tst_kvercmp(6, 14, 0) < 0;
 }
 
 static void run(void)
@@ -101,5 +132,6 @@ static void run(void)
 }
 
 static struct tst_test test = {
+	.setup = setup,
 	.test_all = run,
 };
