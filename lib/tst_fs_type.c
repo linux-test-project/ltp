@@ -74,6 +74,8 @@ const char *tst_fs_type_name(long f_type)
 		return "vfat";
 	case TST_EXFAT_MAGIC:
 		return "exfat";
+	case TST_NTFS3_MAGIC:
+		return "ntfs3";
 	default:
 		return "unknown";
 	}

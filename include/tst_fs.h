@@ -34,6 +34,7 @@
 #define TST_FUSE_MAGIC     0x65735546
 #define TST_VFAT_MAGIC     0x4d44 /* AKA MSDOS */
 #define TST_EXFAT_MAGIC    0x2011BAB0UL
+#define TST_NTFS3_MAGIC    0x7366746e
 
 /* fs/bcachefs/bcachefs_format.h */
 #define TST_BCACHE_MAGIC		0xca451a4e
