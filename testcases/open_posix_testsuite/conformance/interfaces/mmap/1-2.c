@@ -29,7 +29,7 @@ int test_main(int argc PTS_ATTRIBUTE_UNUSED, char **argv PTS_ATTRIBUTE_UNUSED)
 	size_t size = 1024 * 4 * 1024;
 	int fd;
 
-	snprintf(tmpfname, sizeof(tmpfname), "pts_mmap_1_2_%d", getpid());
+	snprintf(tmpfname, sizeof(tmpfname), "/pts_mmap_1_2_%d", getpid());
 
 	/* Create shared object */
 	shm_unlink(tmpfname);
