@@ -91,16 +91,34 @@ ifeq ($(strip $(SUBDIRS)),)
 	$(warning CURDIR is: $(CURDIR))
 	$(error SUBDIRS empty -- did you want generic_leaf_target instead?)
 else
-$(RECURSIVE_TARGETS): %: | $(SUBDIRS)
 ifdef VERBOSE
-	@set -e; for dir in $(SUBDIRS); do \
-	    $(MAKE) -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
-	done
+TRUNK_Q		:=
+SUBMAKE_OPTS	:=
 else
-	@set -e; for dir in $(SUBDIRS); do \
-	    $(MAKE) --no-print-directory -C $$dir -f "$(abs_srcdir)/$$dir/Makefile" $@; \
-	done
+TRUNK_Q		:= @
+SUBMAKE_OPTS	:= --no-print-directory
 endif
+
+# Recurse into subdirectories via per-directory phony targets
+# (<dir>-all, <dir>-install, <dir>-check) so that GNU Make can build
+# sibling directories in parallel under -jN. $(MAKE) must appear
+# literally in the recipes so that sub-makes join the jobserver.
+all:     $(addsuffix -all,$(SUBDIRS))
+install: $(addsuffix -install,$(SUBDIRS))
+check:   $(addsuffix -check,$(SUBDIRS))
+
+.PHONY: $(addsuffix -all,$(SUBDIRS)) \
+	$(addsuffix -install,$(SUBDIRS)) \
+	$(addsuffix -check,$(SUBDIRS))
+
+$(addsuffix -all,$(SUBDIRS)): %-all: trunk-all | $(SUBDIRS) $(MAKE_DEPS)
+	$(TRUNK_Q)$(MAKE) $(SUBMAKE_OPTS) -C "$*" -f "$(abs_srcdir)/$*/Makefile" all
+
+$(addsuffix -install,$(SUBDIRS)): %-install: trunk-install | $(SUBDIRS) $(MAKE_DEPS)
+	$(TRUNK_Q)$(MAKE) $(SUBMAKE_OPTS) -C "$*" -f "$(abs_srcdir)/$*/Makefile" install
+
+$(addsuffix -check,$(SUBDIRS)): %-check: trunk-check | $(SUBDIRS) $(MAKE_DEPS)
+	$(TRUNK_Q)$(MAKE) $(SUBMAKE_OPTS) -C "$*" -f "$(abs_srcdir)/$*/Makefile" check
 endif
 
 check: trunk-check

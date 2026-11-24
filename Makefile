@@ -63,6 +63,8 @@ CHECK_TARGETS		:= $(addsuffix -check,testcases lib)
 all: $(addsuffix -all,$(COMMON_TARGETS)) Version
 
 $(MAKE_TARGETS): lib-all libs-all
+# tools contains apicmds/tst_kvercmp required by some testcases
+testcases-all: tools-all
 
 .PHONY: include-all include-install
 include-install: $(top_builddir)/include/config.h include/mk/config.mk include-all

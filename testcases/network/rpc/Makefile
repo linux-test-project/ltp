@@ -9,3 +9,8 @@ include $(top_srcdir)/include/mk/env_pre.mk
 INSTALL_TARGETS		:= *.sh
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
+
+# librpc-tirpc.a in rpc-tirpc/ must be built before basic_tests
+ifneq ($(filter rpc-tirpc,$(SUBDIRS)),)
+basic_tests-all basic_tests-install: rpc-tirpc-all
+endif

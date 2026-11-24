@@ -54,3 +54,9 @@ FILTER_OUT_DIRS		+= containers controllers device-drivers fs io ipc mem \
 endif
 
 include $(top_srcdir)/include/mk/generic_trunk_target.mk
+
+# libkerntest.a in lib/ must be built before its consumers
+ifneq ($(filter lib,$(SUBDIRS)),)
+KERNTEST_USERS	:= $(filter-out lib,$(SUBDIRS))
+$(addsuffix -all,$(KERNTEST_USERS)) $(addsuffix -install,$(KERNTEST_USERS)): lib-all
+endif
