@@ -12,11 +12,11 @@ LIBLTP_DIR	:= $(abs_top_builddir)/lib
 
 LIBLTP		:= $(LIBLTP_DIR)/libltp.a
 
-$(APICMDS_DIR)/tst_kvercmp: $(APICMDS_DIR)
-	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/tools/apicmds/Makefile" all
+$(APICMDS_DIR)/tst_kvercmp: | $(APICMDS_DIR)
+	$(MAKE) -C "$(APICMDS_DIR)" -f "$(abs_top_srcdir)/tools/apicmds/Makefile" all
 
-$(LIBLTP): $(LIBLTP_DIR)
-	$(MAKE) -C "$^" -f "$(abs_top_srcdir)/lib/Makefile" all
+$(LIBLTP): | $(LIBLTP_DIR)
+	$(MAKE) -C "$(LIBLTP_DIR)" -f "$(abs_top_srcdir)/lib/Makefile" all
 
 MAKE_DEPS	:= $(LIBLTP)
 
@@ -27,13 +27,15 @@ LDLIBS		+= -lltp
 ifdef LTPLIBS
 
 LTPLIBS_DIRS = $(addprefix $(abs_top_builddir)/libs/, $(LTPLIBS))
-LTPLIBS_FILES = $(addsuffix .a, $(addprefix $(abs_top_builddir)/libs/, $(foreach LIB,$(LTPLIBS),$(LIB)/lib$(LIB))))
+LTPLIBS_FILES = $(addsuffix .a, $(addprefix $(abs_top_builddir)/libs/, $(foreach LIB,$(LTPLIBS),$(LIB)/libltp$(LIB))))
 
 MAKE_DEPS += $(LTPLIBS_FILES)
 
+ifeq ($(MAKELEVEL),0)
 .PHONY: $(LTPLIBS_FILES)
+endif
 
-$(LTPLIBS_FILES): $(LTPLIBS_DIRS)
+$(LTPLIBS_FILES): | $(LTPLIBS_DIRS)
 
 $(LTPLIBS_FILES): %:
 ifdef VERBOSE
