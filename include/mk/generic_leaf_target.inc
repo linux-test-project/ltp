@@ -76,6 +76,8 @@
 # INSTALL_DIR			:= $(libdir)
 #
 
+include $(top_srcdir)/include/mk/generic_lib_deps.inc
+
 .PHONY: all clean install check
 
 ifneq ($(strip $(MAKE_TARGETS)),)

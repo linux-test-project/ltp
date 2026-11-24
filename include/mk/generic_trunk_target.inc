@@ -36,6 +36,8 @@ RECURSIVE_TARGETS		?= all install check
 
 $(eval $(get_make_dirs))
 
+include $(top_srcdir)/include/mk/generic_lib_deps.inc
+
 .PHONY: $(RECURSIVE_TARGETS) $(addprefix trunk-,$(RECURSIVE_TARGETS))
 
 $(SUBDIRS): %:
@@ -77,6 +79,12 @@ ifneq ($(abs_builddir),$(abs_srcdir))
 endif
 
 install: trunk-install
+
+ifneq ($(strip $(MAKE_DEPS)),)
+ifneq ($(strip $(filter all install,$(RECURSIVE_TARGETS))),)
+$(filter all install,$(RECURSIVE_TARGETS)): | $(MAKE_DEPS)
+endif
+endif
 
 # Print out CURDIR to check for a recursion issue.
 ifeq ($(strip $(SUBDIRS)),)

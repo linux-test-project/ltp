@@ -29,8 +29,10 @@ LDFLAGS			+= -L$(LIBKERNTEST_DIR)
 $(LIBKERNTEST_DIR):
 	mkdir -p "$@"
 
+ifneq ($(MAKELEVEL),0)
 $(LIBKERNTEST): | $(LIBKERNTEST_DIR)
 	$(MAKE) -C "$(LIBKERNTEST_DIR)" -f "$(LIBKERNTEST_SRCDIR)/Makefile" all
+endif
 
 MAKE_DEPS		+= $(LIBKERNTEST)
 

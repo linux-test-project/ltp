@@ -15,10 +15,7 @@ LIBLTP		:= $(LIBLTP_DIR)/libltp.a
 $(APICMDS_DIR)/tst_kvercmp: | $(APICMDS_DIR)
 	$(MAKE) -C "$(APICMDS_DIR)" -f "$(abs_top_srcdir)/tools/apicmds/Makefile" all
 
-$(LIBLTP): | $(LIBLTP_DIR)
-	$(MAKE) -C "$(LIBLTP_DIR)" -f "$(abs_top_srcdir)/lib/Makefile" all
-
-MAKE_DEPS	:= $(LIBLTP)
+MAKE_DEPS	:=
 
 INSTALL_DIR	:= testcases/bin
 
