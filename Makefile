@@ -222,7 +222,7 @@ MODULE_DIRS :=  $(shell \
 
 
 .PHONY: modules modules-clean modules-install
-modules:
+modules: lib-all
 	@$(foreach dir,$(MODULE_DIRS),\
 		echo "Build $(dir)";\
 		$(MAKE) -C $(dir) || exit $$?; \
