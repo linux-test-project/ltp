@@ -1471,11 +1471,15 @@ static void do_setup(int argc, char *argv[])
 
 	check_supported_kver();
 
-	if (tst_test->needs_kconfigs && tst_kconfig_check(tst_test->needs_kconfigs))
-		tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");
-
 	if (tst_test->needs_root && geteuid() != 0)
 		tst_brk(TCONF, "Test needs to be run as root");
+
+	if (tst_test->needs_kconfigs) {
+		if (tst_kconfig_check(tst_test->needs_kconfigs))
+			tst_brk(TCONF, "Aborting due to unsuitable kernel config, see above!");
+
+		tst_kconfig_module_load();
+	}
 
 	if (tst_test->min_kver)
 		check_kver(tst_test->min_kver, 1);
@@ -1689,6 +1693,9 @@ static void do_cleanup(void)
 
 	if (tst_test->restore_wallclock)
 		tst_wallclock_restore();
+
+	if (tst_test->needs_kconfigs)
+		tst_kconfig_module_unload();
 
 	cleanup_ipc();
 }

@@ -105,4 +105,25 @@ void tst_kcmdline_parse(struct tst_kcmdline_var params[], size_t params_len);
  */
 int tst_has_slow_kconfig(void);
 
+/**
+ * tst_kconfig_module_load() - Load kernel modules for CONFIG_*=m entries.
+ *
+ * Loads the modules for CONFIG_* options found as =m in the kernel config
+ * that are not already loaded, in the order they were found.
+ * Does nothing when not running as root.
+ */
+void tst_kconfig_module_load(void);
+
+/**
+ * tst_kconfig_module_unload() - Unload modules loaded by
+ *                               tst_kconfig_module_load().
+ *
+ * Unloads, in reverse order, only the modules that were actually loaded.
+ * Modules still in use are skipped silently. Dependencies pulled in by
+ * modprobe are not unloaded.
+ *
+ * Called from do_cleanup(), so it runs regardless of the test result.
+ */
+void tst_kconfig_module_unload(void);
+
 #endif	/* TST_KCONFIG_H__ */

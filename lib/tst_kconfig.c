@@ -16,7 +16,15 @@
 #include "tst_bool_expr.h"
 #include "tst_safe_stdio.h"
 
+#include "lapi/syscalls.h"
+#include "tst_module.h"
 #include "tst_kconfig_checks.h"
+
+#define MAX_LOADED_MODULES 32
+
+static const char *loaded_modules[MAX_LOADED_MODULES];
+static unsigned int module_count;
+static unsigned int loaded_module_count;
 
 static int kconfig_skip_check(void)
 {
@@ -159,8 +167,8 @@ static struct config_module_map {
 	{"CONFIG_INPUT_UINPUT", "uinput"},
 	{"CONFIG_DUMMY", "dummy"},
 	{"CONFIG_CAN_VCAN", "vcan"},
-	{"CONFIG_CAN_RAW", "can-raw"},
-	{"CONFIG_CAN_BCM", "can-bcm"},
+	{"CONFIG_CAN_RAW", "can_raw"},
+	{"CONFIG_CAN_BCM", "can_bcm"},
 	{"CONFIG_IP_SCTP", "sctp"},
 	{"CONFIG_NET_SCH_INGRESS", "sch_ingress"},
 	{"CONFIG_NET_CLS_MATCHALL", "cls_matchall"},
@@ -178,6 +186,12 @@ static void kconfig_module_check(struct tst_kconfig_var *var)
 		if (strcmp(config_module_maps[i].config, var->id))
 			continue;
 
+		if (strchr(config_module_maps[i].module_name, '-')) {
+			tst_brk(TBROK, "config_module_maps[]: module '%s' "
+					"must use '_' instead of '-'",
+					config_module_maps[i].module_name);
+		}
+
 		tst_res(TDEBUG, "Running module check for '%s'", var->id);
 
 		if (tst_check_module_driver(config_module_maps[i].module_name)) {
@@ -187,6 +201,38 @@ static void kconfig_module_check(struct tst_kconfig_var *var)
 			return;
 		}
 	}
+}
+
+static void kconfig_module_record(struct tst_kconfig_var *var)
+{
+	unsigned int i;
+	const char *mod = NULL;
+
+	if (var->choice != 'm')
+		return;
+
+	for (i = 0; config_module_maps[i].config; i++) {
+		if (!strcmp(config_module_maps[i].config, var->id)) {
+			mod = config_module_maps[i].module_name;
+			break;
+		}
+	}
+
+	if (!mod)
+		return;
+
+	if (tst_module_is_loaded(mod))
+		return;
+
+	for (i = 0; i < module_count; i++) {
+		if (!strcmp(loaded_modules[i], mod))
+			return;
+	}
+
+	if (module_count >= MAX_LOADED_MODULES)
+		tst_brk(TBROK, "Too many modules, increase MAX_LOADED_MODULES");
+
+	loaded_modules[module_count++] = mod;
 }
 
 static inline int kconfig_parse_line(const char *line,
@@ -268,6 +314,7 @@ out:
 				vars[i].choice = 'm';
 				kconfig_runtime_check(&vars[i]);
 				kconfig_module_check(&vars[i]);
+				kconfig_module_record(&vars[i]);
 				return 1;
 			}
 		}
@@ -298,6 +345,47 @@ void tst_kconfig_read(struct tst_kconfig_var vars[], size_t vars_len)
 
 exit:
 	close_kconfig(fp);
+}
+
+void tst_kconfig_module_load(void)
+{
+	unsigned int i;
+
+	if (geteuid() != 0)
+		return;
+
+	for (i = 0; i < module_count; i++) {
+		tst_res(TDEBUG, "Loading module '%s'", loaded_modules[i]);
+		tst_modprobe(loaded_modules[i], NULL);
+
+		loaded_module_count++;
+	}
+}
+
+void tst_kconfig_module_unload(void)
+{
+	const char *name;
+
+	while (loaded_module_count > 0) {
+		name = loaded_modules[--loaded_module_count];
+
+		tst_res(TDEBUG, "Unloading module '%s'", name);
+
+		if (!syscall(__NR_delete_module, name, O_NONBLOCK))
+			continue;
+
+		switch (errno) {
+		case ENOENT:		/* already unloaded */
+		case EWOULDBLOCK:	/* in use */
+		case EBUSY:		/* still loading or unloading */
+		case ENOSYS:		/* no CONFIG_MODULE_UNLOAD */
+			break;
+		default:
+			tst_res(TWARN | TERRNO, "Failed to unload module '%s'", name);
+		}
+	}
+
+	loaded_module_count = 0;
 }
 
 static size_t array_len(const char *const kconfigs[])
