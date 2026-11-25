@@ -50,7 +50,6 @@
  */
 
 #include "tst_test.h"
-#include "tst_module.h"
 #include "tst_checksum.h"
 #include "tst_safe_net.h"
 
@@ -204,8 +203,6 @@ static void setup(void)
 		{}
 	};
 	const struct tst_path_val *sysctl;
-
-	tst_modprobe("sctp", NULL);
 
 	for (sysctl = sysctls; sysctl->path; sysctl++)
 		tst_sys_conf_save(sysctl);

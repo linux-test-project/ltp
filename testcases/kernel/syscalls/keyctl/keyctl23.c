@@ -6,7 +6,8 @@
 /*\
  * Test ``KEYCTL_RESTRICT_KEYRING`` builtin_trusted of :manpage:`keyctl(2)`.
  *
- * Requires root (CAP_SYS_MODULE) to load the ``x509_key_parser`` module.
+ * Requires root (CAP_SYS_MODULE) so that the test library can load the
+ * ``x509_key_parser`` module.
  *
  * [Algorithm]
  *
@@ -16,7 +17,6 @@
  */
 
 #include "keyctl_common.h"
-#include "tst_module.h"
 
 #define PAYLOAD		"payload"
 
@@ -88,8 +88,6 @@ static key_serial_t user_key;
 static void setup(void)
 {
 	SAFE_KEYCTL(KEYCTL_JOIN_SESSION_KEYRING, 0, 0, 0, 0);
-
-	tst_modprobe("x509_key_parser", NULL);
 
 	ring_builtin = SAFE_NEW_RING("ltpkeyctl23_builtin");
 
